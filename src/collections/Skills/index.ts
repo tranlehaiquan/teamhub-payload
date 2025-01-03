@@ -21,6 +21,12 @@ export const Skills: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'relatedUsers',
+      type: 'join',
+      collection: 'users_skills',
+      on: 'skill',
+    },
   ],
   timestamps: true,
 }

@@ -1,6 +1,12 @@
-import type { CollectionConfig } from 'payload'
-
+import type { CollectionConfig, Field } from 'payload'
 import { authenticated } from '../../access/authenticated'
+
+const ProfileField: Field = {
+  name: 'profile',
+  type: 'join',
+  collection: 'profiles',
+  on: 'users',
+}
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -20,6 +26,19 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
+    },
+    ProfileField,
+    {
+      name: 'relatedSkills',
+      type: 'join',
+      collection: 'users_skills',
+      on: 'user',
+    },
+    {
+      name: 'certificates',
+      type: 'join',
+      collection: 'certificates',
+      on: 'user',
     },
   ],
   timestamps: true,

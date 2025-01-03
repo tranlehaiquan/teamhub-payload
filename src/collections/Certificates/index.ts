@@ -33,14 +33,19 @@ export const Certificates: CollectionConfig = {
       label: 'Expiry date',
     },
     {
-      name: 'users',
+      name: 'user',
       type: 'relationship',
       admin: {
         position: 'sidebar',
       },
       relationTo: 'users',
     },
-    // TODO: upload file (or image) for certificate
+    {
+      name: 'skills',
+      type: 'relationship',
+      relationTo: 'users_skills',
+      hasMany: true,
+    },
   ],
   timestamps: true,
 }

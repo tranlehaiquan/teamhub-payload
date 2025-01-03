@@ -19,6 +19,7 @@ import { getServerSideURL } from './utilities/getURL'
 import { Profiles } from './collections/Profiles'
 import { Certificates } from './collections/Certificates'
 import { Skills } from './collections/Skills'
+import { Users_Skills } from './collections/Users_Skills'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -67,7 +68,17 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Profiles, Certificates, Skills],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Profiles,
+    Certificates,
+    Skills,
+    Users_Skills,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [

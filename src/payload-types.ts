@@ -19,6 +19,7 @@ export interface Config {
     profiles: Profile;
     certificates: Certificate;
     skills: Skill;
+    users_skills: UsersSkill;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -27,7 +28,16 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    users: {
+      profile: 'profiles';
+      relatedSkills: 'users_skills';
+      certificates: 'certificates';
+    };
+    skills: {
+      relatedUsers: 'users_skills';
+    };
+  };
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
@@ -37,6 +47,7 @@ export interface Config {
     profiles: ProfilesSelect<false> | ProfilesSelect<true>;
     certificates: CertificatesSelect<false> | CertificatesSelect<true>;
     skills: SkillsSelect<false> | SkillsSelect<true>;
+    users_skills: UsersSkillsSelect<false> | UsersSkillsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -305,6 +316,18 @@ export interface Category {
 export interface User {
   id: number;
   name?: string | null;
+  profile?: {
+    docs?: (number | Profile)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  relatedSkills?: {
+    docs?: (number | UsersSkill)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  certificates?: {
+    docs?: (number | Certificate)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -315,6 +338,61 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profiles".
+ */
+export interface Profile {
+  id: number;
+  firstName: string;
+  lastName?: string | null;
+  users?: (number | null) | User;
+  avatar?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_skills".
+ */
+export interface UsersSkill {
+  id: number;
+  user?: (number | null) | User;
+  skill?: (number | null) | Skill;
+  currentLevel?: number | null;
+  category?: (number | null) | Category;
+  desiredLevel?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skills".
+ */
+export interface Skill {
+  id: number;
+  name: string;
+  relatedUsers?: {
+    docs?: (number | UsersSkill)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates".
+ */
+export interface Certificate {
+  id: number;
+  name: string;
+  deliveryDate?: string | null;
+  expiryDate?: string | null;
+  user?: (number | null) | User;
+  skills?: (number | UsersSkill)[] | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -644,42 +722,6 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "profiles".
- */
-export interface Profile {
-  id: number;
-  firstName: string;
-  lastName?: string | null;
-  users?: (number | null) | User;
-  avatar?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "certificates".
- */
-export interface Certificate {
-  id: number;
-  name: string;
-  deliveryDate?: string | null;
-  expiryDate?: string | null;
-  users?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "skills".
- */
-export interface Skill {
-  id: number;
-  name: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -784,6 +826,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'skills';
         value: number | Skill;
+      } | null)
+    | ({
+        relationTo: 'users_skills';
+        value: number | UsersSkill;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1126,6 +1172,9 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  profile?: T;
+  relatedSkills?: T;
+  certificates?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1156,7 +1205,8 @@ export interface CertificatesSelect<T extends boolean = true> {
   name?: T;
   deliveryDate?: T;
   expiryDate?: T;
-  users?: T;
+  user?: T;
+  skills?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1166,6 +1216,20 @@ export interface CertificatesSelect<T extends boolean = true> {
  */
 export interface SkillsSelect<T extends boolean = true> {
   name?: T;
+  relatedUsers?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_skills_select".
+ */
+export interface UsersSkillsSelect<T extends boolean = true> {
+  user?: T;
+  skill?: T;
+  currentLevel?: T;
+  category?: T;
+  desiredLevel?: T;
   updatedAt?: T;
   createdAt?: T;
 }
