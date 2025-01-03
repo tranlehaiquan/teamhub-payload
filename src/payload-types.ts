@@ -344,7 +344,7 @@ export interface User {
     docs?: (number | Certificate)[] | null;
     hasNextPage?: boolean | null;
   } | null;
-  role?: ('admin' | 'user') | null;
+  roles?: ('admin' | 'editor' | 'user')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1246,7 +1246,7 @@ export interface UsersSelect<T extends boolean = true> {
   profile?: T;
   relatedSkills?: T;
   certificates?: T;
-  role?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

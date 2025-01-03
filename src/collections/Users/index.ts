@@ -41,10 +41,13 @@ export const Users: CollectionConfig = {
       on: 'user',
     },
     {
-      name: 'role',
+      name: 'roles',
       type: 'select',
+      hasMany: true,
+      defaultValue: ['user'],
       options: [
         { label: 'Admin', value: 'admin' },
+        { label: 'Editor', value: 'editor' },
         { label: 'User', value: 'user' },
       ],
     },

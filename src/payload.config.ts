@@ -69,6 +69,17 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
+    beforeSchemaInit: [
+      ({ schema, adapter }) => {
+        adapter.rawTables.teams_users.indexes!.userIdTeamId = {
+          name: 'userIdTeamIdUnique',
+          unique: true,
+          on: ['user', 'team'],
+        };
+
+        return schema;
+      },
+    ],
   }),
   collections: [
     Pages,

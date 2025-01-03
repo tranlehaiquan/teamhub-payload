@@ -12,7 +12,6 @@ export const Teams_Users: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['team', 'user'],
-    // hidden: true,
   },
   fields: [
     {
