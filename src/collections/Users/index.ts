@@ -1,12 +1,12 @@
-import type { CollectionConfig, Field } from 'payload'
-import { authenticated } from '../../access/authenticated'
+import type { CollectionConfig, Field } from 'payload';
+import { authenticated } from '../../access/authenticated';
 
 const ProfileField: Field = {
   name: 'profile',
   type: 'join',
   collection: 'profiles',
   on: 'users',
-}
+};
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -40,6 +40,14 @@ export const Users: CollectionConfig = {
       collection: 'certificates',
       on: 'user',
     },
+    {
+      name: 'role',
+      type: 'select',
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'User', value: 'user' },
+      ],
+    },
   ],
   timestamps: true,
-}
+};

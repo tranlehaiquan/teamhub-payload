@@ -20,6 +20,8 @@ export interface Config {
     certificates: Certificate;
     skills: Skill;
     users_skills: UsersSkill;
+    teams: Team;
+    teams_users: TeamsUser;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -37,6 +39,9 @@ export interface Config {
     skills: {
       relatedUsers: 'users_skills';
     };
+    teams: {
+      users: 'teams_users';
+    };
   };
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -48,6 +53,8 @@ export interface Config {
     certificates: CertificatesSelect<false> | CertificatesSelect<true>;
     skills: SkillsSelect<false> | SkillsSelect<true>;
     users_skills: UsersSkillsSelect<false> | UsersSkillsSelect<true>;
+    teams: TeamsSelect<false> | TeamsSelect<true>;
+    teams_users: TeamsUsersSelect<false> | TeamsUsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -337,6 +344,7 @@ export interface User {
     docs?: (number | Certificate)[] | null;
     hasNextPage?: boolean | null;
   } | null;
+  role?: ('admin' | 'user') | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -746,6 +754,32 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  owner: number | User;
+  users?: {
+    docs?: (number | TeamsUser)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams_users".
+ */
+export interface TeamsUser {
+  id: number;
+  team?: (number | null) | Team;
+  user?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -859,6 +893,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users_skills';
         value: number | UsersSkill;
+      } | null)
+    | ({
+        relationTo: 'teams';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'teams_users';
+        value: number | TeamsUser;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1204,6 +1246,7 @@ export interface UsersSelect<T extends boolean = true> {
   profile?: T;
   relatedSkills?: T;
   certificates?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1259,6 +1302,27 @@ export interface UsersSkillsSelect<T extends boolean = true> {
   currentLevel?: T;
   category?: T;
   desiredLevel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams_select".
+ */
+export interface TeamsSelect<T extends boolean = true> {
+  name?: T;
+  owner?: T;
+  users?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams_users_select".
+ */
+export interface TeamsUsersSelect<T extends boolean = true> {
+  team?: T;
+  user?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,28 +1,30 @@
 // storage-adapter-import-placeholder
-import { postgresAdapter } from '@payloadcms/db-postgres'
+import { postgresAdapter } from '@payloadcms/db-postgres';
 
-import sharp from 'sharp' // sharp-import
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
+import sharp from 'sharp'; // sharp-import
+import path from 'path';
+import { buildConfig } from 'payload';
+import { fileURLToPath } from 'url';
 
-import { Categories } from './collections/Categories'
-import { Media } from './collections/Media'
-import { Pages } from './collections/Pages'
-import { Posts } from './collections/Posts'
-import { Users } from './collections/Users'
-import { Footer } from './Footer/config'
-import { Header } from './Header/config'
-import { plugins } from './plugins'
-import { defaultLexical } from '@/fields/defaultLexical'
-import { getServerSideURL } from './utilities/getURL'
-import { Profiles } from './collections/Profiles'
-import { Certificates } from './collections/Certificates'
-import { Skills } from './collections/Skills'
-import { Users_Skills } from './collections/Users_Skills'
+import { Categories } from './collections/Categories';
+import { Media } from './collections/Media';
+import { Pages } from './collections/Pages';
+import { Posts } from './collections/Posts';
+import { Users } from './collections/Users';
+import { Footer } from './Footer/config';
+import { Header } from './Header/config';
+import { plugins } from './plugins';
+import { defaultLexical } from '@/fields/defaultLexical';
+import { getServerSideURL } from './utilities/getURL';
+import { Profiles } from './collections/Profiles';
+import { Certificates } from './collections/Certificates';
+import { Skills } from './collections/Skills';
+import { Users_Skills } from './collections/Users_Skills';
+import Teams from './collections/Teams';
+import { Teams_Users } from './collections/Teams_Users';
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 export default buildConfig({
   admin: {
@@ -78,6 +80,8 @@ export default buildConfig({
     Certificates,
     Skills,
     Users_Skills,
+    Teams,
+    Teams_Users,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
@@ -94,4 +98,4 @@ export default buildConfig({
     disable: true,
     disablePlaygroundInProduction: true,
   },
-})
+});

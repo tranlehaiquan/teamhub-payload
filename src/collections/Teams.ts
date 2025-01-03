@@ -1,12 +1,18 @@
-import type { CollectionConfig } from 'payload'
+import { anyone } from '@/access/anyone';
+import { authenticated } from '@/access/authenticated';
+import type { CollectionConfig } from 'payload';
 
-const Team: CollectionConfig = {
+const Teams: CollectionConfig = {
   slug: 'teams',
   access: {
-    create: () => true,
-    read: () => true,
-    update: () => true,
-    delete: () => true,
+    create: authenticated,
+    delete: authenticated,
+    read: anyone,
+    update: authenticated,
+  },
+  admin: {
+    defaultColumns: ['name', 'owner'],
+    useAsTitle: 'name',
   },
   fields: [
     {
@@ -14,5 +20,19 @@ const Team: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'owner',
+      type: 'relationship',
+      relationTo: 'users',
+      required: true,
+    },
+    {
+      name: 'users',
+      type: 'join',
+      collection: 'teams_users',
+      on: 'team',
+    },
   ],
-}
+};
+
+export default Teams;
