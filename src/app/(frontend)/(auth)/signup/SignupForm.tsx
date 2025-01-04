@@ -14,11 +14,15 @@ interface Props {
 const SignupForm: React.FC<Props> = ({ className }) => {
   const { register, handleSubmit } = useForm();
 
+  const onSubmit = handleSubmit((data) => {
+    console.log(data);
+  });
+
   return (
     <div className={cn('w-[500px] mx-auto p-16 border rounded-2xl', className)}>
       <h1 className="text-xl text-center mb-5">Signup to your account</h1>
 
-      <form>
+      <form onSubmit={onSubmit}>
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"

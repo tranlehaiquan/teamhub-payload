@@ -1,5 +1,6 @@
 import type { CollectionConfig, Field } from 'payload';
 import { authenticated } from '../../access/authenticated';
+import { anyone } from '@/access/anyone';
 
 const ProfileField: Field = {
   name: 'profile',
@@ -12,7 +13,7 @@ export const Users: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
-    create: authenticated,
+    create: anyone,
     delete: authenticated,
     read: authenticated,
     update: authenticated,
@@ -48,7 +49,6 @@ export const Users: CollectionConfig = {
       options: [
         { label: 'Admin', value: 'admin' },
         { label: 'Editor', value: 'editor' },
-        { label: 'User', value: 'user' },
       ],
     },
   ],

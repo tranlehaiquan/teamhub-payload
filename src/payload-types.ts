@@ -344,7 +344,7 @@ export interface User {
     docs?: (number | Certificate)[] | null;
     hasNextPage?: boolean | null;
   } | null;
-  roles?: ('admin' | 'editor' | 'user')[] | null;
+  roles?: ('admin' | 'editor')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;

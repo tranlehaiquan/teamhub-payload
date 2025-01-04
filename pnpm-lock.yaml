@@ -191,8 +191,8 @@ packages:
     resolution: {integrity: sha512-Z4xheIo/fHwOxVoI0UsJbPEfI+cJft2hi5mm2VLNvS2nptRUkTQv09kBLpOvNYNybBTQYQRiT61UFoxk4lWLpQ==}
     engines: {node: '>=16.0.0'}
 
-  '@aws-sdk/client-s3@3.721.0':
-    resolution: {integrity: sha512-uCZC8elYhUFF21yq1yB5TrE/VYz8A4/VnttUHc65/jqnHReTDvEC0XAc756tJnjfrReyM1ws12FzBLHoW/NDjg==}
+  '@aws-sdk/client-s3@3.722.0':
+    resolution: {integrity: sha512-FttdkB39TKjqEITfZJcs6Ihh6alICsNEne0ouLvh8re+gAuTK96zWcfX22mP5ap1QEsATaOGRNsMnyfsDSM0zw==}
     engines: {node: '>=16.0.0'}
 
   '@aws-sdk/client-sso-oidc@3.721.0':
@@ -253,11 +253,11 @@ packages:
     resolution: {integrity: sha512-ZGkWkIU7E1AWDG4TzIM8w+6t04MAZNQ+ySfya0tHo5DrSxFUgPFwy0YTLKwyal3lmuRm1UkGMGCXz3L2yPAJ2Q==}
     engines: {node: '>=16.0.0'}
 
-  '@aws-sdk/lib-storage@3.721.0':
-    resolution: {integrity: sha512-3rt0BPgw+lbKAoVEUlyQif+jbQiPRKE3RyiFyuB0BeJiY1/3POZtbuiNg50W34JsKxj/ynz/8hzMmQgptavzCg==}
+  '@aws-sdk/lib-storage@3.722.0':
+    resolution: {integrity: sha512-dl0aCBlQyYPVkEeGu7zSOA5mGbpDoBg0wppqTWH+By7tGEf401Pzawn5GMIk0XLKEomfu3UoPbZ8zA6BkZNRMg==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
-      '@aws-sdk/client-s3': ^3.721.0
+      '@aws-sdk/client-s3': ^3.722.0
 
   '@aws-sdk/middleware-bucket-endpoint@3.721.0':
     resolution: {integrity: sha512-5UyoDoX3z3UhmetoqqqZulq2uF55Jyj9lUKAJWgTxVhDEG5TijTQS40LP9DqwRl0hJkoUUZKAwE0hwnUsiGXAg==}
@@ -1924,8 +1924,8 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/lodash@4.17.13':
-    resolution: {integrity: sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==}
+  '@types/lodash@4.17.14':
+    resolution: {integrity: sha512-jsxagdikDiDBeIRaPYtArcT8my4tN1og7MtMRquFT3XNA6axxyHDRUemqDz/taRDdOUn0GnGHRCuff4q48sW9A==}
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -3905,8 +3905,8 @@ packages:
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
-  process-warning@4.0.0:
-    resolution: {integrity: sha512-/MyYDxttz7DfGMMHiysAsFE4qF+pQYAA8ziO/3NcRVrQ5fSk+Mns4QZA/oRPFzvcqNoVJXQNWNAsdwBXLUkQKw==}
+  process-warning@4.0.1:
+    resolution: {integrity: sha512-3c2LzQ3rY9d0hc1emcsHhfT9Jwz0cChib/QN89oME2R451w5fy3f0afAhERFZAwrbDU43wk12d0ORBpDVME50Q==}
 
   prompts@2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
@@ -4776,7 +4776,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-s3@3.721.0':
+  '@aws-sdk/client-s3@3.722.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
@@ -5110,9 +5110,9 @@ snapshots:
       - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
-  '@aws-sdk/lib-storage@3.721.0(@aws-sdk/client-s3@3.721.0)':
+  '@aws-sdk/lib-storage@3.722.0(@aws-sdk/client-s3@3.722.0)':
     dependencies:
-      '@aws-sdk/client-s3': 3.721.0
+      '@aws-sdk/client-s3': 3.722.0
       '@smithy/abort-controller': 3.1.9
       '@smithy/middleware-endpoint': 3.2.8
       '@smithy/smithy-client': 3.7.0
@@ -6213,9 +6213,9 @@ snapshots:
   '@payloadcms/payload-cloud@3.14.0(@aws-sdk/client-sso-oidc@3.721.0(@aws-sdk/client-sts@3.721.0))(payload@3.14.0(graphql@16.10.0)(monaco-editor@0.52.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2))':
     dependencies:
       '@aws-sdk/client-cognito-identity': 3.721.0
-      '@aws-sdk/client-s3': 3.721.0
+      '@aws-sdk/client-s3': 3.722.0
       '@aws-sdk/credential-providers': 3.721.0(@aws-sdk/client-sso-oidc@3.721.0(@aws-sdk/client-sts@3.721.0))
-      '@aws-sdk/lib-storage': 3.721.0(@aws-sdk/client-s3@3.721.0)
+      '@aws-sdk/lib-storage': 3.722.0(@aws-sdk/client-s3@3.722.0)
       '@payloadcms/email-nodemailer': 3.14.0(payload@3.14.0(graphql@16.10.0)(monaco-editor@0.52.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.2))
       amazon-cognito-identity-js: 6.3.12
       nodemailer: 6.9.10
@@ -6995,7 +6995,7 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/lodash@4.17.13': {}
+  '@types/lodash@4.17.14': {}
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -8518,7 +8518,7 @@ snapshots:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 11.7.3
       '@types/json-schema': 7.0.15
-      '@types/lodash': 4.17.13
+      '@types/lodash': 4.17.14
       is-glob: 4.0.3
       js-yaml: 4.1.0
       lodash: 4.17.21
@@ -9193,7 +9193,7 @@ snapshots:
       on-exit-leak-free: 2.1.2
       pino-abstract-transport: 2.0.0
       pino-std-serializers: 7.0.0
-      process-warning: 4.0.0
+      process-warning: 4.0.1
       quick-format-unescaped: 4.0.4
       real-require: 0.2.0
       safe-stable-stringify: 2.5.0
@@ -9296,7 +9296,7 @@ snapshots:
 
   process-nextick-args@2.0.1: {}
 
-  process-warning@4.0.0: {}
+  process-warning@4.0.1: {}
 
   prompts@2.4.2:
     dependencies:

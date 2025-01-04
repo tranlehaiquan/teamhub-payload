@@ -28,7 +28,7 @@ const LoginForm: React.FC<Props> = ({ className }) => {
       <Button className="w-full">Login</Button>
 
       <Link href="/signup" className="mt-4 text-sm block text-center">
-        Don't have an account? Signup
+        Don&lsquo;t have an account? Signup
       </Link>
     </div>
   );

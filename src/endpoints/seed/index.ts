@@ -136,21 +136,18 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
-
     payload.create({
       collection: 'categories',
       data: {
         title: 'Technology',
       },
     }),
-
     payload.create({
       collection: 'categories',
       data: {
         title: 'News',
       },
     }),
-
     payload.create({
       collection: 'categories',
       data: {
@@ -163,18 +160,34 @@ export const seed = async ({
         title: 'Design',
       },
     }),
-
     payload.create({
       collection: 'categories',
       data: {
         title: 'Software',
       },
     }),
-
     payload.create({
       collection: 'categories',
       data: {
         title: 'Engineering',
+      },
+    }),
+    payload.create({
+      collection: 'users',
+      data: {
+        name: 'admin',
+        email: 'admin@example.com',
+        roles: ['admin'],
+        password: '123qweasd',
+      },
+    }),
+    payload.create({
+      collection: 'users',
+      data: {
+        name: 'editor',
+        email: 'editor@example.com',
+        roles: ['editor'],
+        password: '123qweasd',
       },
     }),
   ]);
