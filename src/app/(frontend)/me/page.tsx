@@ -1,17 +1,20 @@
-import { getPayload } from 'payload';
-import configPromise from '@payload-config';
-import { headers } from 'next/headers';
+import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import UserProfile from './UserProfile';
+import { getMeUser } from '@/utilities/getMeUser';
 
 const Page = async () => {
-  const headersList = await headers();
-  const payload = await getPayload({ config: configPromise });
-  const result = await payload.auth({ headers: headersList });
+  const queryClient = getQueryClient();
+
+  void queryClient.prefetchQuery({
+    queryKey: ['me'],
+    queryFn: () => getMeUser(),
+  });
 
   return (
-    <div>
-      <h1>Me</h1>
-      {JSON.stringify(result.user)}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <UserProfile />
+    </HydrationBoundary>
   );
 };
 
