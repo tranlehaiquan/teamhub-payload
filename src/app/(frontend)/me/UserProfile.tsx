@@ -19,14 +19,12 @@ const UserProfile: React.FC = () => {
     await queryClient.invalidateQueries({
       queryKey: ['me'],
     });
-
-    // later we can reload here
   };
 
   if (userProfile.user) {
     return (
       <div className="container">
-        <h1>Welcome, {JSON.stringify(userProfile)}</h1>
+        <h1>Welcome, {userProfile.user.name}</h1>
         <Button onClick={handleLogout}>Logout</Button>
       </div>
     );

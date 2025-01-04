@@ -1,5 +1,17 @@
-import PageTemplate, { generateMetadata } from './[slug]/page';
+import { Metadata } from 'next';
 
-export default PageTemplate;
+export function generateMetadata(): Metadata {
+  return {
+    title: `TeamHub`,
+  };
+}
 
-export { generateMetadata };
+const HomePage = () => {
+  return (
+    <div>
+      <h1>Home</h1>
+    </div>
+  );
+};
+
+export default HomePage;
