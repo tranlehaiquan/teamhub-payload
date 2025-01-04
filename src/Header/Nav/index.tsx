@@ -11,6 +11,9 @@ import { SearchIcon } from 'lucide-react';
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const navItems = data?.navItems || [];
 
+  // hide for now
+  return null;
+
   return (
     <nav className="flex gap-3 items-center">
       {navItems.map(({ link }, i) => {
