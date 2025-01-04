@@ -1,4 +1,4 @@
-import type { RequiredDataFromCollectionSlug } from 'payload'
+import type { RequiredDataFromCollectionSlug } from 'payload';
 
 export const home: RequiredDataFromCollectionSlug<'pages'> = {
   slug: 'home',
@@ -664,4 +664,4 @@ export const home: RequiredDataFromCollectionSlug<'pages'> = {
     title: 'Payload Website Template',
   },
   title: 'Home',
-}
+};

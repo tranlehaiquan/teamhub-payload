@@ -1,4 +1,4 @@
-import type { Form } from '@/payload-types'
+import type { Form } from '@/payload-types';
 
 export const contactForm: Partial<Form> = {
   confirmationMessage: {
@@ -108,4 +108,4 @@ export const contactForm: Partial<Form> = {
   submitButtonLabel: 'Submit',
   title: 'Contact Form',
   updatedAt: '2023-01-12T21:47:41.374Z',
-}
+};

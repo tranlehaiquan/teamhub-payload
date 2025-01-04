@@ -1,6 +1,6 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload';
 
-import { authenticated } from '../../access/authenticated'
+import { authenticated } from '../../access/authenticated';
 
 export const Certificates: CollectionConfig = {
   slug: 'certificates',
@@ -48,4 +48,4 @@ export const Certificates: CollectionConfig = {
     },
   ],
   timestamps: true,
-}
+};

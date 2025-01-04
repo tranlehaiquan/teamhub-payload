@@ -1,4 +1,4 @@
-import type { Post } from '@/payload-types'
+import type { Post } from '@/payload-types';
 
 export const post2: Partial<Post> = {
   slug: 'global-gaze',
@@ -228,4 +228,4 @@ export const post2: Partial<Post> = {
   },
   relatedPosts: [], // this is populated by the seed script
   title: 'Global Gaze: Beyond the Headlines',
-}
+};

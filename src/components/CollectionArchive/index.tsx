@@ -1,16 +1,16 @@
-import { cn } from 'src/utilities/cn'
-import React from 'react'
+import { cn } from 'src/utilities/cn';
+import React from 'react';
 
-import type { Post } from '@/payload-types'
+import type { Post } from '@/payload-types';
 
-import { Card, CardPostData } from '@/components/Card'
+import { Card, CardPostData } from '@/components/Card';
 
 export type Props = {
-  posts: CardPostData[]
-}
+  posts: CardPostData[];
+};
 
 export const CollectionArchive: React.FC<Props> = (props) => {
-  const { posts } = props
+  const { posts } = props;
 
   return (
     <div className={cn('container')}>
@@ -22,13 +22,13 @@ export const CollectionArchive: React.FC<Props> = (props) => {
                 <div className="col-span-4" key={index}>
                   <Card className="h-full" doc={result} relationTo="posts" showCategories />
                 </div>
-              )
+              );
             }
 
-            return null
+            return null;
           })}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

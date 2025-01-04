@@ -1,25 +1,25 @@
-import { MediaBlock } from '@/blocks/MediaBlock/Component'
-import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
-import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import { MediaBlock } from '@/blocks/MediaBlock/Component';
+import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical';
+import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical';
 import {
   JSXConvertersFunction,
   RichText as RichTextWithoutBlocks,
-} from '@payloadcms/richtext-lexical/react'
+} from '@payloadcms/richtext-lexical/react';
 
-import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
+import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component';
 
 import type {
   BannerBlock as BannerBlockProps,
   CallToActionBlock as CTABlockProps,
   MediaBlock as MediaBlockProps,
-} from '@/payload-types'
-import { BannerBlock } from '@/blocks/Banner/Component'
-import { CallToActionBlock } from '@/blocks/CallToAction/Component'
-import { cn } from '@/utilities/cn'
+} from '@/payload-types';
+import { BannerBlock } from '@/blocks/Banner/Component';
+import { CallToActionBlock } from '@/blocks/CallToAction/Component';
+import { cn } from '@/utilities/cn';
 
 type NodeTypes =
   | DefaultNodeTypes
-  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
+  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>;
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
@@ -38,16 +38,16 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
   },
-})
+});
 
 type Props = {
-  data: SerializedEditorState
-  enableGutter?: boolean
-  enableProse?: boolean
-} & React.HTMLAttributes<HTMLDivElement>
+  data: SerializedEditorState;
+  enableGutter?: boolean;
+  enableProse?: boolean;
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export default function RichText(props: Props) {
-  const { className, enableProse = true, enableGutter = true, ...rest } = props
+  const { className, enableProse = true, enableGutter = true, ...rest } = props;
   return (
     <RichTextWithoutBlocks
       converters={jsxConverters}
@@ -61,5 +61,5 @@ export default function RichText(props: Props) {
       )}
       {...rest}
     />
-  )
+  );
 }

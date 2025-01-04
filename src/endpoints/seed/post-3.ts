@@ -1,4 +1,4 @@
-import type { Post } from '@/payload-types'
+import type { Post } from '@/payload-types';
 
 export const post3: Partial<Post> = {
   slug: 'dollar-and-sense-the-financial-forecast',
@@ -264,4 +264,4 @@ export const post3: Partial<Post> = {
   },
   relatedPosts: [], // this is populated by the seed script
   title: 'Dollar and Sense: The Financial Forecast',
-}
+};

@@ -1,4 +1,4 @@
-import type { Page } from '@/payload-types'
+import type { Page } from '@/payload-types';
 
 export const contact: Partial<Page> = {
   slug: 'contact',
@@ -45,4 +45,4 @@ export const contact: Partial<Page> = {
     },
   ],
   title: 'Contact',
-}
+};

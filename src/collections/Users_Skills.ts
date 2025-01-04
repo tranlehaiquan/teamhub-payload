@@ -1,5 +1,5 @@
-import { authenticated } from '@/access/authenticated'
-import type { CollectionConfig } from 'payload'
+import { authenticated } from '@/access/authenticated';
+import type { CollectionConfig } from 'payload';
 
 export const Users_Skills: CollectionConfig = {
   slug: 'users_skills',
@@ -43,4 +43,4 @@ export const Users_Skills: CollectionConfig = {
     },
   ],
   timestamps: true,
-}
+};
