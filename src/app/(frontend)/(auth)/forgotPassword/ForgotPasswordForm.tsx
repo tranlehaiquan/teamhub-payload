@@ -21,7 +21,7 @@ const ForgotPasswordForm: React.FC<Props> = ({ className }) => {
         <Input id="email" type="email" placeholder="Enter your email" className="mb-4" />
 
         <Link href="/login" className="my-4 text-sm block">
-          Login here
+          Back to login
         </Link>
 
         <Button className="w-full">Login</Button>

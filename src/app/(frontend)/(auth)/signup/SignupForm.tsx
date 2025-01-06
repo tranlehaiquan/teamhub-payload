@@ -7,16 +7,32 @@ import { cn } from '@/utilities/cn';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
+import { signup } from '@/services/users';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface Props {
   className?: string;
 }
 
 const SignupForm: React.FC<Props> = ({ className }) => {
-  const { register, handleSubmit } = useForm();
+  const router = useRouter();
+  const { register, handleSubmit, formState } = useForm();
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      const user = await signup({
+        email: data.email,
+        password: data.password,
+        confirmPassword: data['confirm-password'],
+      });
+
+      toast.success(`Account created successfully ${user.doc.email}!`);
+      router.push('/login');
+    } catch (error) {
+      toast.error('Failed to create account, please try again later!');
+      console.error(error);
+    }
   });
 
   return (
@@ -33,6 +49,7 @@ const SignupForm: React.FC<Props> = ({ className }) => {
               placeholder="Enter your email"
               className="mb-4"
               {...register('email', { required: true })}
+              disabled={formState.isSubmitting}
             />
 
             <Label htmlFor="password">Password</Label>
@@ -42,6 +59,7 @@ const SignupForm: React.FC<Props> = ({ className }) => {
               placeholder="Enter your password"
               className="mb-4"
               {...register('password', { required: true })}
+              disabled={formState.isSubmitting}
             />
 
             <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -51,13 +69,16 @@ const SignupForm: React.FC<Props> = ({ className }) => {
               placeholder="Confirm your password"
               className="mb-4"
               {...register('confirm-password', { required: true })}
+              disabled={formState.isSubmitting}
             />
 
-            <Link href="/forgotPassword" className="mb-4 text-sm inline-block">
-              Forgot your password?
+            <Link href="/login" className="mb-4 text-sm inline-block">
+              Already have an account? Log in
             </Link>
 
-            <Button className="w-full">Sign up</Button>
+            <Button className="w-full" disabled={formState.isSubmitting}>
+              Sign up
+            </Button>
           </form>
         </div>
       </Card>
