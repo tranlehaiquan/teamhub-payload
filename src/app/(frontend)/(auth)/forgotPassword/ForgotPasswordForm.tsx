@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/utilities/cn';
 import Link from 'next/link';
+import { Card } from '@/components/ui/card';
 
 interface Props {
   className?: string;
@@ -12,14 +13,20 @@ interface Props {
 
 const ForgotPasswordForm: React.FC<Props> = ({ className }) => {
   return (
-    <div className={cn('w-[500px] mx-auto p-16 border rounded-2xl', className)}>
-      <h1 className="text-xl text-center mb-5">Forgot password</h1>
+    <Card>
+      <div className={cn('py-10 px-8')}>
+        <h1 className="text-xl text-center mb-5">Forgot password</h1>
 
-      <Label htmlFor="email">Email</Label>
-      <Input id="email" type="email" placeholder="Enter your email" className="mb-4" />
+        <Label htmlFor="email">Email</Label>
+        <Input id="email" type="email" placeholder="Enter your email" className="mb-4" />
 
-      <Button className="w-full">Login</Button>
-    </div>
+        <Link href="/login" className="my-4 text-sm block">
+          Login here
+        </Link>
+
+        <Button className="w-full">Login</Button>
+      </div>
+    </Card>
   );
 };
 
