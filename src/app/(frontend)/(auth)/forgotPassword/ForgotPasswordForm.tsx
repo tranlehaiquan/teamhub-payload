@@ -23,6 +23,7 @@ const ForgotPasswordForm: React.FC = () => {
       await forgotPassword(data);
 
       toast.success('Password reset email sent');
+      setIsSuccessSend(true);
     } catch {
       toast.error('Error sending password reset email');
     }
