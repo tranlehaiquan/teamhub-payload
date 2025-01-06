@@ -1,6 +1,7 @@
 import type { CollectionConfig, Field } from 'payload';
 import { authenticated } from '../../access/authenticated';
 import { anyone } from '@/access/anyone';
+import { forgotPasswordTemplate } from '../../email-templates/forgotPassword';
 
 const ProfileField: Field = {
   name: 'profile',
@@ -22,7 +23,16 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email'],
     useAsTitle: 'name',
   },
-  auth: true,
+  auth: {
+    forgotPassword: {
+      generateEmailHTML: (args) => {
+        const resetPasswordURL = `http://localhost:3000/reset?token=${args?.token}`;
+        const template = forgotPasswordTemplate(args?.user, resetPasswordURL);
+
+        return template;
+      },
+    },
+  },
   fields: [
     {
       name: 'name',

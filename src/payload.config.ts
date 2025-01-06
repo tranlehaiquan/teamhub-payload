@@ -22,11 +22,20 @@ import { Skills } from './collections/Skills';
 import { Users_Skills } from './collections/Users_Skills';
 import Teams from './collections/Teams';
 import { Teams_Users } from './collections/Teams_Users';
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 export default buildConfig({
+  email: nodemailerAdapter({
+    defaultFromAddress: 'teamhub@example.com',
+    defaultFromName: 'TeamHub',
+    transportOptions: {
+      host: 'localhost',
+      port: 1025,
+    },
+  }),
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.

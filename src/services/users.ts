@@ -55,3 +55,49 @@ export const signup = async ({ email, password, confirmPassword }) => {
     message: string;
   };
 };
+
+// forgot password
+export const forgotPassword = async ({ email }) => {
+  const url = `${BASE_URL}/api/users/forgot-password`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+    }),
+  });
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json.message);
+  }
+
+  return json;
+};
+
+// reset password after forgot
+export const resetPasswordAfterForgot = async ({ password, confirmPassword, token }) => {
+  const url = `${BASE_URL}/api/users/reset-password`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      password,
+      'confirm-password': confirmPassword,
+      token,
+    }),
+  });
+
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.message);
+  }
+
+  return json;
+};
