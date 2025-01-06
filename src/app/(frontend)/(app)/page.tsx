@@ -9,7 +9,7 @@ export function generateMetadata(): Metadata {
 const HomePage = () => {
   return (
     <div>
-      <h1>Home</h1>
+      <h1>app</h1>
     </div>
   );
 };
