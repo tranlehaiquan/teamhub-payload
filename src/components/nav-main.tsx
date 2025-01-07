@@ -23,17 +23,24 @@ export function NavMain({
     url: string;
     icon?: LucideIcon;
     isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
   }[];
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>User</SidebarGroupLabel>
-
       <SidebarMenu>
+        {items.map((item) => (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton asChild isActive={item.isActive}>
+              <Link href={item.url}>
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+
+      {/* <SidebarMenu>
         {items.map((item) => (
           <Collapsible
             key={item.title}
@@ -65,7 +72,7 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
-      </SidebarMenu>
+      </SidebarMenu> */}
     </SidebarGroup>
   );
 }

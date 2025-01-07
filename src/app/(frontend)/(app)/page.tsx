@@ -4,10 +4,9 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 export default function Page() {
   return (
@@ -25,7 +24,18 @@ export default function Page() {
           </Breadcrumb>
         </div>
       </header>
-      Dashboard
+
+      <main className="p-4">
+        <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>
+        <p className="mt-2 text-gray-600">Feel free to explore.</p>
+
+        <p>
+          Update your account <Link href="/account">here</Link>.
+        </p>
+        <p>
+          Update your personal skills, plans, certificate <Link href="/profile">here</Link>.
+        </p>
+      </main>
     </>
   );
 }

@@ -6,9 +6,11 @@ import {
   Command,
   GalleryVerticalEnd,
   Map,
-  Settings,
+  Users,
   User,
+  UserRoundPenIcon,
   UsersRound,
+  BookUserIcon,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -43,6 +45,18 @@ const data = {
       name: 'Evil Corp.',
       logo: Command,
       plan: 'Free',
+    },
+  ],
+  main: [
+    {
+      title: 'My Profile',
+      url: '/profile',
+      icon: BookUserIcon,
+    },
+    {
+      title: 'Account',
+      url: '/account',
+      icon: UserRoundPenIcon,
     },
   ],
   listTeam: [
@@ -99,13 +113,13 @@ const data = {
   ],
   admins: [
     {
-      name: 'Settings',
-      url: '#',
-      icon: Settings,
+      name: 'Users',
+      url: '/users',
+      icon: Users,
     },
     {
       name: 'Teams',
-      url: '#',
+      url: '/teams',
       icon: Map,
     },
   ],
@@ -126,7 +140,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.main} />
         <NavTeamActions items={data.listTeam} />
         {userProfile.user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
       </SidebarContent>
