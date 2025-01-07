@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field } from 'payload';
+import type { CollectionConfig, Field, PayloadRequest } from 'payload';
 import { authenticated } from '../../access/authenticated';
 import { anyone } from '@/access/anyone';
 import { forgotPasswordTemplate } from '../../email-templates/forgotPassword';
@@ -20,8 +20,8 @@ export const Users: CollectionConfig = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['name', 'email'],
-    useAsTitle: 'name',
+    defaultColumns: ['email'],
+    useAsTitle: 'email',
   },
   auth: {
     forgotPassword: {

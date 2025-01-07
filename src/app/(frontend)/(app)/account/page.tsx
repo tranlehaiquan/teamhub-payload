@@ -1,4 +1,5 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +10,13 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 
-export default function Page() {
+interface Props {
+  className?: string;
+}
+
+const Account: React.FC<Props> = (props) => {
   return (
-    <>
+    <div>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
@@ -21,11 +26,18 @@ export default function Page() {
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="/">TeamHub</BreadcrumbLink>
               </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Account</BreadcrumbPage>
+              </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
       </header>
-      Dashboard
-    </>
+
+      <div>Using to update user.profile data, update password</div>
+    </div>
   );
-}
+};
+
+export default Account;
