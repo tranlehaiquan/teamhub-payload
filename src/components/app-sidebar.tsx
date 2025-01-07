@@ -7,7 +7,8 @@ import {
   GalleryVerticalEnd,
   Map,
   Settings,
-  SquareTerminal,
+  User,
+  UsersRound,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -18,15 +19,12 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getMeUser } from '@/utilities/getMeUser';
+import { NavTeamActions } from './nav-team-action';
 
 // This is sample data.
 const data = {
@@ -47,9 +45,44 @@ const data = {
       plan: 'Free',
     },
   ],
+  listTeam: [
+    {
+      title: 'FSD team',
+      icon: UsersRound,
+      url: '#',
+      isActive: true,
+      items: [
+        {
+          title: 'Skills Matrix',
+          url: '/skills-matrix',
+        },
+        {
+          title: 'Settings',
+          url: '/team-settings',
+        },
+      ],
+    },
+    {
+      title: 'Marketing team',
+      icon: UsersRound,
+      url: '#',
+      isActive: true,
+      items: [
+        {
+          title: 'Skills Matrix',
+          url: '/skills-matrix',
+        },
+        {
+          title: 'Settings',
+          url: '/team-settings',
+        },
+      ],
+    },
+  ],
   navMain: [
     {
-      title: 'Links',
+      title: 'Settings',
+      icon: User,
       url: '#',
       isActive: true,
       items: [
@@ -94,8 +127,10 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
 
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavTeamActions items={data.listTeam} />
         {userProfile.user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
       </SidebarContent>
+
       <SidebarFooter>
         <React.Suspense fallback="loading...">
           <NavUser user={userProfile.user} />
