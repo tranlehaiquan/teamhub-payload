@@ -1,5 +1,5 @@
 'use client';
-import { Profile } from '@/payload-types';
+import { Media, Profile } from '@/payload-types';
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -18,6 +18,7 @@ import { Card } from '@/components/ui/card';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
+import { Media as MediaComponent } from '@/components/Media';
 
 interface Props {
   className?: string;
@@ -64,6 +65,15 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
     <Card>
       <Form {...form}>
         <form onSubmit={onSubmit} className="p-4">
+          <div className="mb-4">
+            {profile.avatar && (
+              <div className="w-24 h-24 relative rounded-full overflow-hidden">
+                <MediaComponent resource={profile.avatar} fill />
+              </div>
+            )}
+            Implement upload file later
+          </div>
+
           <FormField
             control={form.control}
             name="firstName"
