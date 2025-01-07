@@ -4,7 +4,7 @@ import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
 import { getMeUser } from '@/utilities/getMeUser';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Metadata } from 'next';
-import { Suspense } from 'react';
+import { getCurrentProfile } from './account/actions';
 
 export function generateMetadata(): Metadata {
   return {
@@ -21,6 +21,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   void queryClient.prefetchQuery({
     queryKey: ['me'],
     queryFn: () => getMeUser(),
+  });
+  void queryClient.prefetchQuery({
+    queryKey: ['user-profile'],
+    queryFn: () => getCurrentProfile(),
   });
 
   return (

@@ -1,3 +1,4 @@
+'use client';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import React from 'react';
 import {
@@ -9,12 +10,16 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
+import AccountForm from './AccountForm';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { getCurrentProfile } from './actions';
 
-interface Props {
-  className?: string;
-}
+const AccountPage: React.FC = () => {
+  const { data: profile } = useSuspenseQuery({
+    queryKey: ['user-profile'],
+    queryFn: () => getCurrentProfile(),
+  });
 
-const Account: React.FC<Props> = (props) => {
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -35,9 +40,11 @@ const Account: React.FC<Props> = (props) => {
         </div>
       </header>
 
-      <div>Using to update user.profile data, update password</div>
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <AccountForm profile={profile} />
+      </div>
     </div>
   );
 };
 
-export default Account;
+export default AccountPage;

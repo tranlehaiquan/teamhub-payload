@@ -7,9 +7,9 @@ import { cn } from '@/utilities/cn';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
-import { signup } from '@/services/users';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { signup } from '@/services/server/signup';
 
 interface Props {
   className?: string;
@@ -24,10 +24,9 @@ const SignupForm: React.FC<Props> = ({ className }) => {
       const user = await signup({
         email: data.email,
         password: data.password,
-        confirmPassword: data['confirm-password'],
       });
 
-      toast.success(`Account created successfully ${user.doc.email}!`);
+      toast.success(`Account created successfully ${user.user.email}!`);
       router.push('/login');
     } catch (error) {
       toast.error('Failed to create account, please try again later!');

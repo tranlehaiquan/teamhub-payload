@@ -362,7 +362,7 @@ export interface User {
  */
 export interface Profile {
   id: number;
-  firstName: string;
+  firstName?: string | null;
   lastName?: string | null;
   users?: (number | null) | User;
   avatar?: (number | null) | Media;

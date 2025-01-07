@@ -10,11 +10,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 
-interface Props {
-  className?: string;
-}
-
-const Profile: React.FC<Props> = (props) => {
+const Profile: React.FC = () => {
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

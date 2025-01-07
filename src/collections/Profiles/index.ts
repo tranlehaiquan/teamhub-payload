@@ -19,7 +19,6 @@ export const Profiles: CollectionConfig = {
     {
       name: 'firstName',
       type: 'text',
-      required: true,
     },
     {
       name: 'lastName',
