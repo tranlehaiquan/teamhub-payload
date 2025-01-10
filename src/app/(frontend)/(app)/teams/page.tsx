@@ -8,9 +8,29 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { getMeUser } from '@/utilities/getMeUser';
+import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
+import { User } from '@/payload-types';
 
-const PageTeams = () => {
+const PageTeams = async () => {
+  const me = await getMeUser();
+  const payload = await getPayloadFromConfig();
+  const teamDocs = await payload.find({
+    collection: 'teams',
+    user: me.user,
+  });
+  const teams = teamDocs.docs;
+
   return (
     <div>
       <div>
@@ -31,7 +51,39 @@ const PageTeams = () => {
             </Breadcrumb>
           </div>
         </header>
-        Page Teams: CRUD team here
+
+        <div className="p-4">
+          <h1 className="text-2xl font-bold">Users</h1>
+
+          <div className="my-4">
+            <Button disabled>Create Team</Button>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">ID</TableHead>
+                <TableHead>Team Name</TableHead>
+                <TableHead>Owner Name</TableHead>
+                <TableHead>Members</TableHead>
+                <TableHead>Created at</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {teams.map((team) => (
+                <TableRow key={team.id}>
+                  <TableCell className="font-medium">{team.id}</TableCell>
+                  <TableCell className="font-medium">{team.name}</TableCell>
+                  <TableCell className="font-medium">{(team.owner as User).email}</TableCell>
+                  <TableCell>{team.members?.docs?.length}</TableCell>
+                  <TableCell className="font-medium">
+                    {team.createdAt && new Date(team.createdAt).toString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

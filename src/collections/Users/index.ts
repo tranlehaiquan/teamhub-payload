@@ -3,13 +3,6 @@ import { authenticated } from '../../access/authenticated';
 import { anyone } from '@/access/anyone';
 import { forgotPasswordTemplate } from '../../email-templates/forgotPassword';
 
-const ProfileField: Field = {
-  name: 'profile',
-  type: 'join',
-  collection: 'profiles',
-  on: 'users',
-};
-
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
@@ -20,7 +13,7 @@ export const Users: CollectionConfig = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['email'],
+    defaultColumns: ['email', 'roles'],
     useAsTitle: 'email',
   },
   auth: {
@@ -38,7 +31,6 @@ export const Users: CollectionConfig = {
       name: 'name',
       type: 'text',
     },
-    ProfileField,
     {
       name: 'relatedSkills',
       type: 'join',
@@ -59,6 +51,15 @@ export const Users: CollectionConfig = {
         { label: 'Admin', value: 'admin' },
         { label: 'Editor', value: 'editor' },
       ],
+    },
+    {
+      name: 'profile',
+      type: 'relationship',
+      admin: {
+        position: 'sidebar',
+        allowEdit: false,
+      },
+      relationTo: 'profiles',
     },
   ],
   timestamps: true,

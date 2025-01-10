@@ -32,7 +32,6 @@ export interface Config {
   };
   collectionsJoins: {
     users: {
-      profile: 'profiles';
       relatedSkills: 'users_skills';
       certificates: 'certificates';
     };
@@ -40,7 +39,7 @@ export interface Config {
       relatedUsers: 'users_skills';
     };
     teams: {
-      users: 'teams_users';
+      members: 'teams_users';
     };
   };
   collectionsSelect: {
@@ -332,10 +331,6 @@ export interface Category {
 export interface User {
   id: number;
   name?: string | null;
-  profile?: {
-    docs?: (number | Profile)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
   relatedSkills?: {
     docs?: (number | UsersSkill)[] | null;
     hasNextPage?: boolean | null;
@@ -345,6 +340,7 @@ export interface User {
     hasNextPage?: boolean | null;
   } | null;
   roles?: ('admin' | 'editor')[] | null;
+  profile?: (number | null) | Profile;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -355,19 +351,6 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "profiles".
- */
-export interface Profile {
-  id: number;
-  firstName?: string | null;
-  lastName?: string | null;
-  users?: (number | null) | User;
-  avatar?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -408,6 +391,18 @@ export interface Certificate {
   expiryDate?: string | null;
   user?: (number | null) | User;
   skills?: (number | UsersSkill)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profiles".
+ */
+export interface Profile {
+  id: number;
+  firstName?: string | null;
+  lastName?: string | null;
+  avatar?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -760,7 +755,7 @@ export interface Team {
   id: number;
   name: string;
   owner: number | User;
-  users?: {
+  members?: {
     docs?: (number | TeamsUser)[] | null;
     hasNextPage?: boolean | null;
   } | null;
@@ -1243,10 +1238,10 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
-  profile?: T;
   relatedSkills?: T;
   certificates?: T;
   roles?: T;
+  profile?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1264,7 +1259,6 @@ export interface UsersSelect<T extends boolean = true> {
 export interface ProfilesSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
-  users?: T;
   avatar?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1312,7 +1306,7 @@ export interface UsersSkillsSelect<T extends boolean = true> {
 export interface TeamsSelect<T extends boolean = true> {
   name?: T;
   owner?: T;
-  users?: T;
+  members?: T;
   updatedAt?: T;
   createdAt?: T;
 }

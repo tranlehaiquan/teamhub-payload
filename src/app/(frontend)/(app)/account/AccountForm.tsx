@@ -18,7 +18,7 @@ import { Card } from '@/components/ui/card';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
-import { Media as MediaComponent } from '@/components/Media';
+import { UserAvatar } from '@/components/UserProfile';
 
 interface Props {
   className?: string;
@@ -67,11 +67,8 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
         <form onSubmit={onSubmit} className="p-4">
           <div className="mb-4">
             {profile.avatar && (
-              <div className="w-24 h-24 relative rounded-full overflow-hidden">
-                <MediaComponent resource={profile.avatar} fill />
-              </div>
+              <UserAvatar avatar={profile.avatar as Media} onChange={console.log} />
             )}
-            Implement upload file later
           </div>
 
           <FormField

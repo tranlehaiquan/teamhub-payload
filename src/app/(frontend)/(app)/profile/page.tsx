@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
+import { Card } from '@/components/ui/card';
 
 const Profile: React.FC = () => {
   return (
@@ -31,7 +32,15 @@ const Profile: React.FC = () => {
         </div>
       </header>
 
-      <div>Visual user.profile, maybe show skills, plans, certificates</div>
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <Card className="p-4">User Profile</Card>
+
+        <Card className="p-4">Skills</Card>
+
+        <Card className="p-4">Plans</Card>
+
+        <Card className="p-4">Certificates</Card>
+      </div>
     </div>
   );
 };

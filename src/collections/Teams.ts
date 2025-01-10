@@ -27,10 +27,13 @@ const Teams: CollectionConfig = {
       required: true,
     },
     {
-      name: 'users',
+      name: 'members',
       type: 'join',
       collection: 'teams_users',
       on: 'team',
+      admin: {
+        defaultColumns: ['user', 'id'],
+      },
     },
   ],
 };

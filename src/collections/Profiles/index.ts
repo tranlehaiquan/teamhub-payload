@@ -25,14 +25,6 @@ export const Profiles: CollectionConfig = {
       type: 'text',
     },
     {
-      name: 'users',
-      type: 'relationship',
-      admin: {
-        position: 'sidebar',
-      },
-      relationTo: 'users',
-    },
-    {
       name: 'avatar',
       type: 'upload',
       relationTo: 'media',
