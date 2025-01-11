@@ -19,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
+import { uploadAvatar } from '@/services/server/uploadProfileAvatar';
 
 interface Props {
   className?: string;
@@ -61,14 +62,43 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
     }
   });
 
+  const onChangeAvatar = async (file: File) => {
+    const size = file.size;
+
+    // if size > 3mb then show error
+    if (size > 3 * 1024 * 1024) {
+      toast.error('File size should be less than 3MB');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const result = await uploadAvatar(formData);
+      queryClient.invalidateQueries({
+        queryKey: ['user-profile'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['me'],
+      });
+
+      toast.success(result.success ? 'Avatar uploaded' : 'Failed to upload avatar');
+    } catch {
+      toast.error('Failed to upload avatar');
+    }
+  };
+
   return (
     <Card>
       <Form {...form}>
         <form onSubmit={onSubmit} className="p-4">
           <div className="mb-4">
-            {profile.avatar && (
-              <UserAvatar avatar={profile.avatar as Media} onChange={console.log} />
-            )}
+            <UserAvatar
+              avatar={profile.avatar as Media}
+              onChange={onChangeAvatar}
+              className="h-24 w-24"
+            />
           </div>
 
           <FormField

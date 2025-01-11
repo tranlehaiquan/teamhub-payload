@@ -28,6 +28,9 @@ export const Profiles: CollectionConfig = {
       name: 'avatar',
       type: 'upload',
       relationTo: 'media',
+      filterOptions: {
+        mimeType: { contains: 'image' },
+      },
     },
   ],
   timestamps: true,

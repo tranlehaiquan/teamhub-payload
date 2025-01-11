@@ -19,18 +19,17 @@ export const signup = async ({ email, password }) => {
 
   const payload = await getPayloadFromConfig();
 
+  const profile = await payload.create({
+    collection: 'profiles',
+    data: {},
+  });
+
   const user = await payload.create({
     collection: 'users',
     data: {
       email,
       password,
-    },
-  });
-
-  const profile = await payload.create({
-    collection: 'profiles',
-    data: {
-      users: user.id,
+      profile: profile.id,
     },
   });
 

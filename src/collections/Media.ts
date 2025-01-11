@@ -9,7 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { anyone } from '../access/anyone';
-import { authenticated } from '../access/authenticated';
+import { isAdminRole } from '@/access/isAdminRole';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -17,10 +17,10 @@ const dirname = path.dirname(filename);
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: isAdminRole,
+    delete: isAdminRole,
+    update: isAdminRole,
     read: anyone,
-    update: authenticated,
   },
   fields: [
     {

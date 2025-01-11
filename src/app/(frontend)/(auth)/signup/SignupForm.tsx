@@ -26,7 +26,7 @@ const SignupForm: React.FC<Props> = ({ className }) => {
         password: data.password,
       });
 
-      toast.success(`Account created successfully ${user.user.email}!`);
+      toast.success(`Account created successfully ${user.user?.email}!`);
       router.push('/login');
     } catch (error) {
       toast.error('Failed to create account, please try again later!');

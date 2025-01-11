@@ -1,7 +1,7 @@
 'use client';
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
-import type { User } from '@/payload-types';
+import type { Media, Profile, User } from '@/payload-types';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useRouter } from 'next/navigation';
+import { UserAvatar } from './UserProfile';
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
@@ -36,12 +37,7 @@ export function NavUser({ user }: { user: User }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
-                <AvatarFallback className="rounded-lg">
-                  {String(user.email)[0].toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar avatar={(user.profile as Profile).avatar as Media} />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
