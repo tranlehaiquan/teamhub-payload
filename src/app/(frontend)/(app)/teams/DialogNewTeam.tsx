@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getUsers } from '@/services/users';
 import {
   Select,
@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createTeam } from '@/services/teams';
+import { getTeamsQuery, meQuery } from '@/tanQueries';
 
 interface Props {
   className?: string;
@@ -39,10 +40,17 @@ const formSchema = z.object({
   name: z.string().min(5, {
     message: 'Team name must be at least 5 characters.',
   }),
-  owner: z.string(),
+  owner: z.string().min(1, {
+    message: 'Owner is required.',
+  }),
 });
 
 const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const {
+    data: { user },
+  } = useSuspenseQuery(meQuery);
   const { data, isFetched } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
@@ -51,21 +59,22 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      owner: '',
+      owner: String(user.id),
     },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const newTeam = await createTeam({
+    await createTeam({
       name: values.name,
       owner: Number(values.owner),
     });
 
-    console.log(newTeam);
+    setOpen(false);
+    queryClient.invalidateQueries(getTeamsQuery);
   });
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild={!!children}>{children || 'Create new team'}</DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -8,32 +8,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { getMeUser } from '@/utilities/getMeUser';
-import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { User } from '@/payload-types';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
+import { getTeamsQuery } from '@/tanQueries';
 import DialogNewTeam from './DialogNewTeam';
+import TeamsTable from './TeamsTable';
 
 const PageTeams = async () => {
-  const me = await getMeUser();
-  const payload = await getPayloadFromConfig();
-  const teamDocs = await payload.find({
-    collection: 'teams',
-    user: me.user,
-  });
-  const teams = teamDocs.docs;
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(getTeamsQuery);
 
   return (
-    <div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <div>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -60,36 +48,12 @@ const PageTeams = async () => {
             <DialogNewTeam>
               <Button>Create Team</Button>
             </DialogNewTeam>
+
+            <TeamsTable />
           </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">ID</TableHead>
-                <TableHead>Team Name</TableHead>
-                <TableHead>Owner Name</TableHead>
-                <TableHead>Members</TableHead>
-                <TableHead>Created at</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {teams.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell className="font-medium">{team.id}</TableCell>
-                  <TableCell className="font-medium">{team.name}</TableCell>
-                  <TableCell className="font-medium">{(team.owner as User).email}</TableCell>
-                  <TableCell>{team.members?.docs?.length}</TableCell>
-                  <TableCell className="font-medium">
-                    {team.createdAt && new Date(team.createdAt).toString()}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
         </div>
       </div>
-    </div>
+    </HydrationBoundary>
   );
 };
 
