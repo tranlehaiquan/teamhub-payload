@@ -63,16 +63,25 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
   });
 
   const onChangeAvatar = async (file: File) => {
-    const size = file.size;
+    let uploadFile = file;
+    const size = uploadFile.size;
 
     // if size > 3mb then show error
     if (size > 3 * 1024 * 1024) {
-      toast.error('File size should be less than 3MB');
-      return;
+      const compressor = (await import('@/utilities/image-compressor')).default;
+
+      // convert file
+      const result = await compressor(file, {
+        quality: 0.9,
+        maxWidth: 800,
+        mimeType: 'image/jpeg',
+      });
+
+      uploadFile = result as File;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', uploadFile);
 
     try {
       const result = await uploadAvatar(formData);
