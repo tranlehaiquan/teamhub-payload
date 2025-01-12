@@ -1,10 +1,10 @@
 'use server';
 import { getMeUser } from '@/utilities/getMeUser';
-import { Profile, User } from '@/payload-types';
+import { Media, Profile, User } from '@/payload-types';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 
 const getAvatarFileName = (user: User) => {
-  return `${user.id}-avatar.png`;
+  return `${user.id}-avatar.jpg`;
 };
 
 export const uploadAvatar = async (formData: FormData) => {
@@ -14,20 +14,22 @@ export const uploadAvatar = async (formData: FormData) => {
   const file = formData.get('file') as File;
 
   const payload = await getPayloadFromConfig();
-
-  const avatars = await payload.find({
-    collection: 'media',
-    where: {
-      filename: {
-        equals: fileName,
-      },
-    },
-  });
-
-  const avatar = avatars.docs[0];
+  const avatar = (user.profile as Profile).avatar;
 
   try {
-    if (!avatar) {
+    if (avatar) {
+      await payload.update({
+        collection: 'media',
+        id: (avatar as Media).id,
+        file: {
+          data: Buffer.from(await file.arrayBuffer()),
+          mimetype: file.type,
+          name: fileName,
+          size: file.size,
+        },
+        data: {},
+      });
+    } else {
       const newAvatar = await payload.create({
         collection: 'media',
         data: {
@@ -47,18 +49,6 @@ export const uploadAvatar = async (formData: FormData) => {
         data: {
           avatar: newAvatar.id,
         },
-      });
-    } else {
-      await payload.update({
-        collection: 'media',
-        id: avatar.id,
-        file: {
-          data: Buffer.from(await file.arrayBuffer()),
-          mimetype: file.type,
-          name: fileName,
-          size: file.size,
-        },
-        data: {},
       });
     }
 
