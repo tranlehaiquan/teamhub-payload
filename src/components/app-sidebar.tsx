@@ -25,8 +25,8 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getMeUser } from '@/utilities/getMeUser';
 import { NavTeamActions } from './nav-team-action';
+import { meQuery } from '@/tanQueries';
 
 // This is sample data.
 const data = {
@@ -128,10 +128,7 @@ const data = {
 type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const { data: userProfile } = useSuspenseQuery({
-    queryKey: ['me'],
-    queryFn: async () => await getMeUser(),
-  });
+  const { data: userProfile } = useSuspenseQuery(meQuery);
 
   return (
     <Sidebar collapsible="icon" {...props}>

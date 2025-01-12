@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { getMeUser } from '@/utilities/getMeUser';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { User } from '@/payload-types';
+import DialogNewTeam from './DialogNewTeam';
 
 const PageTeams = async () => {
   const me = await getMeUser();
@@ -56,7 +57,9 @@ const PageTeams = async () => {
           <h1 className="text-2xl font-bold">Users</h1>
 
           <div className="my-4">
-            <Button disabled>Create Team</Button>
+            <DialogNewTeam>
+              <Button>Create Team</Button>
+            </DialogNewTeam>
           </div>
 
           <Table>
@@ -69,6 +72,7 @@ const PageTeams = async () => {
                 <TableHead>Created at</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {teams.map((team) => (
                 <TableRow key={team.id}>

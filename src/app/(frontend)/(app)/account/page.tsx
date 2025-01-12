@@ -12,13 +12,10 @@ import {
 import { Separator } from '@/components/ui/separator';
 import AccountForm from './AccountForm';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getCurrentProfile } from './actions';
+import { userProfileQuery } from '@/tanQueries';
 
 const AccountPage: React.FC = () => {
-  const { data: profile } = useSuspenseQuery({
-    queryKey: ['user-profile'],
-    queryFn: () => getCurrentProfile(),
-  });
+  const { data: profile } = useSuspenseQuery(userProfileQuery);
 
   return (
     <div>

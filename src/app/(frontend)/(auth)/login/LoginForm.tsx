@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { getMeUser } from '@/utilities/getMeUser';
+import { meQuery } from '@/tanQueries';
 
 interface Props {
   className?: string;
@@ -30,10 +31,7 @@ const LoginForm: React.FC<Props> = ({ className }) => {
     const user = await login(data);
 
     if (user) {
-      clientQuery.invalidateQueries({
-        queryKey: ['me'],
-        queryFn: async () => await getMeUser(),
-      });
+      clientQuery.invalidateQueries(meQuery);
       router.push('/');
     }
   });

@@ -20,6 +20,7 @@ import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
 import { uploadAvatar } from '@/services/server/uploadProfileAvatar';
+import { meQuery } from '@/tanQueries';
 
 interface Props {
   className?: string;
@@ -88,9 +89,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
       queryClient.invalidateQueries({
         queryKey: ['user-profile'],
       });
-      queryClient.invalidateQueries({
-        queryKey: ['me'],
-      });
+      queryClient.invalidateQueries(meQuery);
 
       toast.success(result.success ? 'Avatar uploaded' : 'Failed to upload avatar');
     } catch {
