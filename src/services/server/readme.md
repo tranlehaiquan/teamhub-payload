@@ -26,3 +26,8 @@ Example like `services/server/signup.ts` in this function I create User and Prof
 | Error Handling | Direct access to error stack | HTTP status codes and error responses |
 | Advantages | - Better performance<br>- Type safety<br>- Direct DB access<br>- No network latency | - Platform independent<br>- Widely adopted<br>- Cacheable<br>- Stateless |
 | Disadvantages | - Only works server-side<br>- Tied to Payload CMS | - Network overhead<br>- Additional serialization<br>- More complex error handling |
+
+
+## Todo
+
+- [ ] Router permission protect

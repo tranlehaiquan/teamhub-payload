@@ -1,6 +1,7 @@
 import { User } from '@/payload-types';
 import { getClientSideURL } from '@/utilities/getURL';
 import { ResultQuery } from './rest-types';
+import { customFetch } from '@/utilities/customFetch';
 
 const BASE_URL = getClientSideURL();
 
@@ -82,7 +83,7 @@ export const resetPasswordAfterForgot = async ({ password, confirmPassword, toke
 
 export const getUsers = async () => {
   const url = `${BASE_URL}/api/users`;
-  const res = await fetch(url);
+  const res = await customFetch(url);
   const json = await res.json();
   return json as ResultQuery<User>;
 };

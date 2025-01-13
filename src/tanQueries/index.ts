@@ -1,5 +1,6 @@
 import { Profile } from '@/payload-types';
 import { getTeams } from '@/services/teams';
+import { getUsers } from '@/services/users';
 import { getMeUser } from '@/utilities/getMeUser';
 import { queryOptions } from '@tanstack/react-query';
 
@@ -19,4 +20,9 @@ export const userProfileQuery = queryOptions({
 export const getTeamsQuery = queryOptions({
   queryKey: ['teams'],
   queryFn: getTeams,
+});
+
+export const getUsersQuery = queryOptions({
+  queryKey: ['users'],
+  queryFn: getUsers,
 });

@@ -1,13 +1,13 @@
 import type { CollectionConfig, Field, PayloadRequest } from 'payload';
 import { authenticated } from '../../access/authenticated';
-import { anyone } from '@/access/anyone';
 import { forgotPasswordTemplate } from '../../email-templates/forgotPassword';
+import { isAdminRole } from '@/access/isAdminRole';
 
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
-    create: anyone,
+    create: isAdminRole,
     delete: authenticated,
     read: authenticated,
     update: authenticated,
