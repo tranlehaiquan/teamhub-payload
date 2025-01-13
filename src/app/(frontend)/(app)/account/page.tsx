@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import AccountForm from './AccountForm';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { userProfileQuery } from '@/tanQueries';
+import ChangePasswordForm from './ChangePasswordForm';
 
 const AccountPage: React.FC = () => {
   const { data: profile } = useSuspenseQuery(userProfileQuery);
@@ -39,6 +40,7 @@ const AccountPage: React.FC = () => {
 
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <AccountForm profile={profile} />
+        <ChangePasswordForm />
       </div>
     </div>
   );

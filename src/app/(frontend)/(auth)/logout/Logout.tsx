@@ -15,7 +15,7 @@ const LogoutPage = () => {
     });
   }, [queryClient]);
 
-  return <div>logout please wait...</div>;
+  return <div>Logout please wait...</div>;
 };
 
 export default LogoutPage;

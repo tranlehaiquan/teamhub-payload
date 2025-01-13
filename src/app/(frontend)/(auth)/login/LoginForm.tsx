@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { meQuery } from '@/tanQueries';
+import { toast } from 'sonner';
 
 interface Props {
   className?: string;
@@ -29,10 +30,14 @@ const LoginForm: React.FC<Props> = ({ className }) => {
   const onSubmit = handleSubmit(async (data) => {
     const user = await login(data);
 
-    if (user) {
-      clientQuery.invalidateQueries(meQuery);
-      router.push('/');
+    if (user.errors) {
+      const message = user.errors?.[0]?.message || 'Failed to login';
+      toast.error(message);
+      return;
     }
+
+    clientQuery.invalidateQueries(meQuery);
+    router.push('/');
   });
 
   return (
