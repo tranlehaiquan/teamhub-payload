@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
+import ProfileSection from './ProfileSection';
+import UserSkills from './UserSkills/UserSkills';
 
 const Profile: React.FC = () => {
   return (
@@ -33,9 +35,9 @@ const Profile: React.FC = () => {
       </header>
 
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <Card className="p-4">User Profile</Card>
+        <ProfileSection />
 
-        <Card className="p-4">Skills</Card>
+        <UserSkills />
 
         <Card className="p-4">Plans</Card>
 

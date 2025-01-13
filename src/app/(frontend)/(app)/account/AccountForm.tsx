@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
 import { uploadAvatar } from '@/services/server/uploadProfileAvatar';
 import { meQuery } from '@/tanQueries';
+import { getAvatarFallback } from '@/utilities/getAvatarFallback';
 
 interface Props {
   className?: string;
@@ -106,6 +107,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
               avatar={profile.avatar as Media}
               onChange={onChangeAvatar}
               className="h-24 w-24"
+              fallback={getAvatarFallback(profile)}
             />
           </div>
 
