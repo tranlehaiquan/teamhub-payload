@@ -29,6 +29,7 @@ const UsersTable: React.FC<Props> = (props) => {
           <TableHead>Last Name</TableHead>
           <TableHead>Roles</TableHead>
           <TableHead>Email</TableHead>
+          <TableHead>Verify email</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -39,6 +40,7 @@ const UsersTable: React.FC<Props> = (props) => {
             <TableCell>{(user.profile as Profile).lastName}</TableCell>
             <TableCell>{user.roles?.join(', ')}</TableCell>
             <TableCell>{user.email}</TableCell>
+            <TableCell>{user._verified && 'Yes'}</TableCell>
           </TableRow>
         ))}
       </TableBody>

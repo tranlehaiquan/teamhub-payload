@@ -20,17 +20,19 @@ import {
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createUser } from '@/services/server/createUser';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface Props {
   className?: string;
 }
 
 const formSchema = z.object({
-  firstName: z.string().min(5, {
-    message: 'First name must be at least 5 characters.',
+  firstName: z.string().min(1, {
+    message: 'First name is required.',
   }),
-  lastName: z.string().min(5, {
-    message: 'Last name must be at least 5 characters.',
+  lastName: z.string().min(1, {
+    message: 'Last name is required.',
   }),
   email: z.string().email({
     message: 'Invalid email address.',
@@ -38,6 +40,7 @@ const formSchema = z.object({
 });
 
 const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -49,7 +52,16 @@ const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
+    await createUser({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+    });
+
     setOpen(false);
+    queryClient.invalidateQueries({
+      queryKey: ['users'],
+    });
   });
 
   return (

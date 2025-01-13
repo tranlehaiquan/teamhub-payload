@@ -1,7 +1,7 @@
-import type { CollectionConfig, Field, PayloadRequest } from 'payload';
-import { authenticated } from '../../access/authenticated';
-import { forgotPasswordTemplate } from '../../email-templates/forgotPassword';
+import type { CollectionConfig, PayloadRequest } from 'payload';
 import { isAdminRole } from '@/access/isAdminRole';
+import { authenticated } from '../../access/authenticated';
+import { forgotPasswordTemplate, verifyEmailTemplate } from '../../email-templates/templates';
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -23,6 +23,12 @@ export const Users: CollectionConfig = {
         const template = forgotPasswordTemplate(args?.user, resetPasswordURL);
 
         return template;
+      },
+    },
+    verify: {
+      generateEmailHTML: (args) => {
+        const verifyEmailURL = `http://localhost:3000/verify?token=${args?.token}`;
+        return verifyEmailTemplate(args?.user, verifyEmailURL);
       },
     },
   },
