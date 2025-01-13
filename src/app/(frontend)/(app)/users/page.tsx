@@ -14,6 +14,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
 import { getUsersQuery } from '@/tanQueries';
 import UsersTable from './UsersTable';
+import DialogNewUser from './DialogNewUser';
 
 const PageUsers = async () => {
   const queryClient = getQueryClient();
@@ -43,7 +44,9 @@ const PageUsers = async () => {
         <h1 className="text-2xl font-bold">Users</h1>
 
         <div className="my-4">
-          <Button disabled>Invite User</Button>
+          <DialogNewUser>
+            <Button>Create User</Button>
+          </DialogNewUser>
         </div>
 
         <UsersTable />
