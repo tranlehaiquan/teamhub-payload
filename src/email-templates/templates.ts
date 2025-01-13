@@ -26,17 +26,19 @@ export const verifyEmailTemplate = (user, url) => {
           </html>`;
 };
 
-// invite user after create User
-export const inviteUserTemplate = (user, url, password) => {
+export const createUserTemplate = (user, url, password) => {
   return `<!doctype html>
           <html>
             <body>
               <h1>Your account have been created!</h1>
               <p>Hello, ${user.email}!</p>
-              <p>Click below to verify your email.</p>
-              <p>
-                <a href="${url}">${url}</a>
-              </p>
+              <p>Your account have been created:</p>
+              <p>Email: ${user.email}</p>
+              <p>Password: ${password}</p>
+
+              <a href="${url}">
+                And please verify your email here!
+              </a>
             </body>
           </html>`;
 };

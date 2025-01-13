@@ -10,7 +10,6 @@ import { login } from '@/services/users';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { getMeUser } from '@/utilities/getMeUser';
 import { meQuery } from '@/tanQueries';
 
 interface Props {

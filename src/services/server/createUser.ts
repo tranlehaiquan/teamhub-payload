@@ -1,4 +1,5 @@
 'use server';
+import { createUserTemplate } from '@/email-templates/templates';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import z from 'zod';
 
@@ -37,6 +38,17 @@ export const createUser = async ({ firstName, lastName, email }) => {
       profile: profile.id,
     },
     disableVerificationEmail: true,
+    showHiddenFields: true,
+  });
+  const tokenVerify = user._verificationToken;
+  const url = `http://localhost:3000/verify?token=${tokenVerify}`;
+  const html = createUserTemplate(user, url, randomPassword);
+
+  await payload.sendEmail({
+    to: user.email,
+    subject: 'Welcome to TeamHub platform!',
+    text: 'welcome to teamhub',
+    html,
   });
 
   return {
