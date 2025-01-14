@@ -22,10 +22,22 @@ export const Skills: CollectionConfig = {
       required: true,
     },
     {
+      name: 'description',
+      type: 'textarea',
+    },
+    {
       name: 'relatedUsers',
       type: 'join',
       collection: 'users_skills',
       on: 'skill',
+    },
+    {
+      name: 'categories',
+      type: 'relationship',
+      admin: {
+        position: 'sidebar',
+      },
+      relationTo: 'categories',
     },
   ],
   timestamps: true,

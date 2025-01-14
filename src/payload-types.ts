@@ -363,7 +363,6 @@ export interface UsersSkill {
   user?: (number | null) | User;
   skill?: (number | null) | Skill;
   currentLevel?: number | null;
-  category?: (number | null) | Category;
   desiredLevel?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -375,10 +374,12 @@ export interface UsersSkill {
 export interface Skill {
   id: number;
   name: string;
+  description?: string | null;
   relatedUsers?: {
     docs?: (number | UsersSkill)[] | null;
     hasNextPage?: boolean | null;
   } | null;
+  categories?: (number | null) | Category;
   updatedAt: string;
   createdAt: string;
 }
@@ -1286,7 +1287,9 @@ export interface CertificatesSelect<T extends boolean = true> {
  */
 export interface SkillsSelect<T extends boolean = true> {
   name?: T;
+  description?: T;
   relatedUsers?: T;
+  categories?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1298,7 +1301,6 @@ export interface UsersSkillsSelect<T extends boolean = true> {
   user?: T;
   skill?: T;
   currentLevel?: T;
-  category?: T;
   desiredLevel?: T;
   updatedAt?: T;
   createdAt?: T;

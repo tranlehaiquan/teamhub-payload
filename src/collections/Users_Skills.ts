@@ -12,7 +12,7 @@ export const Users_Skills: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['skill', 'user', 'currentLevel', 'desiredLevel'],
-    hidden: true,
+    // hidden: true,
   },
   fields: [
     {
@@ -28,14 +28,6 @@ export const Users_Skills: CollectionConfig = {
     {
       name: 'currentLevel',
       type: 'number',
-    },
-    {
-      name: 'category',
-      type: 'relationship',
-      relationTo: 'categories',
-      admin: {
-        position: 'sidebar',
-      },
     },
     {
       name: 'desiredLevel',
