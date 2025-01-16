@@ -9,6 +9,7 @@ import { imageHero1 } from './image-hero-1';
 import { post1 } from './post-1';
 import { post2 } from './post-2';
 import { post3 } from './post-3';
+import { seedSkills } from './skills';
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -18,6 +19,7 @@ const collections: CollectionSlug[] = [
   'forms',
   'form-submissions',
   'search',
+  'skills',
 ];
 const globals: GlobalSlug[] = ['header', 'footer'];
 
@@ -191,6 +193,10 @@ export const seed = async ({
       },
     }),
   ]);
+
+  await Promise.all(
+    seedSkills.map((skill) => payload.create({ collection: 'skills', data: skill })),
+  );
 
   let demoAuthorID: number | string = demoAuthor.id;
 

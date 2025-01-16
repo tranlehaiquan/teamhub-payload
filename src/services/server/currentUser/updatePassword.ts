@@ -1,6 +1,5 @@
 'use server';
 import { getMeUser } from '@/utilities/getMeUser';
-import { Media, Profile, User } from '@/payload-types';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import z from 'zod';
 

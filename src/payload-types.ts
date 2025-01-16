@@ -379,7 +379,7 @@ export interface Skill {
     docs?: (number | UsersSkill)[] | null;
     hasNextPage?: boolean | null;
   } | null;
-  categories?: (number | null) | Category;
+  category?: (number | null) | Category;
   updatedAt: string;
   createdAt: string;
 }
@@ -1289,7 +1289,7 @@ export interface SkillsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
   relatedUsers?: T;
-  categories?: T;
+  category?: T;
   updatedAt?: T;
   createdAt?: T;
 }

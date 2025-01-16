@@ -1,4 +1,7 @@
 import { Profile } from '@/payload-types';
+import { getCategories } from '@/services/categories';
+import { getUserCertificates, getUserSkills } from '@/services/server/currentUser/getUserInfo';
+import { getSkills } from '@/services/skills';
 import { getTeams } from '@/services/teams';
 import { getUsers } from '@/services/users';
 import { getMeUser } from '@/utilities/getMeUser';
@@ -25,4 +28,24 @@ export const getTeamsQuery = queryOptions({
 export const getUsersQuery = queryOptions({
   queryKey: ['users'],
   queryFn: getUsers,
+});
+
+export const getSkillsQuery = queryOptions({
+  queryKey: ['skills'],
+  queryFn: getSkills,
+});
+
+export const getCategoriesQuery = queryOptions({
+  queryKey: ['categories'],
+  queryFn: getCategories,
+});
+
+export const getCurrentUserSkillsQuery = queryOptions({
+  queryKey: ['current-user-skills'],
+  queryFn: getUserSkills,
+});
+
+export const getCurrentUserCertificatesQuery = queryOptions({
+  queryKey: ['current-user-certificates'],
+  queryFn: getUserCertificates,
 });

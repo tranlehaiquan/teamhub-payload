@@ -12,10 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { meQuery } from '@/tanQueries';
-import { updatePassword } from '@/services/server/updatePassword';
+import { updatePassword } from '@/services/server/currentUser/updatePassword';
 
 interface Props {
   className?: string;

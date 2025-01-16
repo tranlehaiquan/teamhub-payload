@@ -32,7 +32,7 @@ export const Skills: CollectionConfig = {
       on: 'skill',
     },
     {
-      name: 'categories',
+      name: 'category',
       type: 'relationship',
       admin: {
         position: 'sidebar',
