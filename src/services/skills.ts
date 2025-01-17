@@ -7,7 +7,8 @@ import type { Where } from 'payload';
 const BASE_URL = getClientSideURL();
 
 export const getSkills = async () => {
-  const url = `${BASE_URL}/api/skills`;
+  // TODO: update limit here
+  const url = `${BASE_URL}/api/skills?limit=20`;
 
   const res = await customFetch(url, {
     credentials: 'include',

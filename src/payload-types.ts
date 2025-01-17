@@ -31,6 +31,9 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    categories: {
+      skills: 'skills';
+    };
     users: {
       relatedSkills: 'users_skills';
       certificates: 'certificates';
@@ -312,6 +315,10 @@ export interface Media {
 export interface Category {
   id: number;
   title: string;
+  skills?: {
+    docs?: (number | Skill)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   parent?: (number | null) | Category;
   breadcrumbs?:
     | {
@@ -321,6 +328,35 @@ export interface Category {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skills".
+ */
+export interface Skill {
+  id: number;
+  name: string;
+  description?: string | null;
+  relatedUsers?: {
+    docs?: (number | UsersSkill)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  category?: (number | null) | Category;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_skills".
+ */
+export interface UsersSkill {
+  id: number;
+  user?: (number | null) | User;
+  skill?: (number | null) | Skill;
+  currentLevel?: number | null;
+  desiredLevel?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -353,35 +389,6 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_skills".
- */
-export interface UsersSkill {
-  id: number;
-  user?: (number | null) | User;
-  skill?: (number | null) | Skill;
-  currentLevel?: number | null;
-  desiredLevel?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "skills".
- */
-export interface Skill {
-  id: number;
-  name: string;
-  description?: string | null;
-  relatedUsers?: {
-    docs?: (number | UsersSkill)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
-  category?: (number | null) | Category;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1223,6 +1230,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
+  skills?: T;
   parent?: T;
   breadcrumbs?:
     | T

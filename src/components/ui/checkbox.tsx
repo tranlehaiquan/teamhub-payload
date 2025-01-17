@@ -24,4 +24,21 @@ const Checkbox = React.forwardRef<
 ));
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
-export { Checkbox };
+type PropsCheckBoxWithLabel = {
+  label: string;
+} & React.ComponentProps<typeof Checkbox>;
+
+const CheckboxWithLabel: React.FC<PropsCheckBoxWithLabel> = ({ id, label }) => {
+  return (
+    <label
+      key={id}
+      className="inline-flex items-center rounded-md bg-primary/10 px-3 py-1 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+      htmlFor={String(id)}
+    >
+      <Checkbox className="mr-1" id={String(id)} />
+      <span>{label}</span>
+    </label>
+  );
+};
+
+export { Checkbox, CheckboxWithLabel };

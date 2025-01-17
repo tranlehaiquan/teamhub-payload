@@ -20,5 +20,11 @@ export const Categories: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'skills',
+      type: 'join',
+      collection: 'skills',
+      on: 'category',
+    },
   ],
 };

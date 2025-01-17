@@ -15,7 +15,7 @@ const ProfileSection: React.FC = () => {
 
   return (
     <Card className="p-4">
-      <p className="mb-2">User Profile</p>
+      <p className="mb-2 text-lg">User Profile</p>
 
       <div className="flex gap-4">
         <UserAvatar className="w-20 h-20 rounded-full" avatar={userProfile?.avatar as Media} />

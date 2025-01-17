@@ -6,6 +6,7 @@ import { Category, Skill } from '@/payload-types';
 import { getCategoriesQuery, getCurrentUserSkillsQuery, getSkillsQuery } from '@/tanQueries';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import groupBy from 'lodash/groupBy';
+import DialogAddSkills from './DialogAddSkills';
 
 const UserSkills: React.FC = () => {
   const {
@@ -24,7 +25,7 @@ const UserSkills: React.FC = () => {
 
   return (
     <Card className="p-4">
-      <p className="mb-2">Skills</p>
+      <p className="mb-2 text-lg">Skills</p>
 
       {categoriesById.map(([categoryId, userSkills]) => {
         const category = categories.find((s) => s.id === Number(categoryId));
@@ -50,7 +51,9 @@ const UserSkills: React.FC = () => {
         );
       })}
 
-      <Button>Add Skill</Button>
+      <DialogAddSkills>
+        <Button>Add Skill</Button>
+      </DialogAddSkills>
     </Card>
   );
 };
