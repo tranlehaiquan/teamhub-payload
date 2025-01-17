@@ -28,14 +28,17 @@ type PropsCheckBoxWithLabel = {
   label: string;
 } & React.ComponentProps<typeof Checkbox>;
 
-const CheckboxWithLabel: React.FC<PropsCheckBoxWithLabel> = ({ id, label }) => {
+const CheckboxWithLabel: React.FC<PropsCheckBoxWithLabel> = ({ id, label, disabled, ...rest }) => {
   return (
     <label
       key={id}
-      className="inline-flex items-center rounded-md bg-primary/10 px-3 py-1 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+      className={cn(
+        'inline-flex items-center rounded-md bg-primary/10 px-3 py-1 text-sm font-medium text-primary hover:bg-primary/20 transition-colors',
+        disabled && 'cursor-not-allowed opacity-50',
+      )}
       htmlFor={String(id)}
     >
-      <Checkbox className="mr-1" id={String(id)} />
+      <Checkbox className="mr-1" id={String(id)} disabled={disabled} {...rest} />
       <span>{label}</span>
     </label>
   );

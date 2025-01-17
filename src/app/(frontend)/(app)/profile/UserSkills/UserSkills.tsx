@@ -7,6 +7,7 @@ import { getCategoriesQuery, getCurrentUserSkillsQuery, getSkillsQuery } from '@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import groupBy from 'lodash/groupBy';
 import DialogAddSkills from './DialogAddSkills';
+import { Plus } from 'lucide-react';
 
 const UserSkills: React.FC = () => {
   const {
@@ -22,6 +23,7 @@ const UserSkills: React.FC = () => {
     return categoryId;
   });
   const categoriesById = Object.entries(skillsByCategory);
+  const userSkillIds = userSkillsData?.map((userSkill) => Number(userSkill.skill)) || [];
 
   return (
     <Card className="p-4">
@@ -34,25 +36,25 @@ const UserSkills: React.FC = () => {
             <h3 className="mb-4 text-lg font-semibold text-card-foreground">
               {category?.title || 'Another'}
             </h3>
-            <ul className="flex flex-wrap gap-2">
+            <div>
               {userSkills.map((userSkill) => {
                 const skill = skills.find((s) => s.id === userSkill.skill) as Skill;
                 return (
-                  <li
-                    key={userSkill.id}
-                    className="inline-flex items-center rounded-md bg-primary/10 px-3 py-1 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
-                  >
-                    {skill.name}
-                  </li>
+                  <div key={userSkill.id}>
+                    {skill.name} {userSkill.currentLevel} {userSkill.desiredLevel}
+                  </div>
                 );
               })}
-            </ul>
+            </div>
           </div>
         );
       })}
 
-      <DialogAddSkills>
-        <Button>Add Skill</Button>
+      <DialogAddSkills disabledSkillIds={userSkillIds} checkedSkillIds={userSkillIds}>
+        <Button>
+          <Plus />
+          Add Skill
+        </Button>
       </DialogAddSkills>
     </Card>
   );

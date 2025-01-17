@@ -32,7 +32,11 @@ export const getUsersQuery = queryOptions({
 
 export const getSkillsQuery = queryOptions({
   queryKey: ['skills'],
-  queryFn: getSkills,
+  queryFn: () =>
+    getSkills({
+      page: 1,
+      limit: 20,
+    }),
 });
 
 export const getCategoriesQuery = queryOptions({

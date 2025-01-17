@@ -6,9 +6,12 @@ import type { Where } from 'payload';
 
 const BASE_URL = getClientSideURL();
 
-export const getSkills = async () => {
-  // TODO: update limit here
-  const url = `${BASE_URL}/api/skills?limit=20`;
+export const getSkills = async ({ page = 1, limit = 20 }) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  const url = `${BASE_URL}/api/skills?${params.toString()}`;
 
   const res = await customFetch(url, {
     credentials: 'include',

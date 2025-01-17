@@ -1,6 +1,6 @@
 'use client';
-import { getCategoriesQuery } from '@/tanQueries';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { getCategoriesQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -12,16 +12,43 @@ import {
 import { Skill } from '@/payload-types';
 import { CheckboxWithLabel } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { addCurrentUserSkills } from '@/services/server/currentUser/addUserSkills';
 
 interface Props {
   className?: string;
+  checkedSkillIds?: number[];
+  disabledSkillIds?: number[];
 }
 
-const DialogAddSkills: React.FC<React.PropsWithChildren> = ({ children }) => {
+const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
+  children,
+  disabledSkillIds = [],
+  checkedSkillIds = [],
+}) => {
+  const queryClient = useQueryClient();
+  const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const {
     data: { docs: categories },
   } = useSuspenseQuery(getCategoriesQuery);
+
+  const handleOnCheck = (id: number) => {
+    if (selectedSkills.includes(id)) {
+      setSelectedSkills(selectedSkills.filter((skillId) => skillId !== id));
+    } else {
+      setSelectedSkills([...selectedSkills, id]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    console.log('Selected Skills:', selectedSkills);
+    await addCurrentUserSkills(selectedSkills);
+    // reset selected skills
+    queryClient.invalidateQueries(getCurrentUserSkillsQuery);
+    setSelectedSkills([]);
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -37,13 +64,23 @@ const DialogAddSkills: React.FC<React.PropsWithChildren> = ({ children }) => {
 
             <div className="flex gap-2">
               {(category.skills?.docs as Skill[]).map((skill) => (
-                <CheckboxWithLabel key={skill.id} id={String(skill.id)} label={skill?.name} />
+                <CheckboxWithLabel
+                  key={skill.id}
+                  id={String(skill.id)}
+                  label={skill?.name}
+                  disabled={disabledSkillIds.includes(skill.id)}
+                  checked={checkedSkillIds.includes(skill.id) || selectedSkills.includes(skill.id)}
+                  onCheckedChange={() => handleOnCheck(skill.id)}
+                />
               ))}
             </div>
           </div>
         ))}
 
-        <Button type="submit">Add Skill</Button>
+        <Button onClick={handleSubmit}>
+          <Plus />
+          Add Skill
+        </Button>
       </DialogContent>
     </Dialog>
   );
