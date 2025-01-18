@@ -1,4 +1,5 @@
 'use server';
+import { UsersSkill } from '@/payload-types';
 import { getMeUser } from '@/utilities/getMeUser';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 
@@ -63,4 +64,41 @@ const removeCurrentUserSkill = async (skill: number) => {
   }
 };
 
-export { addCurrentUserSkills, removeCurrentUserSkill };
+const updateCurrentUserSkill = async (
+  skill: number,
+  data: {
+    currentLevel?: number;
+    desiredLevel?: number;
+  },
+) => {
+  const me = await getMeUser();
+  const userId = me.user.id;
+  const payload = await getPayloadFromConfig();
+
+  try {
+    await payload.update({
+      collection: 'users_skills',
+      data,
+      where: {
+        user: {
+          equals: userId,
+        },
+        skill: {
+          equals: skill,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Skill updated successfully',
+    };
+  } catch {
+    return {
+      success: false,
+      message: 'Failed to update skill',
+    };
+  }
+};
+
+export { addCurrentUserSkills, removeCurrentUserSkill, updateCurrentUserSkill };
