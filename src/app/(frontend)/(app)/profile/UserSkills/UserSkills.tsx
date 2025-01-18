@@ -4,10 +4,20 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Category, Skill } from '@/payload-types';
 import { getCategoriesQuery, getCurrentUserSkillsQuery, getSkillsQuery } from '@/tanQueries';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import groupBy from 'lodash/groupBy';
 import DialogAddSkills from './DialogAddSkills';
-import { Plus } from 'lucide-react';
+import { Pen, Plus, XIcon } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { removeCurrentUserSkill } from '@/services/server/currentUser/userSkills';
+import { toast } from 'sonner';
 
 const UserSkills: React.FC = () => {
   const {
@@ -24,6 +34,13 @@ const UserSkills: React.FC = () => {
   });
   const categoriesById = Object.entries(skillsByCategory);
   const userSkillIds = userSkillsData?.map((userSkill) => Number(userSkill.skill)) || [];
+  const queryClient = useQueryClient();
+
+  const handleRemoveSkill = async (skillId: number) => {
+    await removeCurrentUserSkill(skillId);
+    toast.success('Skill removed successfully');
+    queryClient.invalidateQueries(getCurrentUserSkillsQuery);
+  };
 
   return (
     <Card className="p-4">
@@ -36,16 +53,48 @@ const UserSkills: React.FC = () => {
             <h3 className="mb-4 text-lg font-semibold text-card-foreground">
               {category?.title || 'Another'}
             </h3>
-            <div>
-              {userSkills.map((userSkill) => {
-                const skill = skills.find((s) => s.id === userSkill.skill) as Skill;
-                return (
-                  <div key={userSkill.id}>
-                    {skill.name} {userSkill.currentLevel} {userSkill.desiredLevel}
-                  </div>
-                );
-              })}
-            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Skill</TableHead>
+                  <TableHead className="text-center">Current Level</TableHead>
+                  <TableHead className="text-center">Desired Level</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {userSkills.map((userSkill) => {
+                  const skill = skills.find((s) => s.id === userSkill.skill) as Skill;
+                  return (
+                    <TableRow key={skill.id}>
+                      <TableCell className="font-medium">
+                        <p>{skill.name}</p>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <p>{userSkill.currentLevel || '---'}</p>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <p>{userSkill.desiredLevel || '---'}</p>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button size="icon" variant={'ghost'} className="rounded-full">
+                          <Pen />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant={'ghost'}
+                          className="rounded-full"
+                          onClick={() => handleRemoveSkill(skill.id)}
+                        >
+                          <XIcon />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         );
       })}

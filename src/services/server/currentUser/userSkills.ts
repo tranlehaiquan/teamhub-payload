@@ -33,4 +33,34 @@ const addCurrentUserSkills = async (skills: number[]) => {
   }
 };
 
-export { addCurrentUserSkills };
+const removeCurrentUserSkill = async (skill: number) => {
+  const me = await getMeUser();
+  const userId = me.user.id;
+  const payload = await getPayloadFromConfig();
+
+  try {
+    await payload.delete({
+      collection: 'users_skills',
+      where: {
+        user: {
+          equals: userId,
+        },
+        skill: {
+          equals: skill,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Skill removed successfully',
+    };
+  } catch {
+    return {
+      success: false,
+      message: 'Failed to remove skill',
+    };
+  }
+};
+
+export { addCurrentUserSkills, removeCurrentUserSkill };
