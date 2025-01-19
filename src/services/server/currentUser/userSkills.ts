@@ -8,7 +8,7 @@ const addCurrentUserSkills = async (skills: number[]) => {
   const userId = me.user.id;
   const payload = await getPayloadFromConfig();
 
-  // TODO: consider insert with drizzle
+  // TODO: consider insert with drizzle (N + 1)
   try {
     await Promise.all(
       skills.map(async (skill) =>
@@ -65,7 +65,7 @@ const removeCurrentUserSkill = async (skill: number) => {
 };
 
 const updateCurrentUserSkill = async (
-  skill: number,
+  userSkillId: number,
   data: {
     currentLevel?: number;
     desiredLevel?: number;
@@ -80,11 +80,11 @@ const updateCurrentUserSkill = async (
       collection: 'users_skills',
       data,
       where: {
+        id: {
+          equals: userSkillId,
+        },
         user: {
           equals: userId,
-        },
-        skill: {
-          equals: skill,
         },
       },
     });
