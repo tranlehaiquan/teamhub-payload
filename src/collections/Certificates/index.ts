@@ -41,7 +41,7 @@ export const Certificates: CollectionConfig = {
       relationTo: 'users',
     },
     {
-      name: 'skills',
+      name: 'userSkills',
       type: 'relationship',
       relationTo: 'users_skills',
       hasMany: true,

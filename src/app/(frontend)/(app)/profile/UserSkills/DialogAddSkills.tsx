@@ -61,7 +61,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
           <div key={category.id}>
             <h3 className="text-lg">{category.title}</h3>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {(category.skills?.docs as Skill[]).map((skill) => (
                 <CheckboxWithLabel
                   key={skill.id}

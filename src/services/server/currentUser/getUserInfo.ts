@@ -34,7 +34,11 @@ export const getUserCertificates = async () => {
         equals: userId,
       },
     },
-    depth: 0,
+    populate: {
+      users_skills: {
+        skill: true,
+      },
+    },
   });
 
   return userCertificates;

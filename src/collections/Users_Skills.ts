@@ -12,7 +12,6 @@ export const Users_Skills: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['skill', 'user', 'currentLevel', 'desiredLevel'],
-    // hidden: true,
   },
   fields: [
     {

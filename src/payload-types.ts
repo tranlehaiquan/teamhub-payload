@@ -400,7 +400,7 @@ export interface Certificate {
   deliveryDate?: string | null;
   expiryDate?: string | null;
   user?: (number | null) | User;
-  skills?: (number | UsersSkill)[] | null;
+  userSkills?: (number | UsersSkill)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1285,7 +1285,7 @@ export interface CertificatesSelect<T extends boolean = true> {
   deliveryDate?: T;
   expiryDate?: T;
   user?: T;
-  skills?: T;
+  userSkills?: T;
   updatedAt?: T;
   createdAt?: T;
 }
