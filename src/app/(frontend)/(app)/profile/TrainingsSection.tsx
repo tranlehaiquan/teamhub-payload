@@ -8,9 +8,9 @@ interface Props {
 const TrainingsSection: React.FC<Props> = (props) => {
   return (
     <Card className="p-4">
-      <p className="mb-2 text-lg">Certificates</p>
+      <p className="mb-2 text-lg">Trainings</p>
 
-      <p>Certificates you have earned</p>
+      <p>Trainings you have earned</p>
     </Card>
   );
 };

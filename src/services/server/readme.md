@@ -32,3 +32,6 @@ Example like `services/server/signup.ts` in this function I create User and Prof
 
 - [ ] Router permission protect
 - [ ] UI select removable
+- [ ] File upload, storage
+- [x] Email service local/develop
+- [ ] Email service production
