@@ -44,7 +44,6 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
   const handleSubmit = async () => {
     console.log('Selected Skills:', selectedSkills);
     await addCurrentUserSkills(selectedSkills);
-    // reset selected skills
     queryClient.invalidateQueries(getCurrentUserSkillsQuery);
     setSelectedSkills([]);
     setOpen(false);
@@ -77,7 +76,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
           </div>
         ))}
 
-        <Button onClick={handleSubmit}>
+        <Button onClick={handleSubmit} disabled={!selectedSkills.length}>
           <Plus />
           Add Skill
         </Button>

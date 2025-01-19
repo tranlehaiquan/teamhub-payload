@@ -105,7 +105,11 @@ const ChangePasswordForm: React.FC<Props> = (props) => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="mt-4">
+          <Button
+            type="submit"
+            className="mt-4"
+            disabled={form.formState.isSubmitting || !form.formState.isDirty}
+          >
             Change Password
           </Button>
         </form>

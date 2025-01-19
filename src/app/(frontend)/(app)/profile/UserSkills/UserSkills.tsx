@@ -50,6 +50,7 @@ const UserSkills: React.FC = () => {
           handleRemoveSkill={handleRemoveSkill}
         />
       ))}
+
       <DialogAddSkills disabledSkillIds={userSkillIds} checkedSkillIds={userSkillIds}>
         <Button>
           <Plus />

@@ -31,3 +31,4 @@ Example like `services/server/signup.ts` in this function I create User and Prof
 ## Todo
 
 - [ ] Router permission protect
+- [ ] UI select removable

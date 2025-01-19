@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Category, Skill, UsersSkill } from '@/payload-types';
 import {
   Table,
@@ -65,9 +65,8 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
             <TableHead className="w-[200px]">Skill</TableHead>
             <TableHead className="text-center">Current Level</TableHead>
             <TableHead className="text-center">Desired Level</TableHead>
-            {/* TODO: add 2 column here latter */}
-            {/* <TableHead className="text-center">Trainings</TableHead>
-            <TableHead className="text-center">Certificates</TableHead> */}
+            <TableHead className="text-center">Trainings</TableHead>
+            <TableHead className="text-center">Certificates</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -84,6 +83,12 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
                 </TableCell>
                 <TableCell className="text-center">
                   <p>{userSkill.desiredLevel || '---'}</p>
+                </TableCell>
+                <TableCell className="text-center">
+                  <p>---</p>
+                </TableCell>
+                <TableCell className="text-center">
+                  <p>---</p>
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
@@ -177,6 +182,13 @@ const DialogUpdateUserSkill = ({
     resolver: zodResolver(zSchema),
   });
 
+  useEffect(() => {
+    form.reset({
+      currentLevel: userSkill?.currentLevel,
+      desiredLevel: userSkill?.desiredLevel,
+    });
+  }, [userSkill]);
+
   const handleSubmit = form.handleSubmit(async (values) => {
     if (!userSkill) return;
 
@@ -191,6 +203,7 @@ const DialogUpdateUserSkill = ({
     if (result.success) {
       queryClient.invalidateQueries(getCurrentUserSkillsQuery);
       toast.success(`Skill updated successfully`);
+      form.reset();
       onClose();
     }
   });
@@ -263,7 +276,7 @@ const DialogUpdateUserSkill = ({
                 )}
               />
 
-              <Button type="submit" className="mt-4">
+              <Button type="submit" className="mt-4" disabled={form.formState.isSubmitting}>
                 Update
               </Button>
             </form>

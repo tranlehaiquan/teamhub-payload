@@ -139,7 +139,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
             )}
           />
 
-          <Button>Submit</Button>
+          <Button disabled={form.formState.isSubmitting || !form.formState.isDirty}>Submit</Button>
         </form>
       </Form>
     </Card>

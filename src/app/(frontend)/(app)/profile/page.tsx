@@ -20,6 +20,8 @@ import {
   getCurrentUserSkillsQuery,
   getSkillsQuery,
 } from '@/tanQueries';
+import CertificatesSection from './CertificatesSection';
+import TrainingsSection from './TrainingsSection';
 
 const Profile: React.FC = () => {
   const queryClient = getQueryClient();
@@ -54,9 +56,9 @@ const Profile: React.FC = () => {
 
           <UserSkills />
 
-          <Card className="p-4">Plans</Card>
+          <CertificatesSection />
 
-          <Card className="p-4">Certificates</Card>
+          <TrainingsSection />
         </div>
       </div>
     </HydrationBoundary>
