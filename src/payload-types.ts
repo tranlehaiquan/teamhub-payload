@@ -397,6 +397,7 @@ export interface User {
 export interface Certificate {
   id: number;
   name: string;
+  issuingOrganization: string;
   deliveryDate?: string | null;
   expiryDate?: string | null;
   user?: (number | null) | User;
@@ -1282,6 +1283,7 @@ export interface ProfilesSelect<T extends boolean = true> {
  */
 export interface CertificatesSelect<T extends boolean = true> {
   name?: T;
+  issuingOrganization?: T;
   deliveryDate?: T;
   expiryDate?: T;
   user?: T;

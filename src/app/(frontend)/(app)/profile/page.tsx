@@ -20,7 +20,7 @@ import {
   getCurrentUserSkillsQuery,
   getSkillsQuery,
 } from '@/tanQueries';
-import CertificatesSection from './CertificatesSection';
+import CertificatesSection from './UserCertificates/CertificatesSection';
 import TrainingsSection from './TrainingsSection';
 
 const Profile: React.FC = () => {

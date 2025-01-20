@@ -18,6 +18,7 @@ import { Plus, XIcon } from 'lucide-react';
 import { Skill, UsersSkill } from '@/payload-types';
 import { removeUserCertificate } from '@/services/server/currentUser/userCertificates';
 import { toast } from 'sonner';
+import DialogCertificate from './DialogCertificate';
 
 const CertificatesSection: React.FC = () => {
   const {
@@ -73,17 +74,14 @@ const CertificatesSection: React.FC = () => {
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={6}>Total: {certificates.length}</TableCell>
-          </TableRow>
-        </TableFooter>
       </Table>
 
-      <Button className="mt-4">
-        <Plus size={16} className="mr-2" />
-        Add Certificate
-      </Button>
+      <DialogCertificate>
+        <Button className="mt-4">
+          <Plus size={16} className="mr-2" />
+          Add Certificate
+        </Button>
+      </DialogCertificate>
     </Card>
   );
 };

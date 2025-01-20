@@ -43,3 +43,19 @@ export const getUserCertificates = async () => {
 
   return userCertificates;
 };
+
+export const createUserCertificate = async (data) => {
+  const me = await getMeUser();
+  const userId = me.user.id;
+  const payload = await getPayloadFromConfig();
+
+  const certificate = await payload.create({
+    collection: 'certificates',
+    data: {
+      ...data,
+      user: userId,
+    },
+  });
+
+  return certificate;
+};

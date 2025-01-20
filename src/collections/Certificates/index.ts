@@ -23,6 +23,12 @@ export const Certificates: CollectionConfig = {
       required: true,
     },
     {
+      name: 'issuingOrganization',
+      type: 'text',
+      label: 'Issuing organization',
+      required: true,
+    },
+    {
       name: 'deliveryDate',
       type: 'date',
       label: 'Delivery date',
