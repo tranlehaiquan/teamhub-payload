@@ -1,7 +1,7 @@
 'use client';
 import { Card } from '@/components/ui/card';
 import { getCurrentUserCertificatesQuery } from '@/tanQueries';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import React from 'react';
 import {
   Table,
@@ -14,13 +14,22 @@ import {
 } from '@/components/ui/table';
 import { format } from 'date-fns/format';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, XIcon } from 'lucide-react';
 import { Skill, UsersSkill } from '@/payload-types';
+import { removeUserCertificate } from '@/services/server/currentUser/userCertificates';
+import { toast } from 'sonner';
 
 const CertificatesSection: React.FC = () => {
   const {
     data: { docs: certificates },
   } = useSuspenseQuery(getCurrentUserCertificatesQuery);
+  const queryClient = useQueryClient();
+
+  const handleRemoveCertificate = async (certificateId: number) => {
+    await removeUserCertificate(certificateId);
+    toast.success('Certificate removed successfully');
+    queryClient.invalidateQueries(getCurrentUserCertificatesQuery);
+  };
 
   return (
     <Card className="p-4">
@@ -34,6 +43,7 @@ const CertificatesSection: React.FC = () => {
             <TableHead>Delivery Date</TableHead>
             <TableHead>Expire Date</TableHead>
             <TableHead>Skills</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -50,12 +60,22 @@ const CertificatesSection: React.FC = () => {
               <TableCell>
                 {certificate.userSkills?.map((i: UsersSkill) => (i.skill as Skill).name).join(', ')}
               </TableCell>
+              <TableCell className="text-right">
+                <Button
+                  size={'icon'}
+                  variant={'ghost'}
+                  onClick={() => handleRemoveCertificate(certificate.id)}
+                  className="rounded-full"
+                >
+                  <XIcon />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={5}>Total: {certificates.length}</TableCell>
+            <TableCell colSpan={6}>Total: {certificates.length}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
