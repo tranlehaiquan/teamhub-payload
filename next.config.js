@@ -27,6 +27,7 @@ const nextConfig = {
       bodySizeLimit: '3mb',
     },
   },
+  output: 'standalone',
 };
 
 export default withPayload(nextConfig);
