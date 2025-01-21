@@ -18,7 +18,8 @@ export const login = async ({ email, password }: { email: string; password: stri
     }),
   });
 
-  return res;
+  const json = await res.json();
+  return json;
 };
 
 export const logout = async () => {
@@ -30,8 +31,7 @@ export const logout = async () => {
     },
   });
 
-  const json = await res.json();
-  return json;
+  return res;
 };
 
 // forgot password
