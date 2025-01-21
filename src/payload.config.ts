@@ -27,15 +27,28 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-export default buildConfig({
-  email: nodemailerAdapter({
-    defaultFromAddress: 'teamhub@example.com',
-    defaultFromName: 'TeamHub',
+const getEmailConfig = () => {
+  const defaultFromAddress = process.env.MAIL_FROM_ADDRESS;
+  const defaultFromName = process.env.MAIL_FROM_NAME;
+  const mailHost = process.env.MAIL_HOST;
+  const mailPort = process.env.MAIL_PORT;
+
+  if (!defaultFromAddress || !defaultFromName || !mailHost || !mailPort) {
+    return;
+  }
+
+  return {
+    defaultFromAddress,
+    defaultFromName,
     transportOptions: {
-      host: 'localhost',
-      port: 1025,
+      host: mailHost,
+      port: mailPort,
     },
-  }),
+  };
+};
+
+export default buildConfig({
+  email: nodemailerAdapter(getEmailConfig()),
   admin: {
     importMap: {
       baseDir: path.resolve(dirname),

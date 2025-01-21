@@ -18,8 +18,7 @@ export const login = async ({ email, password }: { email: string; password: stri
     }),
   });
 
-  const json = await res.json();
-  return json;
+  return res;
 };
 
 export const logout = async () => {
