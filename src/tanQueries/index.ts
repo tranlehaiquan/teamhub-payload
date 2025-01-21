@@ -30,13 +30,20 @@ export const getUsersQuery = queryOptions({
   queryFn: getUsers,
 });
 
-export const getSkillsQuery = queryOptions({
-  queryKey: ['skills'],
-  queryFn: () =>
-    getSkills({
-      page: 1,
-      limit: 20,
-    }),
+export const getSkillsByOptionsQuery = ({ page = 1, limit = 10 } = {}) => {
+  return queryOptions({
+    queryKey: ['skills', { page, limit }],
+    queryFn: () =>
+      getSkills({
+        page,
+        limit,
+      }),
+  });
+};
+
+export const getSkillsQuery = getSkillsByOptionsQuery({
+  page: 1,
+  limit: 100,
 });
 
 export const getCategoriesQuery = queryOptions({

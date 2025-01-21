@@ -46,7 +46,6 @@ interface CategorySkillsProps {
 const CategorySkills: React.FC<CategorySkillsProps> = ({
   categoryId,
   userSkills,
-  skills,
   categories,
   handleRemoveSkill,
 }) => {
@@ -71,46 +70,43 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {userSkills.map((userSkill) => {
-            const skill = skills.find((s) => s.id === userSkill.skill) as Skill;
-            return (
-              <TableRow key={userSkill.id}>
-                <TableCell className="font-medium">
-                  <p>{skill.name}</p>
-                </TableCell>
-                <TableCell className="text-center">
-                  <p>{userSkill.currentLevel || '---'}</p>
-                </TableCell>
-                <TableCell className="text-center">
-                  <p>{userSkill.desiredLevel || '---'}</p>
-                </TableCell>
-                <TableCell className="text-center">
-                  <p>---</p>
-                </TableCell>
-                <TableCell className="text-center">
-                  <p>---</p>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="rounded-full"
-                    onClick={() => setOpenUpdateDialog(userSkill.id)}
-                  >
-                    <Pen />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="rounded-full"
-                    onClick={() => handleRemoveSkill(skill.id)}
-                  >
-                    <XIcon />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {userSkills.map((userSkill) => (
+            <TableRow key={userSkill.id}>
+              <TableCell className="font-medium">
+                <p>{(userSkill.skill as Skill).name}</p>
+              </TableCell>
+              <TableCell className="text-center">
+                <p>{userSkill.currentLevel || '---'}</p>
+              </TableCell>
+              <TableCell className="text-center">
+                <p>{userSkill.desiredLevel || '---'}</p>
+              </TableCell>
+              <TableCell className="text-center">
+                <p>---</p>
+              </TableCell>
+              <TableCell className="text-center">
+                <p>---</p>
+              </TableCell>
+              <TableCell className="text-right">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="rounded-full"
+                  onClick={() => setOpenUpdateDialog(userSkill.id)}
+                >
+                  <Pen />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="rounded-full"
+                  onClick={() => handleRemoveSkill((userSkill.skill as Skill).id)}
+                >
+                  <XIcon />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
 

@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { Card } from '@/components/ui/card';
 import ProfileSection from './ProfileSection';
 import UserSkills from './UserSkills/UserSkills';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';

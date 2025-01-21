@@ -14,7 +14,12 @@ export const getUserSkills = async () => {
         equals: userId,
       },
     },
-    depth: 0,
+    populate: {
+      skills: {
+        name: true,
+      },
+    },
+    depth: 1,
   });
 
   return userSkills;

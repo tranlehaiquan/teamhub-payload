@@ -12,11 +12,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { getUsersQuery } from '@/tanQueries';
 import { Profile } from '@/payload-types';
 
-interface Props {
-  className?: string;
-}
-
-const UsersTable: React.FC<Props> = (props) => {
+const UsersTable: React.FC = () => {
   const { data: userDocs } = useSuspenseQuery(getUsersQuery);
   const users = userDocs.docs;
 

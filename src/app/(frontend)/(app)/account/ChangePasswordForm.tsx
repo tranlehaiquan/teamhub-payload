@@ -15,10 +15,6 @@ import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { updatePassword } from '@/services/server/currentUser/updatePassword';
 
-interface Props {
-  className?: string;
-}
-
 const formSchema = z
   .object({
     currentPassword: z.string().min(8, {
@@ -36,7 +32,7 @@ const formSchema = z
     path: ['confirmPassword'],
   });
 
-const ChangePasswordForm: React.FC<Props> = (props) => {
+const ChangePasswordForm: React.FC = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {

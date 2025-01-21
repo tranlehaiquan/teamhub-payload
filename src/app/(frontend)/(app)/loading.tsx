@@ -1,10 +1,6 @@
 import React from 'react';
 
-interface Props {
-  className?: string;
-}
-
-const Loading: React.FC<Props> = (props) => {
+const Loading: React.FC = () => {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">

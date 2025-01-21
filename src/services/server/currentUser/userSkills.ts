@@ -1,5 +1,4 @@
 'use server';
-import { UsersSkill } from '@/payload-types';
 import { getMeUser } from '@/utilities/getMeUser';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 

@@ -17,11 +17,7 @@ import DatePicker from '@/components/ui/datepicker';
 import { Button } from '@/components/ui/button';
 import { createUserCertificate } from '@/services/server/currentUser/getUserInfo';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import {
-  getCurrentUserCertificatesQuery,
-  getCurrentUserSkillsQuery,
-  getSkillsQuery,
-} from '@/tanQueries';
+import { getCurrentUserCertificatesQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
 import { toast } from 'sonner';
 import {
   Select,
@@ -64,16 +60,6 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
   const {
     data: { docs: userSkills },
   } = useSuspenseQuery(getCurrentUserSkillsQuery);
-  const {
-    data: { docs: skills },
-  } = useSuspenseQuery(getSkillsQuery);
-
-  const skillById = skills.reduce<{
-    [key: number]: Skill;
-  }>((acc, skill) => {
-    acc[skill.id] = skill;
-    return acc;
-  }, {});
 
   const onSubmit = form.handleSubmit(async (data) => {
     try {
@@ -199,7 +185,7 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
                         <SelectContent>
                           {userSkills.map((userSkill) => (
                             <SelectItem key={userSkill.id} value={String(userSkill.id)}>
-                              {skillById[userSkill.skill as number]?.name}
+                              {(userSkill.skill as Skill)?.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

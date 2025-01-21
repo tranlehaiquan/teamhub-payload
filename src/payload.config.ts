@@ -83,8 +83,6 @@ export default buildConfig({
     ],
   }),
   collections: [
-    Pages,
-    Posts,
     Media,
     Categories,
     Users,
@@ -94,6 +92,8 @@ export default buildConfig({
     Users_Skills,
     Teams,
     Teams_Users,
+    Pages,
+    Posts,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],

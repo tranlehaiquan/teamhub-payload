@@ -12,11 +12,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { getTeamsQuery } from '@/tanQueries';
 import { User } from '@/payload-types';
 
-interface Props {
-  className?: string;
-}
-
-const TeamsTable: React.FC<Props> = ({ className }) => {
+const TeamsTable: React.FC = () => {
   const { data: teamsResults } = useSuspenseQuery(getTeamsQuery);
   const teams = teamsResults.docs;
 

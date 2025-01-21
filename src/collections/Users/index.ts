@@ -1,4 +1,4 @@
-import type { CollectionConfig, PayloadRequest } from 'payload';
+import type { CollectionConfig } from 'payload';
 import { isAdminRole } from '@/access/isAdminRole';
 import { authenticated } from '../../access/authenticated';
 import { forgotPasswordTemplate, verifyEmailTemplate } from '../../email-templates/templates';

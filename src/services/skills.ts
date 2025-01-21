@@ -6,7 +6,7 @@ import type { Where } from 'payload';
 
 const BASE_URL = getClientSideURL();
 
-export const getSkills = async ({ page = 1, limit = 20 }) => {
+export const getSkills = async ({ page = 1, limit = 10 }) => {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),

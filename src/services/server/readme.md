@@ -30,8 +30,14 @@ Example like `services/server/signup.ts` in this function I create User and Prof
 
 ## Todo
 
+### Features
+
 - [ ] Router permission protect
 - [ ] UI select removable
+- [ ] Pagination query
+
+## Integration
+
 - [ ] File upload, storage
 - [x] Email service local/develop
 - [ ] Email service production

@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { BadgeCheck, ChevronsUpDown, LogOut } from 'lucide-react';
 import type { Media, Profile, User } from '@/payload-types';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
