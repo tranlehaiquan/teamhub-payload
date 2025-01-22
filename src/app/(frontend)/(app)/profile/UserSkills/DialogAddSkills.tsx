@@ -13,7 +13,7 @@ import { Skill } from '@/payload-types';
 import { CheckboxWithLabel } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { addCurrentUserSkills } from '@/services/server/currentUser/userSkills';
+import { addCurrentUserSkills } from '@/services/server/currentUser';
 
 interface Props {
   className?: string;

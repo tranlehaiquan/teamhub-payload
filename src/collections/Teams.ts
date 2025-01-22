@@ -1,4 +1,3 @@
-import { anyone } from '@/access/anyone';
 import { authenticated } from '@/access/authenticated';
 import type { CollectionConfig } from 'payload';
 
@@ -32,7 +31,7 @@ const Teams: CollectionConfig = {
       collection: 'teams_users',
       on: 'team',
       admin: {
-        defaultColumns: ['user', 'id'],
+        defaultColumns: ['user'],
       },
     },
   ],

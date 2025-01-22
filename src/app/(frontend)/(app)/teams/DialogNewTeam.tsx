@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createTeam } from '@/services/teams';
-import { getTeamsQuery, meQuery } from '@/tanQueries';
+import { getTeamsQuery, getUserTeamsQuery, meQuery } from '@/tanQueries';
 
 interface Props {
   className?: string;
@@ -71,6 +71,7 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
 
     setOpen(false);
     queryClient.invalidateQueries(getTeamsQuery);
+    queryClient.invalidateQueries(getUserTeamsQuery);
   });
 
   return (

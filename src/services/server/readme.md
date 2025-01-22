@@ -38,6 +38,6 @@ Example like `services/server/signup.ts` in this function I create User and Prof
 
 ## Integration
 
-- [ ] File upload, storage
+- [x] File upload, storage
 - [x] Email service local/develop
 - [ ] Email service production

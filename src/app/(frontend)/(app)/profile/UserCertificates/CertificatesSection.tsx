@@ -15,7 +15,7 @@ import { format } from 'date-fns/format';
 import { Button } from '@/components/ui/button';
 import { Plus, XIcon } from 'lucide-react';
 import { Skill, UsersSkill } from '@/payload-types';
-import { removeUserCertificate } from '@/services/server/currentUser/userCertificates';
+import { removeUserCertificate } from '@/services/server/currentUser';
 import { toast } from 'sonner';
 import DialogCertificate from './DialogCertificate';
 

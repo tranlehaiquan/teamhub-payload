@@ -1,22 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import {
-  AudioWaveform,
-  Command,
-  GalleryVerticalEnd,
-  Map,
-  Users,
-  User,
-  UserRoundPenIcon,
-  UsersRound,
-  BookUserIcon,
-} from 'lucide-react';
+import { Map, Users, User, UserRoundPenIcon, BookUserIcon } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavAdmin } from '@/components/nav-admin';
 import { NavUser } from '@/components/nav-user';
-import { TeamSwitcher } from '@/components/team-switcher';
 import {
   Sidebar,
   SidebarContent,
@@ -26,27 +15,10 @@ import {
 } from '@/components/ui/sidebar';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { NavTeamActions } from './nav-team-action';
-import { meQuery } from '@/tanQueries';
+import { getUserTeamsQuery, meQuery } from '@/tanQueries';
 
 // This is sample data.
 const data = {
-  teams: [
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-    {
-      name: 'Evil Corp.',
-      logo: Command,
-      plan: 'Free',
-    },
-  ],
   main: [
     {
       title: 'My Profile',
@@ -57,40 +29,6 @@ const data = {
       title: 'Account',
       url: '/account',
       icon: UserRoundPenIcon,
-    },
-  ],
-  listTeam: [
-    {
-      title: 'FSD team',
-      icon: UsersRound,
-      url: '#',
-      isActive: true,
-      items: [
-        {
-          title: 'Skills Matrix',
-          url: '/skills-matrix',
-        },
-        {
-          title: 'Settings',
-          url: '/team-settings',
-        },
-      ],
-    },
-    {
-      title: 'Marketing team',
-      icon: UsersRound,
-      url: '#',
-      isActive: true,
-      items: [
-        {
-          title: 'Skills Matrix',
-          url: '/skills-matrix',
-        },
-        {
-          title: 'Settings',
-          url: '/team-settings',
-        },
-      ],
     },
   ],
   navMain: [
@@ -129,16 +67,19 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
   const { data: userProfile } = useSuspenseQuery(meQuery);
+  const {
+    data: {
+      teamsOwned: { docs: teamsOwned },
+    },
+  } = useSuspenseQuery(getUserTeamsQuery);
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
+      <SidebarHeader>{/* <TeamSwitcher teams={data.teams} /> */}</SidebarHeader>
 
       <SidebarContent>
         <NavMain items={data.main} />
-        <NavTeamActions items={data.listTeam} />
+        <NavTeamActions items={teamsOwned} />
         {userProfile.user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
       </SidebarContent>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -14,44 +14,38 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
+import { Team } from '@/payload-types';
 
-export function NavTeamActions({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
+const TEAM_LINKS = [
+  {
+    title: 'Skills Matrix',
+    url: '/skills-matrix',
+  },
+  {
+    title: 'Settings',
+    url: '/team-settings',
+  },
+];
+
+export function NavTeamActions({ items }: { items: Team[] }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Teams</SidebarGroupLabel>
 
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
+          <Collapsible key={item.name} asChild defaultOpen className="group/collapsible">
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+                <SidebarMenuButton tooltip={item.name}>
+                  {/* {item.icon && <item.icon />} */}
+                  <span>{item.name}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
+                  {TEAM_LINKS?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
                         <Link href={subItem.url}>

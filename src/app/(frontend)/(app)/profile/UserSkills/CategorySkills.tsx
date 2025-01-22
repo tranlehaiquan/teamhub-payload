@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useQueryClient } from '@tanstack/react-query';
-import { updateCurrentUserSkill } from '@/services/server/currentUser/userSkills';
+import { updateCurrentUserSkill } from '@/services/server/currentUser';
 import { getCurrentUserSkillsQuery } from '@/tanQueries';
 import { toast } from 'sonner';
 

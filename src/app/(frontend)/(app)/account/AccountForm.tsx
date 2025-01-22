@@ -19,7 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
-import { uploadAvatar } from '@/services/server/currentUser/uploadProfileAvatar';
+import { uploadAvatar } from '@/services/server/currentUser';
 import { meQuery } from '@/tanQueries';
 import { getAvatarFallback } from '@/utilities/getAvatarFallback';
 

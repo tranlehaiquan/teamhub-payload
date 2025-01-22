@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import DatePicker from '@/components/ui/datepicker';
 import { Button } from '@/components/ui/button';
-import { createUserCertificate } from '@/services/server/currentUser/getUserInfo';
+import { createUserCertificate } from '@/services/server/currentUser';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getCurrentUserCertificatesQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
 import { toast } from 'sonner';

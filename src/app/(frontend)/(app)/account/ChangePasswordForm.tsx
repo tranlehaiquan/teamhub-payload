@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { updatePassword } from '@/services/server/currentUser/updatePassword';
+import { updatePassword } from '@/services/server/currentUser';
 
 const formSchema = z
   .object({

@@ -42,7 +42,7 @@ const PageTeams = async () => {
         </header>
 
         <div className="p-4">
-          <h1 className="text-2xl font-bold">Users</h1>
+          <h1 className="text-2xl font-bold">Teams</h1>
 
           <div className="my-4">
             <DialogNewTeam>

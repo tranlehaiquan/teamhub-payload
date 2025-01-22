@@ -8,7 +8,7 @@ import groupBy from 'lodash/groupBy';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { Category } from '@/payload-types';
 import { getCategoriesQuery, getSkillsQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
-import { removeCurrentUserSkill } from '@/services/server/currentUser/userSkills';
+import { removeCurrentUserSkill } from '@/services/server/currentUser';
 import DialogAddSkills from './DialogAddSkills';
 import CategorySkills from './CategorySkills';
 

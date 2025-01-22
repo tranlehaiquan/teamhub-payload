@@ -4,7 +4,7 @@ import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
 import { getMeUser } from '@/utilities/getMeUser';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Metadata } from 'next';
-import { meQuery, userProfileQuery } from '@/tanQueries';
+import { getUserTeamsQuery, meQuery, userProfileQuery } from '@/tanQueries';
 
 export function generateMetadata(): Metadata {
   return {
@@ -20,6 +20,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(meQuery);
   void queryClient.prefetchQuery(userProfileQuery);
+  void queryClient.prefetchQuery(getUserTeamsQuery);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
