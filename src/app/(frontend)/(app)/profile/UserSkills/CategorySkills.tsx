@@ -121,12 +121,11 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
 
 const zSchema = z
   .object({
-    currentLevel: z.number().optional(),
-    desiredLevel: z.number().optional(),
+    currentLevel: z.number().optional().nullable(),
+    desiredLevel: z.number().optional().nullable(),
   })
   .refine(
     (data) => {
-      console.log(data);
       if (data.currentLevel && data.desiredLevel && data.currentLevel > data.desiredLevel) {
         return false;
       }

@@ -17,30 +17,27 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   # payload:
-  #   image: node:18-alpine
+  #   build: .
+  #   container_name: payload
+  #   restart: unless-stopped
   #   ports:
-  #     - '3000:3000'
-  #   volumes:
-  #     - .:/home/node/app
-  #     - node_modules:/home/node/app/node_modules
-  #   working_dir: /home/node/app/
-  #   command: sh -c "yarn install && yarn dev"
-  #   depends_on:
-  #     - mongo
-  #   env_file:
-  #     - .env
+  #     - 3000:3000
+  #   environment:
+  #     - NODE_ENV=production
+  #     - PORT=3000
+  #     - DATABASE_URL=
+  #     - PAYLOAD_SECRET=
+  #     - NEXT_PUBLIC_SERVER_URL=
 
-  # mongo:
-  #   image: mongo:latest
-  #   ports:
-  #     - '27017:27017'
-  #   command:
-  #     - --storageEngine=wiredTiger
-  #   volumes:
-  #     - data:/data/db
-  #   logging:
-  #     driver: none
+  postgres:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
 
 volumes:
   data:
+  pgdata:
   node_modules:

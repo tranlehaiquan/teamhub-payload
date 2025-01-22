@@ -39,9 +39,11 @@ const zSchema = zod.object({
   issuingOrganization: zod.string().min(1, {
     message: 'Issuing organization is required',
   }),
-  deliveryDate: zod.date().optional(),
-  expiryDate: zod.date().optional(),
-  skill: zod.number().optional(),
+  deliveryDate: zod.date().optional().nullable(),
+  expiryDate: zod.date().optional().nullable(),
+  skill: zod.number({
+    message: 'Skill is required',
+  }),
 });
 
 const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
@@ -53,8 +55,8 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
       name: '',
       deliveryDate: null,
       expiryDate: null,
-      skill: null,
       issuingOrganization: '',
+      skill: null,
     },
   });
   const {

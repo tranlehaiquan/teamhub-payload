@@ -22,12 +22,12 @@ import { Skills } from './collections/Skills';
 import { Users_Skills } from './collections/Users_Skills';
 import Teams from './collections/Teams';
 import { Teams_Users } from './collections/Teams_Users';
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-nodemailer';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const getEmailConfig = () => {
+const getEmailConfig = (): NodemailerAdapterArgs | undefined => {
   const defaultFromAddress = process.env.MAIL_FROM_ADDRESS;
   const defaultFromName = process.env.MAIL_FROM_NAME;
   const mailHost = process.env.MAIL_HOST;

@@ -31,6 +31,7 @@
     "@payloadcms/plugin-search": "3.18.0",
     "@payloadcms/plugin-seo": "3.18.0",
     "@payloadcms/richtext-lexical": "3.18.0",
+    "@payloadcms/storage-vercel-blob": "^3.18.0",
     "@payloadcms/ui": "3.18.0",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.3",
