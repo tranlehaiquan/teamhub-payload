@@ -1,7 +1,5 @@
 'use client';
-
 import { ChevronRight } from 'lucide-react';
-
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
@@ -23,7 +21,7 @@ const TEAM_LINKS = [
   },
   {
     title: 'Settings',
-    url: '/team-settings',
+    url: '/settings',
   },
 ];
 
@@ -38,7 +36,6 @@ export function NavTeamActions({ items }: { items: Team[] }) {
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.name}>
-                  {/* {item.icon && <item.icon />} */}
                   <span>{item.name}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
@@ -48,7 +45,7 @@ export function NavTeamActions({ items }: { items: Team[] }) {
                   {TEAM_LINKS?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
+                        <Link href={`/${item.id}${subItem.url}`}>
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>
