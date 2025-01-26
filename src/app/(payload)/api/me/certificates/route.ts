@@ -1,7 +1,7 @@
 import { getMeUser } from '@/utilities/getMeUser';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 
-export const getUserCertificates = async () => {
+export const GET = async () => {
   const me = await getMeUser();
   const userId = me.user.id;
   const payload = await getPayloadFromConfig();
@@ -22,5 +22,3 @@ export const getUserCertificates = async () => {
 
   return Response.json(userCertificates);
 };
-
-export const GET = getUserCertificates;
