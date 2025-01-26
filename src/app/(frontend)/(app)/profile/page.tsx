@@ -22,7 +22,7 @@ import {
 import CertificatesSection from './UserCertificates/CertificatesSection';
 import TrainingsSection from './TrainingsSection';
 
-const Profile: React.FC = () => {
+const Profile: React.FC = async () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(getSkillsQuery);
   void queryClient.prefetchQuery(getCategoriesQuery);

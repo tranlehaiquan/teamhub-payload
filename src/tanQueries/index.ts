@@ -1,21 +1,21 @@
 import { Profile } from '@/payload-types';
 import { getCategories } from '@/services/categories';
-import { getUserCertificates, getUserSkills, getUserTeams } from '@/services/server/currentUser';
+import { getMeUserClient, getUserSkills, getUserCertificates, getUserTeams } from '@/services/me';
+import {} from '@/services/server/currentUser';
 import { getSkills } from '@/services/skills';
 import { getTeams } from '@/services/teams';
 import { getUsers } from '@/services/users';
-import { getMeUser } from '@/utilities/getMeUser';
 import { queryOptions } from '@tanstack/react-query';
 
 export const meQuery = queryOptions({
   queryKey: ['me'],
-  queryFn: () => getMeUser(),
+  queryFn: getMeUserClient,
 });
 
 export const userProfileQuery = queryOptions({
   queryKey: ['user-profile'],
   queryFn: async () => {
-    const me = await getMeUser();
+    const me = await getMeUserClient();
     return me.user.profile as Profile;
   },
 });
