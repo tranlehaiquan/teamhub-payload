@@ -15,13 +15,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useQueryClient } from '@tanstack/react-query';
 import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
 import { uploadAvatar } from '@/services/server/currentUser';
-import { meQuery } from '@/tanQueries';
 import { getAvatarFallback } from '@/utilities/getAvatarFallback';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
@@ -38,7 +37,7 @@ const formSchema = z.object({
 });
 
 const AccountForm: React.FC<Props> = ({ profile }) => {
-  const queryClient = useQueryClient();
+  const utils = api.useUtils();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,9 +54,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
         lastName: data.lastName,
       });
 
-      queryClient.invalidateQueries({
-        queryKey: ['user-profile'],
-      });
+      utils.me.getProfile.invalidate();
       toast.success('Profile updated');
     } catch {
       toast.error('Failed to update profile');
@@ -87,10 +84,8 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
 
     try {
       const result = await uploadAvatar(formData);
-      queryClient.invalidateQueries({
-        queryKey: ['user-profile'],
-      });
-      queryClient.invalidateQueries(meQuery);
+      utils.me.getProfile.invalidate();
+      utils.me.getMe.invalidate();
 
       toast.success(result.success ? 'Avatar uploaded' : 'Failed to upload avatar');
     } catch {

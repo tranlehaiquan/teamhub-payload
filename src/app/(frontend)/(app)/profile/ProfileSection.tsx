@@ -3,26 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { UserAvatar } from '@/components/UserProfile';
 import { Media } from '@/payload-types';
-import {
-  getCurrentUserCertificatesQuery,
-  getCurrentUserSkillsQuery,
-  meQuery,
-  userProfileQuery,
-} from '@/tanQueries';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Edit } from 'lucide-react';
 import Link from 'next/link';
+import { api } from '@/trpc/react';
 
 const ProfileSection: React.FC = () => {
-  const { data: userProfile } = useSuspenseQuery(userProfileQuery);
-  const { data: me } = useSuspenseQuery(meQuery);
-  const {
-    data: { docs: skills },
-  } = useSuspenseQuery(getCurrentUserSkillsQuery);
-  const {
-    data: { docs: certificates },
-  } = useSuspenseQuery(getCurrentUserCertificatesQuery);
+  const [userProfile] = api.me.getProfile.useSuspenseQuery();
+  const [me] = api.me.getMe.useSuspenseQuery();
+  const [{ docs: skills }] = api.me.userSkill.useSuspenseQuery();
+  const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
 
   return (
     <div className="grid grid-cols-2 gap-2">

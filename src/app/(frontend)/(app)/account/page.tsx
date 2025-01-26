@@ -11,12 +11,11 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import AccountForm from './AccountForm';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { userProfileQuery } from '@/tanQueries';
 import ChangePasswordForm from './ChangePasswordForm';
+import { api } from '@/trpc/react';
 
 const AccountPage: React.FC = () => {
-  const { data: profile } = useSuspenseQuery(userProfileQuery);
+  const [profile] = api.me.getProfile.useSuspenseQuery();
 
   return (
     <div>

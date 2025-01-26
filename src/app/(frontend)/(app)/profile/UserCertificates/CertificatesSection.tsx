@@ -1,7 +1,5 @@
 'use client';
 import { Card } from '@/components/ui/card';
-import { getCurrentUserCertificatesQuery } from '@/tanQueries';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import React from 'react';
 import {
   Table,
@@ -18,17 +16,16 @@ import { Skill, UsersSkill } from '@/payload-types';
 import { removeUserCertificate } from '@/services/server/currentUser';
 import { toast } from 'sonner';
 import DialogCertificate from './DialogCertificate';
+import { api } from '@/trpc/react';
 
 const CertificatesSection: React.FC = () => {
-  const {
-    data: { docs: certificates },
-  } = useSuspenseQuery(getCurrentUserCertificatesQuery);
-  const queryClient = useQueryClient();
+  const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
+  const utils = api.useUtils();
 
   const handleRemoveCertificate = async (certificateId: number) => {
     await removeUserCertificate(certificateId);
     toast.success('Certificate removed successfully');
-    queryClient.invalidateQueries(getCurrentUserCertificatesQuery);
+    utils.me.getCertificates.invalidate();
   };
 
   return (

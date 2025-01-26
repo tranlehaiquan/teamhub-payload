@@ -6,16 +6,9 @@ import { Map, Users, User, UserRoundPenIcon, BookUserIcon } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavAdmin } from '@/components/nav-admin';
 import { NavUser } from '@/components/nav-user';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from '@/components/ui/sidebar';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import { NavTeamActions } from './nav-team-action';
-import { getUserTeamsQuery, meQuery } from '@/tanQueries';
+import { api } from '@/trpc/react';
 
 // This is sample data.
 const data = {
@@ -66,14 +59,18 @@ const data = {
 type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const { data: userProfile } = useSuspenseQuery(meQuery);
-  const {
-    data: { docs: teamsOwned },
-  } = useSuspenseQuery(getUserTeamsQuery);
+  const [userProfile] = api.me.getMe.useSuspenseQuery();
+  const [
+    {
+      teamsOwned: { docs: teamsOwned },
+    },
+  ] = api.me.getTeams.useSuspenseQuery();
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>{/* <TeamSwitcher teams={data.teams} /> */}</SidebarHeader>
+      {/* <SidebarHeader>
+        <TeamSwitcher teams={data.teams} />
+      </SidebarHeader> */}
 
       <SidebarContent>
         <NavMain items={data.main} />

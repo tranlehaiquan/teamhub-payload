@@ -16,8 +16,6 @@ import { Input } from '@/components/ui/input';
 import DatePicker from '@/components/ui/datepicker';
 import { Button } from '@/components/ui/button';
 import { createUserCertificate } from '@/services/server/currentUser';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { getCurrentUserCertificatesQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
 import { toast } from 'sonner';
 import {
   Select,
@@ -27,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skill } from '@/payload-types';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
@@ -47,8 +46,8 @@ const zSchema = zod.object({
 });
 
 const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
+  const utils = api.useUtils();
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(zSchema),
     defaultValues: {
@@ -59,13 +58,10 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
       skill: null,
     },
   });
-  const {
-    data: { docs: userSkills },
-  } = useSuspenseQuery(getCurrentUserSkillsQuery);
+  const [{ docs: userSkills }] = api.me.userSkill.useSuspenseQuery();
 
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      console.log(data);
       await createUserCertificate({
         name: data.name,
         issuingOrganization: data.issuingOrganization,
@@ -74,7 +70,7 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
         userSkills: data.skill ? [data.skill] : [],
       });
 
-      queryClient.invalidateQueries(getCurrentUserCertificatesQuery);
+      utils.me.getCertificates.invalidate();
       toast.success('Certificate added');
       setOpen(false);
     } catch {

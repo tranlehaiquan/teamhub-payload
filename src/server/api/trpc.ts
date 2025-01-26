@@ -11,6 +11,7 @@ import superjson from 'superjson';
 import { ZodError } from 'zod';
 
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
+import { getMeUser } from '@/utilities/getMeUser';
 
 /**
  * 1. CONTEXT
@@ -25,13 +26,19 @@ import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const payload = await getPayloadFromConfig();
-  const db = payload.db;
+  try {
+    const user = await getMeUser();
 
-  return {
-    db,
-    ...opts,
-  };
+    return {
+      user,
+      ...opts,
+    };
+  } finally {
+    return {
+      user: null,
+      ...opts,
+    };
+  }
 };
 
 /**

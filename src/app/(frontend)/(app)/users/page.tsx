@@ -10,18 +10,15 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
-import { getUsersQuery } from '@/tanQueries';
 import UsersTable from './UsersTable';
 import DialogNewUser from './DialogNewUser';
+import { api, HydrateClient } from '@/trpc/server';
 
 const PageUsers = async () => {
-  const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(getUsersQuery);
+  void api.user.getUsers.prefetch({});
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrateClient>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
@@ -51,7 +48,7 @@ const PageUsers = async () => {
 
         <UsersTable />
       </div>
-    </HydrationBoundary>
+    </HydrateClient>
   );
 };
 

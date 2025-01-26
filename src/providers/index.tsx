@@ -2,8 +2,8 @@ import React from 'react';
 
 import { HeaderThemeProvider } from './HeaderTheme';
 import { ThemeProvider } from './Theme';
-import QueryProvider from './QueryProvider/QueryProvider';
 import { TRPCReactProvider } from '@/trpc/react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export const Providers: React.FC<{
   children: React.ReactNode;
@@ -12,7 +12,8 @@ export const Providers: React.FC<{
     <ThemeProvider>
       <HeaderThemeProvider>
         <TRPCReactProvider>
-          <QueryProvider>{children}</QueryProvider>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
         </TRPCReactProvider>
       </HeaderThemeProvider>
     </ThemeProvider>

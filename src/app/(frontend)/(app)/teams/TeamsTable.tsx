@@ -8,13 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getTeamsQuery } from '@/tanQueries';
 import { User } from '@/payload-types';
+import { api } from '@/trpc/react';
 
 const TeamsTable: React.FC = () => {
-  const { data: teamsResults } = useSuspenseQuery(getTeamsQuery);
-  const teams = teamsResults.docs;
+  const [{ docs: teams = [] }] = api.team.getTeams.useSuspenseQuery({});
 
   return (
     <Table>
