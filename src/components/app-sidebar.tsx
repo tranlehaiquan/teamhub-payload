@@ -68,9 +68,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 export function AppSidebar({ ...props }: AppSidebarProps) {
   const { data: userProfile } = useSuspenseQuery(meQuery);
   const {
-    data: {
-      teamsOwned: { docs: teamsOwned },
-    },
+    data: { docs: teamsOwned },
   } = useSuspenseQuery(getUserTeamsQuery);
 
   return (
