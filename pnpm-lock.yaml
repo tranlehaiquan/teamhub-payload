@@ -95,9 +95,21 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.20.6
         version: 8.20.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@trpc/client':
+        specifier: 11.0.0-rc.729
+        version: 11.0.0-rc.729(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(typescript@5.7.3)
+      '@trpc/react-query':
+        specifier: 11.0.0-rc.729
+        version: 11.0.0-rc.729(@tanstack/react-query@5.64.2(react@19.0.0))(@trpc/client@11.0.0-rc.729(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)
+      '@trpc/server':
+        specifier: 11.0.0-rc.729
+        version: 11.0.0-rc.729(typescript@5.7.3)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
+      client-only:
+        specifier: ^0.0.1
+        version: 0.0.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -161,6 +173,9 @@ importers:
       sonner:
         specifier: ^1.7.2
         version: 1.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      superjson:
+        specifier: ^2.2.2
+        version: 2.2.2
       tailwind-merge:
         specifier: ^2.6.0
         version: 2.6.0
@@ -2139,6 +2154,27 @@ packages:
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
 
+  '@trpc/client@11.0.0-rc.729':
+    resolution: {integrity: sha512-soDEkBWeLX+WOa+FRqkkCWY6GEaogDc85zWcvxXaXUiZ45ORiz4bVzGyLUYJGuzxYs1cUxv0RAhy6zhGtC688Q==}
+    peerDependencies:
+      '@trpc/server': 11.0.0-rc.729+a60413241
+      typescript: '>=5.7.2'
+
+  '@trpc/react-query@11.0.0-rc.729':
+    resolution: {integrity: sha512-pesyuBcSvV+lj2y0g3kPIk/opONI5j/HKvwgaJh8UtJJCukh09cFKZmtObfemfwfwK4U3HyQ9mSnzUbnEv3sRQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.62.8
+      '@trpc/client': 11.0.0-rc.729+a60413241
+      '@trpc/server': 11.0.0-rc.729+a60413241
+      react: '>=18.2.0'
+      react-dom: '>=18.2.0'
+      typescript: '>=5.7.2'
+
+  '@trpc/server@11.0.0-rc.729':
+    resolution: {integrity: sha512-rjkzNpnmbuFWT/BSSRN14/23ebt9CnkZqaq+WPdWZiBsxaDVvQRmm2mcjtKhEokwxWX1p1yuJhdIwG5yt5YuDw==}
+    peerDependencies:
+      typescript: '>=5.7.2'
+
   '@types/acorn@4.0.6':
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
 
@@ -2548,6 +2584,10 @@ packages:
 
   convert-source-map@1.9.0:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
+
+  copy-anything@3.0.5:
+    resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
+    engines: {node: '>=12.13'}
 
   copyfiles@2.4.1:
     resolution: {integrity: sha512-fereAvAvxDrQDOXybk3Qu3dPbOoKoysFMWtkY3mv5BsL8//OSZVL5DCLYqgRfY5cWirgRzlC+WSrxp6Bo3eNZg==}
@@ -3419,6 +3459,10 @@ packages:
   is-weakset@2.0.4:
     resolution: {integrity: sha512-mfcwb6IzQyOKTs84CQMrOwW4gQcaTOAWJ0zzJCl2WSPDrWk/OzDaImWFH3djXhb24g4eudZfLRozAvPGw4d9hQ==}
     engines: {node: '>= 0.4'}
+
+  is-what@4.1.16:
+    resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
+    engines: {node: '>=12.13'}
 
   is-windows@1.0.2:
     resolution: {integrity: sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==}
@@ -4524,6 +4568,10 @@ packages:
     resolution: {integrity: sha512-8EbVDiu9iN/nESwxeSxDKe0dunta1GOlHufmSSXxMD2z2/tMZpDMpvXQGsc+ajGo8y2uYUmixaSRUc/QPoQ0GA==}
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
+
+  superjson@2.2.2:
+    resolution: {integrity: sha512-5JRxVqC8I8NuOUjzBbvVJAKNM8qoVuH0O77h4WInc/qC2q5IreqKxYwgkga3PfA22OayK2ikceb/B26dztPl+Q==}
+    engines: {node: '>=16'}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -7309,6 +7357,24 @@ snapshots:
 
   '@tokenizer/token@0.3.0': {}
 
+  '@trpc/client@11.0.0-rc.729(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(typescript@5.7.3)':
+    dependencies:
+      '@trpc/server': 11.0.0-rc.729(typescript@5.7.3)
+      typescript: 5.7.3
+
+  '@trpc/react-query@11.0.0-rc.729(@tanstack/react-query@5.64.2(react@19.0.0))(@trpc/client@11.0.0-rc.729(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(typescript@5.7.3))(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(typescript@5.7.3)':
+    dependencies:
+      '@tanstack/react-query': 5.64.2(react@19.0.0)
+      '@trpc/client': 11.0.0-rc.729(@trpc/server@11.0.0-rc.729(typescript@5.7.3))(typescript@5.7.3)
+      '@trpc/server': 11.0.0-rc.729(typescript@5.7.3)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      typescript: 5.7.3
+
+  '@trpc/server@11.0.0-rc.729(typescript@5.7.3)':
+    dependencies:
+      typescript: 5.7.3
+
   '@types/acorn@4.0.6':
     dependencies:
       '@types/estree': 1.0.6
@@ -7775,6 +7841,10 @@ snapshots:
       simple-wcswidth: 1.0.1
 
   convert-source-map@1.9.0: {}
+
+  copy-anything@3.0.5:
+    dependencies:
+      is-what: 4.1.16
 
   copyfiles@2.4.1:
     dependencies:
@@ -8768,6 +8838,8 @@ snapshots:
     dependencies:
       call-bound: 1.0.3
       get-intrinsic: 1.2.7
+
+  is-what@4.1.16: {}
 
   is-windows@1.0.2: {}
 
@@ -10093,6 +10165,10 @@ snapshots:
       mz: 2.7.0
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
+
+  superjson@2.2.2:
+    dependencies:
+      copy-anything: 3.0.5
 
   supports-color@7.2.0:
     dependencies:
