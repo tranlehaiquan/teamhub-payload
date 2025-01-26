@@ -1,6 +1,7 @@
-import { User } from '@/payload-types';
+import { Team, User, UsersSkill, Certificate } from '@/payload-types';
 import { getClientSideURL } from '@/utilities/getURL';
 import { customFetch } from '@/utilities/customFetch';
+import { PaginatedDocs } from 'payload';
 
 const BASE_URL = getClientSideURL();
 
@@ -24,19 +25,19 @@ export const getUserSkills = async () => {
   const meUserReq = await customFetch(`${BASE_URL}/api/me/userSkills`);
   const userSkills = await meUserReq.json();
 
-  return userSkills;
+  return userSkills as PaginatedDocs<UsersSkill>;
 };
 
 export const getUserCertificates = async () => {
   const meUserReq = await customFetch(`${BASE_URL}/api/me/certificates`);
   const userCertificates = await meUserReq.json();
 
-  return userCertificates;
+  return userCertificates as PaginatedDocs<Certificate>;
 };
 
 export const getUserTeams = async () => {
   const meUserReq = await customFetch(`${BASE_URL}/api/me/userTeams`);
   const userTeams = await meUserReq.json();
 
-  return userTeams;
+  return userTeams as PaginatedDocs<Team>;
 };
