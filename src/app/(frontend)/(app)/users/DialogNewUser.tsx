@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createUser } from '@/services/server/createUser';
-import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
@@ -40,7 +40,7 @@ const formSchema = z.object({
 });
 
 const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
-  const queryClient = useQueryClient();
+  const utils = api.useUtils();
   const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -59,9 +59,7 @@ const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
     });
 
     setOpen(false);
-    queryClient.invalidateQueries({
-      queryKey: ['users'],
-    });
+    utils.user.getUsers.invalidate();
   });
 
   return (

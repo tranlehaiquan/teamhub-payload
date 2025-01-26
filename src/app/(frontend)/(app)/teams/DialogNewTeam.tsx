@@ -20,7 +20,7 @@ import {
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getUsers } from '@/services/users';
 import {
   Select,
@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createTeam } from '@/services/teams';
-import { getTeamsQuery, getUserTeamsQuery, meQuery } from '@/tanQueries';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
@@ -46,11 +46,9 @@ const formSchema = z.object({
 });
 
 const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
-  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const {
-    data: { user },
-  } = useSuspenseQuery(meQuery);
+  const [{ user }] = api.me.getMe.useSuspenseQuery();
+  const utils = api.useUtils();
   const { data, isFetched } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
@@ -70,8 +68,9 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
     });
 
     setOpen(false);
-    queryClient.invalidateQueries(getTeamsQuery);
-    queryClient.invalidateQueries(getUserTeamsQuery);
+
+    utils.team.getTeams.invalidate();
+    utils.me.getTeams.invalidate();
   });
 
   return (

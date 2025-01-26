@@ -1,10 +1,8 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
 import { getMeUser } from '@/utilities/getMeUser';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Metadata } from 'next';
-import { getUserTeamsQuery, meQuery, userProfileQuery } from '@/tanQueries';
+import { api, HydrateClient } from '@/trpc/server';
 
 export function generateMetadata(): Metadata {
   return {
@@ -17,17 +15,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     nullUserRedirect: '/login',
   });
 
-  const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(meQuery);
-  void queryClient.prefetchQuery(userProfileQuery);
-  void queryClient.prefetchQuery(getUserTeamsQuery);
+  void api.me.getMe.prefetch();
+  void api.me.getTeams.prefetch();
+  void api.me.getProfile.prefetch();
+  void api.me.getCertificates.prefetch();
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrateClient>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>{children}</SidebarInset>
       </SidebarProvider>
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

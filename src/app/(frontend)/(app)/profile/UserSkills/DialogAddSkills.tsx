@@ -1,6 +1,4 @@
 'use client';
-import { getCategoriesQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -14,6 +12,7 @@ import { CheckboxWithLabel } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { addCurrentUserSkills } from '@/services/server/currentUser';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
@@ -26,13 +25,10 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
   disabledSkillIds = [],
   checkedSkillIds = [],
 }) => {
-  const queryClient = useQueryClient();
   const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
-  const {
-    data: { docs: categories },
-  } = useSuspenseQuery(getCategoriesQuery);
-
+  const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery({});
+  const utils = api.useUtils();
   const handleOnCheck = (id: number) => {
     if (selectedSkills.includes(id)) {
       setSelectedSkills(selectedSkills.filter((skillId) => skillId !== id));
@@ -43,7 +39,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
 
   const handleSubmit = async () => {
     await addCurrentUserSkills(selectedSkills);
-    queryClient.invalidateQueries(getCurrentUserSkillsQuery);
+    utils.me.userSkill.invalidate();
     setSelectedSkills([]);
     setOpen(false);
   };

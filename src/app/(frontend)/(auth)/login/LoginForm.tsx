@@ -10,8 +10,8 @@ import { login } from '@/services/users';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { meQuery } from '@/tanQueries';
 import { toast } from 'sonner';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
@@ -20,6 +20,7 @@ interface Props {
 const LoginForm: React.FC<Props> = ({ className }) => {
   const clientQuery = useQueryClient();
   const router = useRouter();
+  const utils = api.useUtils();
   const { register, handleSubmit, formState } = useForm({
     defaultValues: {
       email: '',
@@ -36,7 +37,7 @@ const LoginForm: React.FC<Props> = ({ className }) => {
       return;
     }
 
-    clientQuery.invalidateQueries(meQuery);
+    utils.me.getMe.invalidate();
     router.push('/');
   });
 

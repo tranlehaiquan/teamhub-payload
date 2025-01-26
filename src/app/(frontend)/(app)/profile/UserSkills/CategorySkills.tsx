@@ -32,8 +32,8 @@ import {
 } from '@/components/ui/select';
 import { useQueryClient } from '@tanstack/react-query';
 import { updateCurrentUserSkill } from '@/services/server/currentUser';
-import { getCurrentUserSkillsQuery } from '@/tanQueries';
 import { toast } from 'sonner';
+import { api } from '@/trpc/react';
 
 interface CategorySkillsProps {
   categoryId: string;
@@ -168,7 +168,7 @@ const DialogUpdateUserSkill = ({
   userSkill?: UsersSkill;
   onClose: () => void;
 }) => {
-  const queryClient = useQueryClient();
+  const utils = api.useUtils();
   const form = useForm({
     defaultValues: {
       currentLevel: userSkill?.currentLevel,
@@ -196,7 +196,7 @@ const DialogUpdateUserSkill = ({
     );
 
     if (result.success) {
-      queryClient.invalidateQueries(getCurrentUserSkillsQuery);
+      utils.me.userSkill.invalidate();
       toast.success(`Skill updated successfully`);
       form.reset();
       onClose();

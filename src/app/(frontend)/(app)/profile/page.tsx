@@ -11,26 +11,22 @@ import {
 import { Separator } from '@/components/ui/separator';
 import ProfileSection from './ProfileSection';
 import UserSkills from './UserSkills/UserSkills';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@/providers/QueryProvider/makeQueryClient';
-import {
-  getCategoriesQuery,
-  getCurrentUserCertificatesQuery,
-  getCurrentUserSkillsQuery,
-  getSkillsQuery,
-} from '@/tanQueries';
 import CertificatesSection from './UserCertificates/CertificatesSection';
 import TrainingsSection from './TrainingsSection';
+import { api, HydrateClient } from '@/trpc/server';
 
 const Profile: React.FC = async () => {
-  const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(getSkillsQuery);
-  void queryClient.prefetchQuery(getCategoriesQuery);
-  void queryClient.prefetchQuery(getCurrentUserSkillsQuery);
-  void queryClient.prefetchQuery(getCurrentUserCertificatesQuery);
+  void api.skill.getSkills.prefetch({
+    page: 1,
+    limit: 100,
+  });
+
+  void api.category.getCategories.prefetch({});
+  void api.me.userSkill.prefetch();
+  void api.me.getProfile.prefetch();
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrateClient>
       <div>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -60,7 +56,7 @@ const Profile: React.FC = async () => {
           <TrainingsSection />
         </div>
       </div>
-    </HydrationBoundary>
+    </HydrateClient>
   );
 };
 

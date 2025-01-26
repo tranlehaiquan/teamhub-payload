@@ -5,21 +5,17 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import groupBy from 'lodash/groupBy';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { Category, Skill } from '@/payload-types';
-import { getCategoriesQuery, getSkillsQuery, getCurrentUserSkillsQuery } from '@/tanQueries';
 import { removeCurrentUserSkill } from '@/services/server/currentUser';
 import DialogAddSkills from './DialogAddSkills';
 import CategorySkills from './CategorySkills';
+import { api } from '@/trpc/react';
 
 const UserSkills: React.FC = () => {
-  const {
-    data: { docs: categories },
-  } = useSuspenseQuery(getCategoriesQuery);
-  const { data: skillDocs } = useSuspenseQuery(getSkillsQuery);
-  const { data: userSkills } = useSuspenseQuery(getCurrentUserSkillsQuery);
-  const skills = skillDocs?.docs;
-  const userSkillsData = userSkills?.docs;
+  const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery({});
+  const [{ docs: skills }] = api.skill.getSkills.useSuspenseQuery({});
+  const [{ docs: userSkillsData }] = api.me.userSkill.useSuspenseQuery();
+  const utils = api.useUtils();
 
   const skillsByCategory = groupBy(userSkillsData, (userSkill) => {
     const skill = skills.find((s) => s.id === userSkill.skill);
@@ -29,12 +25,11 @@ const UserSkills: React.FC = () => {
 
   const categoriesById = Object.entries(skillsByCategory);
   const userSkillIds = userSkillsData?.map((userSkill) => (userSkill.skill as Skill).id) || [];
-  const queryClient = useQueryClient();
 
   const handleRemoveSkill = async (skillId: number) => {
     await removeCurrentUserSkill(skillId);
     toast.success('Skill removed successfully');
-    queryClient.invalidateQueries(getCurrentUserSkillsQuery);
+    utils.me.userSkill.invalidate();
   };
 
   return (
