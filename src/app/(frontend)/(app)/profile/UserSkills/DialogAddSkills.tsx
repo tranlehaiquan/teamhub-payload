@@ -40,6 +40,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
   const handleSubmit = async () => {
     await addCurrentUserSkills(selectedSkills);
     utils.me.userSkill.invalidate();
+    utils.me.getCertificates.invalidate();
     setSelectedSkills([]);
     setOpen(false);
   };

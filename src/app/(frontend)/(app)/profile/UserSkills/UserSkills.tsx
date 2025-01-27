@@ -30,6 +30,7 @@ const UserSkills: React.FC = () => {
     await removeCurrentUserSkill(skillId);
     toast.success('Skill removed successfully');
     utils.me.userSkill.invalidate();
+    utils.me.getCertificates.invalidate();
   };
 
   return (
