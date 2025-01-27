@@ -20,8 +20,6 @@ import {
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { getUsers } from '@/services/users';
 import {
   Select,
   SelectContent,
@@ -49,10 +47,7 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
   const [open, setOpen] = useState(false);
   const [{ user }] = api.me.getMe.useSuspenseQuery();
   const utils = api.useUtils();
-  const { data, isFetched } = useQuery({
-    queryKey: ['users'],
-    queryFn: getUsers,
-  });
+  const { data, isFetched } = api.user.getUsers.useQuery({});
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
