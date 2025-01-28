@@ -20,6 +20,10 @@ const Teams: CollectionConfig = {
       required: true,
     },
     {
+      name: 'description',
+      type: 'textarea',
+    },
+    {
       name: 'owner',
       type: 'relationship',
       relationTo: 'users',

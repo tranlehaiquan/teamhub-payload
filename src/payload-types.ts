@@ -297,6 +297,7 @@ export interface Profile {
 export interface Team {
   id: number;
   name: string;
+  description?: string | null;
   owner: number | User;
   members?: {
     docs?: (number | TeamsUser)[] | null;
@@ -788,6 +789,7 @@ export interface UsersSkillsSelect<T extends boolean = true> {
  */
 export interface TeamsSelect<T extends boolean = true> {
   name?: T;
+  description?: T;
   owner?: T;
   members?: T;
   updatedAt?: T;

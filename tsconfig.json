@@ -6,7 +6,7 @@
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ES2022"
+      "es2024"
     ],
     "allowJs": true,
     "skipLibCheck": true,
