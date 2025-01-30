@@ -1,5 +1,7 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/react';
+import { Plus } from 'lucide-react';
 import React from 'react';
 
 interface Props {
@@ -12,6 +14,10 @@ const TeamMembers: React.FC<Props> = ({ teamId }) => {
 
   return (
     <div>
+      <Button>
+        <Plus /> Add member
+      </Button>
+
       {members.map((member) => (
         <div key={member.id}>{member.user?.email}</div>
       ))}

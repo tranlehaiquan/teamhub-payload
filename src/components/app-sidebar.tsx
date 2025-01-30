@@ -68,10 +68,6 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      {/* <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader> */}
-
       <SidebarContent>
         <NavMain items={data.main} />
         <NavTeamActions items={teamsOwned} />

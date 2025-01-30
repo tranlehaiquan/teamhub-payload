@@ -4,6 +4,7 @@ import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { teams_users, users, profiles } from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
+import { User } from '@/payload-types';
 
 export const teamRouter = createTRPCRouter({
   getTeams: publicProcedure
@@ -108,4 +109,30 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+
+  deleteTeam: publicProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const payload = await getPayloadFromConfig();
+    const me = ctx.user;
+
+    if (!me) {
+      throw new Error('Unauthorized');
+    }
+
+    const teamId = input;
+    const userId = me.user.id;
+
+    const team = await payload.findByID({
+      collection: 'teams',
+      id: teamId,
+    });
+
+    if (!team || (team.owner as User).id !== userId) {
+      throw new Error('Team not found');
+    }
+
+    return await payload.delete({
+      collection: 'teams',
+      id: teamId,
+    });
+  }),
 });

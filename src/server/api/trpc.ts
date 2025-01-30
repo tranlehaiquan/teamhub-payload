@@ -33,7 +33,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
       user,
       ...opts,
     };
-  } finally {
+  } catch {
     return {
       user: null,
       ...opts,
