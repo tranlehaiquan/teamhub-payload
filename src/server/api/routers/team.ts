@@ -26,7 +26,7 @@ export const teamRouter = createTRPCRouter({
       return teams;
     }),
 
-  getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
     const payload = await getPayloadFromConfig();
     const team = await payload.findByID({
       collection: 'teams',

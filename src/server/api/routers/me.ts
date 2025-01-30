@@ -70,7 +70,7 @@ export const meRouter = createTRPCRouter({
     return userSkills;
   }),
 
-  getCertificates: isAuthedProcedure.query(async ({ ctx }) => {
+  getCertificates: isAuthedProcedure.query(async () => {
     const payload = await getPayloadFromConfig();
 
     const userCertificates = await payload.find({

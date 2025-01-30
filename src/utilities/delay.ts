@@ -10,4 +10,4 @@ const newDelayMethod = (ms: number) => {
   return promise;
 };
 
-export { delay };
+export { delay, newDelayMethod };
