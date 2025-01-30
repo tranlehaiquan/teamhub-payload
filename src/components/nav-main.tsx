@@ -8,6 +8,8 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/utilities/cn';
 
 export function NavMain({
   items,
@@ -19,13 +21,21 @@ export function NavMain({
     isActive?: boolean;
   }[];
 }) {
+  const pathname = usePathname();
+  const isActive = (url: string) => {
+    return pathname === url;
+  };
+
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild isActive={item.isActive}>
-              <Link href={item.url}>
+              <Link
+                href={item.url}
+                className={cn(isActive(item.url) && 'bg-primary/10 text-primary font-medium')}
+              >
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </Link>
@@ -33,40 +43,6 @@ export function NavMain({
           </SidebarMenuItem>
         ))}
       </SidebarMenu>
-
-      {/* <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
-      </SidebarMenu> */}
     </SidebarGroup>
   );
 }

@@ -27,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { createTeam } from '@/services/teams';
 import { api } from '@/trpc/react';
 
 interface Props {
@@ -44,6 +43,7 @@ const formSchema = z.object({
 });
 
 const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
+  const createTeamMutation = api.team.createTeam.useMutation();
   const [open, setOpen] = useState(false);
   const [{ user }] = api.me.getMe.useSuspenseQuery();
   const utils = api.useUtils();
@@ -57,7 +57,7 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await createTeam({
+    await createTeamMutation.mutateAsync({
       name: values.name,
       owner: Number(values.owner),
     });

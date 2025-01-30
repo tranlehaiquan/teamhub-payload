@@ -82,7 +82,7 @@ const TeamSettingForm: React.FC<Props> = ({ teamId }) => {
           )}
         />
 
-        <Button type="submit" disabled={form.formState.isLoading || !form.formState.isDirty}>
+        <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
           Save
         </Button>
       </form>

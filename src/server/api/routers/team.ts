@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
+import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { teams_users, users, profiles } from '@/payload-generated-schema';
+import { teams_users, users } from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
 import { User } from '@/payload-types';
 
 export const teamRouter = createTRPCRouter({
-  getTeams: publicProcedure
+  getTeams: isAuthedProcedure
     .input(
       z.object({
         page: z.number().optional().default(1),
@@ -26,7 +26,7 @@ export const teamRouter = createTRPCRouter({
       return teams;
     }),
 
-  getTeamById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const payload = await getPayloadFromConfig();
     const team = await payload.findByID({
       collection: 'teams',
@@ -37,7 +37,7 @@ export const teamRouter = createTRPCRouter({
     return team;
   }),
 
-  updateTeamById: publicProcedure
+  updateTeamById: isAuthedProcedure
     .input(
       z.object({ id: z.number(), name: z.string().optional(), description: z.string().optional() }),
     )
@@ -57,7 +57,7 @@ export const teamRouter = createTRPCRouter({
       return team;
     }),
 
-  getTeamMembers: publicProcedure.input(z.number()).query(async ({ input }) => {
+  getTeamMembers: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
     const teamId = input;
     const payload = await getPayloadFromConfig();
     const teamUsersResults = await payload.db.drizzle
@@ -83,7 +83,7 @@ export const teamRouter = createTRPCRouter({
     return teamUsersResults;
   }),
 
-  removeTeamMember: publicProcedure
+  removeTeamMember: isAuthedProcedure
     .input(z.object({ teams_usersId: z.number() }))
     .mutation(async ({ input }) => {
       const { teams_usersId } = input;
@@ -95,7 +95,7 @@ export const teamRouter = createTRPCRouter({
       });
     }),
 
-  addTeamMember: publicProcedure
+  addTeamMember: isAuthedProcedure
     .input(z.object({ teamId: z.number(), userId: z.number() }))
     .mutation(async ({ input }) => {
       const { teamId, userId } = input;
@@ -110,7 +110,7 @@ export const teamRouter = createTRPCRouter({
       });
     }),
 
-  deleteTeam: publicProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  deleteTeam: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
     const payload = await getPayloadFromConfig();
     const me = ctx.user;
 
@@ -135,4 +135,30 @@ export const teamRouter = createTRPCRouter({
       id: teamId,
     });
   }),
+
+  createTeam: adminProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        owner: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const payload = await getPayloadFromConfig();
+      const me = ctx.user;
+
+      if (!me) {
+        throw new Error('Unauthorized');
+      }
+
+      const userId = me.user.id;
+
+      return await payload.create({
+        collection: 'teams',
+        data: {
+          name: input.name,
+          owner: userId,
+        },
+      });
+    }),
 });

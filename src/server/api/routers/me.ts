@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
+import { createTRPCRouter, publicProcedure, isAuthedProcedure } from '@/server/api/trpc';
 import { getMeUser } from '@/utilities/getMeUser';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile } from '@/payload-types';
@@ -75,4 +75,25 @@ export const meRouter = createTRPCRouter({
 
     return userCertificates;
   }),
+
+  updateProfile: isAuthedProcedure
+    .input(
+      z.object({
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const me = await getMeUser();
+      const profileId = (me.user.profile as Profile).id;
+
+      const payload = await getPayloadFromConfig();
+      const profile = await payload.update({
+        collection: 'profiles',
+        id: profileId,
+        data: input,
+      });
+
+      return profile;
+    }),
 });

@@ -10,6 +10,8 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/utilities/cn';
 
 export function NavAdmin({
   projects,
@@ -20,6 +22,11 @@ export function NavAdmin({
     icon: LucideIcon;
   }[];
 }) {
+  const pathname = usePathname();
+  const isActive = (url: string) => {
+    return pathname === url;
+  };
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Admin</SidebarGroupLabel>
@@ -27,7 +34,10 @@ export function NavAdmin({
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <Link href={item.url}>
+              <Link
+                href={item.url}
+                className={cn(isActive(item.url) && 'bg-primary/10 text-primary font-medium')}
+              >
                 <item.icon />
                 <span>{item.name}</span>
               </Link>

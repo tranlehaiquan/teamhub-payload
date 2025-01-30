@@ -20,7 +20,6 @@ import {
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createUser } from '@/services/server/createUser';
 import { api } from '@/trpc/react';
 
 interface Props {
@@ -40,6 +39,7 @@ const formSchema = z.object({
 });
 
 const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
+  const createUser = api.user.createUser.useMutation();
   const utils = api.useUtils();
   const [open, setOpen] = useState(false);
   const form = useForm({
@@ -52,7 +52,7 @@ const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await createUser({
+    await createUser.mutateAsync({
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,

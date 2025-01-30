@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Team } from '@/payload-types';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/utilities/cn';
 
 const TEAM_LINKS = [
   {
@@ -26,6 +28,11 @@ const TEAM_LINKS = [
 ];
 
 export function NavTeamActions({ items }: { items: Team[] }) {
+  const pathname = usePathname();
+  const isActive = (url: string) => {
+    return pathname === url;
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Teams</SidebarGroupLabel>
@@ -40,12 +47,19 @@ export function NavTeamActions({ items }: { items: Team[] }) {
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
+
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {TEAM_LINKS?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={`/${item.id}${subItem.url}`}>
+                        <Link
+                          href={`/${item.id}${subItem.url}`}
+                          className={cn(
+                            isActive(`/${item.id}${subItem.url}`) &&
+                              'bg-primary/10 text-primary font-medium',
+                          )}
+                        >
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>

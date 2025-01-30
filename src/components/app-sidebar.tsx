@@ -24,24 +24,6 @@ const data = {
       icon: UserRoundPenIcon,
     },
   ],
-  navMain: [
-    {
-      title: 'Settings',
-      icon: User,
-      url: '#',
-      isActive: true,
-      items: [
-        {
-          title: 'My Profile',
-          url: '/profile',
-        },
-        {
-          title: 'Account',
-          url: '/account',
-        },
-      ],
-    },
-  ],
   admins: [
     {
       name: 'Users',

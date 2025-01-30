@@ -15,7 +15,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { updateProfileById } from '@/services/profiles';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
 import { uploadAvatar } from '@/services/server/currentUser';
@@ -38,6 +37,7 @@ const formSchema = z.object({
 
 const AccountForm: React.FC<Props> = ({ profile }) => {
   const utils = api.useUtils();
+  const mutationProfile = api.me.updateProfile.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,7 +49,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
 
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      await updateProfileById(profile.id, {
+      await mutationProfile.mutateAsync({
         firstName: data.firstName,
         lastName: data.lastName,
       });
