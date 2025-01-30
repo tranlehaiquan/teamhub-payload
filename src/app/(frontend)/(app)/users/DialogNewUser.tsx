@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@/trpc/react';
+import { toast } from 'sonner';
 
 interface Props {
   className?: string;
@@ -39,7 +40,11 @@ const formSchema = z.object({
 });
 
 const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
-  const createUser = api.user.createUser.useMutation();
+  const createUser = api.user.createUser.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
   const utils = api.useUtils();
   const [open, setOpen] = useState(false);
   const form = useForm({

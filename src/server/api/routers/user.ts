@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createTRPCRouter, isAuthedProcedure, adminProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { createUserTemplate } from '@/email-templates/templates';
+import { TRPCError } from '@trpc/server';
 
 export const userRouter = createTRPCRouter({
   getUsers: isAuthedProcedure
@@ -35,6 +36,18 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { firstName, lastName, email } = input;
       const payload = await getPayloadFromConfig();
+
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const user = await payload.create({
+        collection: 'users',
+        data: {
+          email,
+          password: randomPassword,
+        },
+        disableVerificationEmail: true,
+        showHiddenFields: true,
+      });
+
       const profile = await payload.create({
         collection: 'profiles',
         data: {
@@ -43,17 +56,14 @@ export const userRouter = createTRPCRouter({
         },
       });
 
-      const randomPassword = Math.random().toString(36).slice(-8);
-      const user = await payload.create({
+      await payload.update({
         collection: 'users',
+        id: user.id,
         data: {
-          email,
-          password: randomPassword,
           profile: profile.id,
         },
-        disableVerificationEmail: true,
-        showHiddenFields: true,
       });
+
       const tokenVerify = user._verificationToken;
       const url = `http://localhost:3000/verify?token=${tokenVerify}`;
       const html = createUserTemplate(user, url, randomPassword);
@@ -66,6 +76,7 @@ export const userRouter = createTRPCRouter({
       });
 
       return {
+        success: true,
         user,
         profile,
         message: 'User created successfully',
