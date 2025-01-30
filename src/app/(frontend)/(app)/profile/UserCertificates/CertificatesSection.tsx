@@ -13,17 +13,17 @@ import { format } from 'date-fns/format';
 import { Button } from '@/components/ui/button';
 import { Plus, XIcon } from 'lucide-react';
 import { Skill, UsersSkill } from '@/payload-types';
-import { removeUserCertificate } from '@/services/server/currentUser';
 import { toast } from 'sonner';
 import DialogCertificate from './DialogCertificate';
 import { api } from '@/trpc/react';
 
 const CertificatesSection: React.FC = () => {
+  const removeCertificateMutation = api.me.removeCertificate.useMutation();
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
   const utils = api.useUtils();
 
   const handleRemoveCertificate = async (certificateId: number) => {
-    await removeUserCertificate(certificateId);
+    await removeCertificateMutation.mutateAsync(certificateId);
     toast.success('Certificate removed successfully');
     utils.me.getCertificates.invalidate();
   };

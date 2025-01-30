@@ -1,8 +1,6 @@
 'use client';
-
 import * as React from 'react';
-import { Map, Users, User, UserRoundPenIcon, BookUserIcon } from 'lucide-react';
-
+import { Map, Users, UserRoundPenIcon, BookUserIcon } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavAdmin } from '@/components/nav-admin';
 import { NavUser } from '@/components/nav-user';
@@ -10,7 +8,6 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from '@/component
 import { NavTeamActions } from './nav-team-action';
 import { api } from '@/trpc/react';
 
-// This is sample data.
 const data = {
   main: [
     {
@@ -41,7 +38,7 @@ const data = {
 type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
-  const [userProfile] = api.me.getMe.useSuspenseQuery();
+  const [{ user }] = api.me.getMe.useSuspenseQuery();
   const [
     {
       teamsOwned: { docs: teamsOwned },
@@ -53,12 +50,12 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
       <SidebarContent>
         <NavMain items={data.main} />
         <NavTeamActions items={teamsOwned} />
-        {userProfile.user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
+        {user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
       </SidebarContent>
 
       <SidebarFooter>
         <React.Suspense fallback="loading...">
-          <NavUser user={userProfile.user} />
+          <NavUser user={user} />
         </React.Suspense>
       </SidebarFooter>
       <SidebarRail />

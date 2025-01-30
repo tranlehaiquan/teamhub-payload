@@ -54,7 +54,7 @@ export function NavTeamActions({ items }: { items: Team[] }) {
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
                         <Link
-                          href={`/${item.id}${subItem.url}`}
+                          href={`/team/${item.id}${subItem.url}`}
                           className={cn(
                             isActive(`/${item.id}${subItem.url}`) &&
                               'bg-primary/10 text-primary font-medium',

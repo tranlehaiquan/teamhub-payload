@@ -15,7 +15,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import DatePicker from '@/components/ui/datepicker';
 import { Button } from '@/components/ui/button';
-import { createUserCertificate } from '@/services/server/currentUser';
 import { toast } from 'sonner';
 import {
   Select,
@@ -58,15 +57,16 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
       skill: null,
     },
   });
+  const addCertificateMutation = api.me.addCertificate.useMutation();
   const [{ docs: userSkills }] = api.me.userSkill.useSuspenseQuery();
 
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      await createUserCertificate({
+      await addCertificateMutation.mutateAsync({
         name: data.name,
         issuingOrganization: data.issuingOrganization,
-        deliveryDate: data.deliveryDate ? new Date(data.deliveryDate).toISOString() : null,
-        expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString() : null,
+        deliveryDate: data.deliveryDate,
+        expiryDate: data.expiryDate,
         userSkills: data.skill ? [data.skill] : [],
       });
 

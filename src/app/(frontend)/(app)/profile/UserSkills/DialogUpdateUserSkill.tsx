@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { updateCurrentUserSkill } from '@/services/server/currentUser';
 import { toast } from 'sonner';
 import { api } from '@/trpc/react';
 
@@ -74,6 +73,7 @@ const DialogUpdateUserSkill = ({
   userSkill?: UsersSkill;
   onClose: () => void;
 }) => {
+  const updateCurrentUserSkillMutation = api.me.updateUserSkill.useMutation();
   const utils = api.useUtils();
   const form = useForm({
     defaultValues: {
@@ -93,13 +93,11 @@ const DialogUpdateUserSkill = ({
   const handleSubmit = form.handleSubmit(async (values) => {
     if (!userSkill) return;
 
-    const result = await updateCurrentUserSkill(
-      userSkill.id,
-      values as {
-        currentLevel?: number;
-        desiredLevel?: number;
-      },
-    );
+    const result = await updateCurrentUserSkillMutation.mutateAsync({
+      id: userSkill.id,
+      desiredLevel: values.desiredLevel ? Number(values.desiredLevel) : undefined,
+      currentLevel: values.currentLevel ? Number(values.currentLevel) : undefined,
+    });
 
     if (result.success) {
       utils.me.userSkill.invalidate();

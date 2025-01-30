@@ -1,19 +1,27 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure, isAuthedProcedure } from '@/server/api/trpc';
-import { getMeUser } from '@/utilities/getMeUser';
+import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile } from '@/payload-types';
 
+const schemaChangePassword = z.object({
+  currentPassword: z.string().min(8, {
+    message: 'Password must be at',
+  }),
+  newPassword: z.string().min(8, {
+    message: 'Password must be at',
+  }),
+});
+
 export const meRouter = createTRPCRouter({
-  getMe: publicProcedure.query(async () => {
-    const me = await getMeUser();
+  getMe: isAuthedProcedure.query(async ({ ctx }) => {
+    const me = ctx.user;
 
     return me;
   }),
 
-  getTeams: publicProcedure.query(async () => {
-    const me = await getMeUser();
+  getTeams: isAuthedProcedure.query(async ({ ctx }) => {
+    const me = ctx.user;
     const userId = me.user.id;
     const payload = await getPayloadFromConfig();
 
@@ -32,14 +40,14 @@ export const meRouter = createTRPCRouter({
     };
   }),
 
-  getProfile: publicProcedure.query(async () => {
-    const me = await getMeUser();
+  getProfile: isAuthedProcedure.query(async ({ ctx }) => {
+    const me = ctx.user;
 
     return me.user.profile as Profile;
   }),
 
-  userSkill: publicProcedure.query(async () => {
-    const me = await getMeUser();
+  userSkill: isAuthedProcedure.query(async ({ ctx }) => {
+    const me = ctx.user;
     const userId = me.user.id;
     const payload = await getPayloadFromConfig();
 
@@ -53,6 +61,7 @@ export const meRouter = createTRPCRouter({
       populate: {
         skills: {
           name: true,
+          category: true,
         },
       },
       depth: 1,
@@ -61,7 +70,7 @@ export const meRouter = createTRPCRouter({
     return userSkills;
   }),
 
-  getCertificates: publicProcedure.query(async ({ ctx }) => {
+  getCertificates: isAuthedProcedure.query(async ({ ctx }) => {
     const payload = await getPayloadFromConfig();
 
     const userCertificates = await payload.find({
@@ -83,8 +92,8 @@ export const meRouter = createTRPCRouter({
         lastName: z.string().optional(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const me = await getMeUser();
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user;
       const profileId = (me.user.profile as Profile).id;
 
       const payload = await getPayloadFromConfig();
@@ -95,5 +104,198 @@ export const meRouter = createTRPCRouter({
       });
 
       return profile;
+    }),
+
+  addCertificate: isAuthedProcedure
+    .input(
+      z.object({
+        name: z.string().nonempty({
+          message: 'Name is required',
+        }),
+        issuingOrganization: z.string().min(1, {
+          message: 'Issuing organization is required',
+        }),
+        deliveryDate: z.date().optional().nullable(),
+        expiryDate: z.date().optional().nullable(),
+        userSkills: z.array(
+          z.number({
+            message: 'Skill is required',
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { name, issuingOrganization, deliveryDate, expiryDate, userSkills } = input;
+
+      const certificate = await payload.create({
+        collection: 'certificates',
+        data: {
+          name,
+          issuingOrganization,
+          deliveryDate: deliveryDate ? new Date(deliveryDate).toISOString() : null,
+          expiryDate: expiryDate ? new Date(expiryDate).toISOString() : null,
+          userSkills,
+          user: userId,
+        },
+      });
+
+      return certificate;
+    }),
+
+  removeCertificate: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const payload = await getPayloadFromConfig();
+    const userId = ctx.user.user.id;
+    const certificateId = input;
+
+    try {
+      await payload.delete({
+        collection: 'certificates',
+        where: {
+          id: {
+            equals: certificateId,
+          },
+          user: {
+            equals: userId,
+          },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Certificate removed successfully',
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Failed to remove certificate',
+      };
+    }
+  }),
+
+  updatePassword: isAuthedProcedure.input(schemaChangePassword).mutation(async ({ input, ctx }) => {
+    const payload = await getPayloadFromConfig();
+    const user = ctx.user.user;
+
+    await payload.update({
+      collection: 'users',
+      id: user.id,
+      data: {
+        password: input.newPassword,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Password updated successfully',
+    };
+  }),
+
+  addUserSkill: isAuthedProcedure.input(z.array(z.number())).mutation(async ({ input, ctx }) => {
+    const me = ctx.user.user;
+    const userId = me.id;
+    const payload = await getPayloadFromConfig();
+    const skills = input;
+
+    // TODO: consider insert with drizzle (N + 1)
+    try {
+      await Promise.all(
+        skills.map(async (skill) =>
+          payload.create({
+            collection: 'users_skills',
+            data: {
+              user: userId,
+              skill: skill,
+            },
+          }),
+        ),
+      );
+
+      return {
+        success: true,
+        message: 'Skills added successfully',
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Failed to add skills',
+      };
+    }
+  }),
+
+  removeUserSkill: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const me = ctx.user.user;
+    const userId = me.id;
+    const payload = await getPayloadFromConfig();
+    const skill = input;
+
+    try {
+      await payload.delete({
+        collection: 'users_skills',
+        where: {
+          user: {
+            equals: userId,
+          },
+          skill: {
+            equals: skill,
+          },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Skill removed successfully',
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Failed to remove skill',
+      };
+    }
+  }),
+
+  updateUserSkill: isAuthedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        currentLevel: z.number().optional(),
+        desiredLevel: z.number().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { id, currentLevel, desiredLevel } = input;
+
+      try {
+        await payload.update({
+          collection: 'users_skills',
+          where: {
+            user: {
+              equals: userId,
+            },
+            skill: {
+              equals: id,
+            },
+          },
+          data: {
+            currentLevel,
+            desiredLevel,
+          },
+        });
+
+        return {
+          success: true,
+          message: 'Skill updated successfully',
+        };
+      } catch {
+        return {
+          success: false,
+          message: 'Failed to update skill',
+        };
+      }
     }),
 });

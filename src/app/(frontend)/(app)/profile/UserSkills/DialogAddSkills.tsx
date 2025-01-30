@@ -11,7 +11,6 @@ import { Skill } from '@/payload-types';
 import { CheckboxWithLabel } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { addCurrentUserSkills } from '@/services/server/currentUser';
 import { api } from '@/trpc/react';
 
 interface Props {
@@ -25,6 +24,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
   disabledSkillIds = [],
   checkedSkillIds = [],
 }) => {
+  const addCurrentUserSkillsMutation = api.me.addUserSkill.useMutation();
   const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
   const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery({});
@@ -38,7 +38,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
   };
 
   const handleSubmit = async () => {
-    await addCurrentUserSkills(selectedSkills);
+    await addCurrentUserSkillsMutation.mutateAsync(selectedSkills);
     utils.me.userSkill.invalidate();
     utils.me.getCertificates.invalidate();
     setSelectedSkills([]);

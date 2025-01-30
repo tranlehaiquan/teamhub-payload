@@ -9,19 +9,20 @@ import { useForm } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { signup } from '@/services/server/signup';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
 }
 
 const SignupForm: React.FC<Props> = ({ className }) => {
+  const signUp = api.auth.signUp.useMutation();
   const router = useRouter();
   const { register, handleSubmit, formState } = useForm();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const user = await signup({
+      const user = await signUp.mutateAsync({
         email: data.email,
         password: data.password,
       });

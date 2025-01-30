@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { updatePassword } from '@/services/server/currentUser';
+import { api } from '@/trpc/react';
 
 const formSchema = z
   .object({
@@ -33,6 +33,7 @@ const formSchema = z
   });
 
 const ChangePasswordForm: React.FC = () => {
+  const updatePassword = api.me.updatePassword.useMutation();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,12 +45,12 @@ const ChangePasswordForm: React.FC = () => {
 
   const onSubmit = async (values: any) => {
     try {
-      const result = await updatePassword({
+      const result = await updatePassword.mutateAsync({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
 
-      if (result.errors) {
+      if (result.success) {
         toast.error('Failed to update password');
         return;
       }
