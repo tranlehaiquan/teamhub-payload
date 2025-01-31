@@ -12,12 +12,14 @@ import { Button } from '@/components/ui/button';
 import { User } from '@/payload-types';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/utilities/cn';
 
 type DialogNewMemberProps = React.PropsWithChildren<{
   teamId: number;
+  members?: number[];
 }>;
 
-const DialogNewMember: React.FC<DialogNewMemberProps> = ({ children, teamId }) => {
+const DialogNewMember: React.FC<DialogNewMemberProps> = ({ children, teamId, members }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<User>();
@@ -83,9 +85,16 @@ const DialogNewMember: React.FC<DialogNewMemberProps> = ({ children, teamId }) =
               {searchUsers?.docs.map((user) => (
                 <li key={user.id} className="flex w-full">
                   <Button
-                    className="block w-full text-left"
+                    className={cn(
+                      'block w-full text-left',
+                      members?.includes(user.id) && 'bg-gray-100 opacity-50',
+                    )}
                     variant={'ghost'}
-                    onClick={() => setSelectedUsers(user)}
+                    onClick={() => {
+                      if (members?.includes(user.id)) return;
+                      setSelectedUsers(user);
+                    }}
+                    disabled={members?.includes(user.id)}
                   >
                     <p>{user.email}</p>
                   </Button>

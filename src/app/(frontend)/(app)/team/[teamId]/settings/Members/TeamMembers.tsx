@@ -36,10 +36,11 @@ const TeamMembers: React.FC<Props> = ({ teamId }) => {
       toast.error('Failed to remove user from team');
     }
   };
+  const memberIds = members.map((member) => member.user?.id as number);
 
   return (
     <div>
-      <DialogNewMember teamId={Number(teamId)}>
+      <DialogNewMember teamId={Number(teamId)} members={memberIds}>
         <Button className="mb-4">
           <Plus /> Add member
         </Button>
