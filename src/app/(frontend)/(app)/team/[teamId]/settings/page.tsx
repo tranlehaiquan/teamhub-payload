@@ -2,7 +2,7 @@ import { api, HydrateClient } from '@/trpc/server';
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import TeamSettingGeneralForm from './TeamSettingGeneralForm';
-import TeamMembers from './TeamMembers';
+import TeamMembers from './Members/TeamMembers';
 import DangerSetting from './DangerSetting';
 
 const Page = async ({ params }: { params: Promise<{ teamId: string }> }) => {

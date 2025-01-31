@@ -15,6 +15,8 @@ import DialogNewUser from './DialogNewUser';
 import { api, HydrateClient } from '@/trpc/server';
 
 const PageUsers = async () => {
+  // TODO: integrate pagination
+  // Data table https://ui.shadcn.com/docs/components/data-table
   void api.user.getUsers.prefetch({});
 
   return (

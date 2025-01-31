@@ -35,7 +35,8 @@ const LoginForm: React.FC<Props> = ({ className }) => {
       return;
     }
 
-    utils.me.getMe.invalidate();
+    await utils.me.getMe.invalidate();
+    toast.success('Success login');
     router.push('/');
   });
 

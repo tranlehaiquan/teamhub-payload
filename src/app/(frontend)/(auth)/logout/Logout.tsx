@@ -9,7 +9,7 @@ const LogoutPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    logout().finally(() => {
+    logout().then(() => {
       queryClient.clear();
       router.push('/login');
     });

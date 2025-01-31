@@ -1,23 +1,32 @@
 import { z } from 'zod';
-
 import { createTRPCRouter, isAuthedProcedure, adminProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { createUserTemplate } from '@/email-templates/templates';
-import { TRPCError } from '@trpc/server';
+import { Where } from 'payload';
 
 export const userRouter = createTRPCRouter({
   getUsers: isAuthedProcedure
     .input(
       z.object({
+        email: z.string().optional(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(10),
       }),
     )
     .query(async ({ input }) => {
-      const { page, limit } = input;
+      const { page, limit, email } = input;
       const payload = await getPayloadFromConfig();
+      const where: Where = {};
+
+      if (email) {
+        where['email'] = {
+          contains: email,
+        };
+      }
+
       const skills = await payload.find({
         collection: 'users',
+        where,
         limit,
         page,
       });
