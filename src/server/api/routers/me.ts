@@ -2,7 +2,12 @@ import { z } from 'zod';
 
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { Media, Profile, User } from '@/payload-types';
+import { Profile, User } from '@/payload-types';
+import { zfd } from 'zod-form-data';
+
+export const uploadFileSchema = zfd.formData({
+  file: zfd.file(),
+});
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -256,62 +261,6 @@ export const meRouter = createTRPCRouter({
       return {
         success: false,
         message: 'Failed to remove skill',
-      };
-    }
-  }),
-
-  uploadAvatar: isAuthedProcedure.input(z.instanceof(FormData)).mutation(async ({ input, ctx }) => {
-    const user = ctx.user.user;
-    const fileName = getAvatarFileName(user);
-    const file = input.get('file') as File;
-
-    const payload = await getPayloadFromConfig();
-    const avatar = (user.profile as Profile).avatar;
-
-    try {
-      if (avatar) {
-        await payload.update({
-          collection: 'media',
-          id: (avatar as Media).id,
-          file: {
-            data: Buffer.from(await file.arrayBuffer()),
-            mimetype: file.type,
-            name: fileName,
-            size: file.size,
-          },
-          data: {},
-        });
-      } else {
-        const newAvatar = await payload.create({
-          collection: 'media',
-          data: {
-            filename: fileName,
-          },
-          file: {
-            data: Buffer.from(await file.arrayBuffer()),
-            mimetype: file.type,
-            name: fileName,
-            size: file.size,
-          },
-        });
-
-        await payload.update({
-          collection: 'profiles',
-          id: (user.profile as Profile).id,
-          data: {
-            avatar: newAvatar.id,
-          },
-        });
-      }
-
-      return {
-        success: true,
-        message: 'Avatar uploaded successfully',
-      };
-    } catch {
-      return {
-        success: false,
-        message: 'Failed to upload avatar',
       };
     }
   }),

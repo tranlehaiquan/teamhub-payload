@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
 import { getAvatarFallback } from '@/utilities/getAvatarFallback';
 import { api } from '@/trpc/react';
+import { uploadAvatar } from '@/services/server/uploadAvatar';
 
 interface Props {
   className?: string;
@@ -37,7 +38,6 @@ const formSchema = z.object({
 const AccountForm: React.FC<Props> = ({ profile }) => {
   const utils = api.useUtils();
   const mutationProfile = api.me.updateProfile.useMutation();
-  const uploadAvatar = api.me.uploadAvatar.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,7 +83,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
     formData.append('file', uploadFile);
 
     try {
-      const result = await uploadAvatar.mutateAsync(formData);
+      const result = await uploadAvatar(formData);
       utils.me.getProfile.invalidate();
       utils.me.getMe.invalidate();
 
