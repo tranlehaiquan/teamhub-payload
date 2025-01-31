@@ -3,11 +3,6 @@ import { z } from 'zod';
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile, User } from '@/payload-types';
-import { zfd } from 'zod-form-data';
-
-export const uploadFileSchema = zfd.formData({
-  file: zfd.file(),
-});
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
