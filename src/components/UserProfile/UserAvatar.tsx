@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Media } from '@/payload-types';
 import { cn } from '@/utilities/cn';
 import { Edit } from 'lucide-react';
+import { api } from '@/trpc/react';
+import { Profile, Media, User } from '@/payload-types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   className?: string;
@@ -56,6 +58,37 @@ const UserAvatar: React.FC<Props> = ({ className, avatar, onChange, fallback }) 
         ref={ref}
         onChange={onFileChange}
       />
+    </div>
+  );
+};
+
+export const UserAvatarByUserId: React.FC<{ userId: number }> = ({ userId }) => {
+  const { data, isFetched } = api.user.findUserById.useQuery({
+    id: userId,
+  });
+
+  if (!isFetched) {
+    return (
+      <div className="flex gap-2">
+        <Skeleton className="h-8 w-8 rounded-full" />
+        <div className="grid flex-1 text-left text-sm leading-tight gap-2">
+          <Skeleton className="w-32 h-3" />
+          <Skeleton className="w-32 h-3" />
+        </div>
+      </div>
+    );
+  }
+
+  const user = data as User;
+  const avatar = (user.profile as Profile).avatar as Media;
+
+  return (
+    <div className="flex gap-2">
+      <UserAvatar avatar={avatar} />
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-semibold">{user!.name}</span>
+        <span className="truncate text-xs">{user!.email}</span>
+      </div>
     </div>
   );
 };

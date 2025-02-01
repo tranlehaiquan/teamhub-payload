@@ -91,4 +91,15 @@ export const userRouter = createTRPCRouter({
         message: 'User created successfully',
       };
     }),
+
+  findUserById: isAuthedProcedure.input(z.object({ id: z.number() })).query(async ({ input }) => {
+    const { id } = input;
+    const payload = await getPayloadFromConfig();
+    const user = await payload.findByID({
+      collection: 'users',
+      id,
+    });
+
+    return user;
+  }),
 });

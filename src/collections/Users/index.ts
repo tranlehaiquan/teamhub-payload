@@ -17,6 +17,8 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
   },
   auth: {
+    // TODO: extends expiry time, handle logic for refresh tokens
+    // handle logic expire in front end
     forgotPassword: {
       generateEmailHTML: (args) => {
         const resetPasswordURL = `http://localhost:3000/reset?token=${args?.token}`;

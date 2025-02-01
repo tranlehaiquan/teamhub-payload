@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/table';
 import DialogNewMember from './DialogNewMember';
 import { toast } from 'sonner';
+import { UserAvatarByUserId } from '@/components/UserProfile/UserAvatar';
 
 interface Props {
   className?: string;
@@ -56,7 +57,9 @@ const TeamMembers: React.FC<Props> = ({ teamId }) => {
         <TableBody>
           {members.map((member) => (
             <TableRow key={member.id}>
-              <TableCell>{member.user?.email}</TableCell>
+              <TableCell>
+                <UserAvatarByUserId userId={member.user?.id as number} />
+              </TableCell>
               <TableCell>
                 <Button
                   variant={'destructive'}

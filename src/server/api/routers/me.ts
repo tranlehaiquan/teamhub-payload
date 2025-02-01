@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { Profile, User } from '@/payload-types';
+import { Profile } from '@/payload-types';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -12,10 +12,6 @@ const schemaChangePassword = z.object({
     message: 'Password must be at',
   }),
 });
-
-const getAvatarFileName = (user: User) => {
-  return `${user.id}-avatar.jpg`;
-};
 
 export const meRouter = createTRPCRouter({
   getMe: isAuthedProcedure.query(async ({ ctx }) => {
