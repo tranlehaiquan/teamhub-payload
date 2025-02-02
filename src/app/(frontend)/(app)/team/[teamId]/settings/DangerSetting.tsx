@@ -17,7 +17,7 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
   const router = useRouter();
   const [team] = api.team.getTeamById.useSuspenseQuery(Number(teamId));
   const [me] = api.me.getMe.useSuspenseQuery();
-  const isOwner = (team?.owner as Number) === me.user?.id;
+  const isOwner = (team?.owner as number) === me.user?.id;
 
   const handleOnDelete = async () => {
     try {
