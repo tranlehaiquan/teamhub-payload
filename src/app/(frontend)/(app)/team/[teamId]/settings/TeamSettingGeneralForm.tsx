@@ -28,6 +28,7 @@ const schema = z.object({
 });
 
 const TeamSettingForm: React.FC<Props> = ({ teamId }) => {
+  const utils = api.useUtils();
   const mutation = api.team.updateTeamById.useMutation();
   const [team] = api.team.getTeamById.useSuspenseQuery(Number(teamId));
   const form = useForm({
@@ -46,6 +47,7 @@ const TeamSettingForm: React.FC<Props> = ({ teamId }) => {
       });
       toast.success('Team updated');
       form.reset({ name: team.name, description: team.description || '' });
+      utils.team.getTeamById.invalidate(Number(teamId));
     } catch (error) {
       toast.error('Failed to update team');
     }

@@ -6,7 +6,6 @@ import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
-import { User } from '@/payload-types';
 
 type DangerSettingProps = {
   teamId: string;
