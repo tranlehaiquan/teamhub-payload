@@ -25,11 +25,7 @@ const Page = async ({ params }: { params: Promise<{ teamId: string }> }) => {
           <TeamMembers teamId={teamId} />
         </Card>
 
-        <Card className="p-4">
-          <h2 className="mb-2 text-lg">Danger zone</h2>
-
-          <DangerSetting teamId={teamId} />
-        </Card>
+        <DangerSetting teamId={teamId} />
       </div>
     </HydrateClient>
   );

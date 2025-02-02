@@ -76,3 +76,17 @@ export const resetPasswordAfterForgot = async ({ password, confirmPassword, toke
 
   return json;
 };
+
+// refresh token
+export const refreshToken = async () => {
+  const url = `${BASE_URL}/api/users/refresh-token`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const json = await res.json();
+  return json;
+};

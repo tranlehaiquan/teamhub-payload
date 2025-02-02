@@ -33,6 +33,8 @@ export const Users: CollectionConfig = {
         return verifyEmailTemplate(args?.user, verifyEmailURL);
       },
     },
+    // second expires 5 hours
+    tokenExpiration: 60 * 60 * 5,
   },
   fields: [
     {

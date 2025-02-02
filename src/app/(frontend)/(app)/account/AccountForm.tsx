@@ -56,6 +56,11 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
 
       utils.me.getProfile.invalidate();
       toast.success('Profile updated');
+
+      form.reset({
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
     } catch {
       toast.error('Failed to update profile');
     }

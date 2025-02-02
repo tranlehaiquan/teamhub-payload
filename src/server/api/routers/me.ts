@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { Profile } from '@/payload-types';
+import { Profile, Team } from '@/payload-types';
+import { unionBy } from 'lodash';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -35,9 +36,22 @@ export const meRouter = createTRPCRouter({
       },
     });
 
-    return {
-      teamsOwned,
-    };
+    // find team_user
+    const teamUsers = await payload.find({
+      collection: 'teams_users',
+      where: {
+        user: {
+          equals: userId,
+        },
+      },
+      populate: {},
+    });
+    const teamsIsMember = unionBy(
+      [...teamUsers.docs.map((teamUser) => teamUser.team), ...teamsOwned.docs],
+      'id',
+    );
+
+    return teamsIsMember as Team[];
   }),
 
   getProfile: isAuthedProcedure.query(async ({ ctx }) => {

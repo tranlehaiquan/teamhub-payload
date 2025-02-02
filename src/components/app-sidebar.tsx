@@ -39,17 +39,13 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
   const [{ user }] = api.me.getMe.useSuspenseQuery();
-  const [
-    {
-      teamsOwned: { docs: teamsOwned },
-    },
-  ] = api.me.getTeams.useSuspenseQuery();
+  const [teams] = api.me.getTeams.useSuspenseQuery();
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
         <NavMain items={data.main} />
-        <NavTeamActions items={teamsOwned} />
+        <NavTeamActions items={teams} />
         {user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
       </SidebarContent>
 

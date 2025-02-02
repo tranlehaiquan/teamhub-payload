@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Card } from '@/components/ui/card';
+import { User } from '@/payload-types';
 
 type DangerSettingProps = {
   teamId: string;
@@ -14,6 +16,9 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
   const deleteTeamMutation = api.team.deleteTeam.useMutation();
   const utils = api.useUtils();
   const router = useRouter();
+  const [team] = api.team.getTeamById.useSuspenseQuery(Number(teamId));
+  const [me] = api.me.getMe.useSuspenseQuery();
+  const isOwner = (team?.owner as Number) === me.user?.id;
 
   const handleOnDelete = async () => {
     try {
@@ -28,22 +33,30 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
     }
   };
 
-  return (
-    <div>
-      <Button variant="outline" className="block mb-4">
-        Transfer owner
-      </Button>
+  if (!isOwner) {
+    return null;
+  }
 
-      <ConfirmDialog
-        title="Delete team"
-        description="Are you sure you want to delete this team? This action cannot be undone."
-        onConfirm={handleOnDelete}
-      >
-        <Button variant="destructive" className="block">
-          Delete team
+  return (
+    <Card className="p-4">
+      <h2 className="mb-2 text-lg">Danger zone</h2>
+
+      <div>
+        <Button variant="outline" className="block mb-4">
+          Transfer owner
         </Button>
-      </ConfirmDialog>
-    </div>
+
+        <ConfirmDialog
+          title="Delete team"
+          description="Are you sure you want to delete this team? This action cannot be undone."
+          onConfirm={handleOnDelete}
+        >
+          <Button variant="destructive" className="block">
+            Delete team
+          </Button>
+        </ConfirmDialog>
+      </div>
+    </Card>
   );
 };
 
