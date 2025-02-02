@@ -56,7 +56,7 @@ export function NavTeamActions({ items }: { items: Team[] }) {
                         <Link
                           href={`/team/${item.id}${subItem.url}`}
                           className={cn(
-                            isActive(`/${item.id}${subItem.url}`) &&
+                            isActive(`/team/${item.id}${subItem.url}`) &&
                               'bg-primary/10 text-primary font-medium',
                           )}
                         >

@@ -20,6 +20,8 @@ export interface Config {
     users_skills: UsersSkill;
     teams: Team;
     teams_users: TeamsUser;
+    team_skills: TeamSkill;
+    team_requirements: TeamRequirement;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-locked-documents': PayloadLockedDocument;
@@ -51,6 +53,8 @@ export interface Config {
     users_skills: UsersSkillsSelect<false> | UsersSkillsSelect<true>;
     teams: TeamsSelect<false> | TeamsSelect<true>;
     teams_users: TeamsUsersSelect<false> | TeamsUsersSelect<true>;
+    team_skills: TeamSkillsSelect<false> | TeamSkillsSelect<true>;
+    team_requirements: TeamRequirementsSelect<false> | TeamRequirementsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -319,6 +323,30 @@ export interface TeamsUser {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_skills".
+ */
+export interface TeamSkill {
+  id: number;
+  team?: (number | null) | Team;
+  skill?: (number | null) | Skill;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_requirements".
+ */
+export interface TeamRequirement {
+  id: number;
+  team?: (number | null) | Team;
+  skill?: (number | null) | Skill;
+  desiredLevel?: number | null;
+  desiredMembers?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms".
  */
 export interface Form {
@@ -549,6 +577,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'teams_users';
         value: number | TeamsUser;
+      } | null)
+    | ({
+        relationTo: 'team_skills';
+        value: number | TeamSkill;
+      } | null)
+    | ({
+        relationTo: 'team_requirements';
+        value: number | TeamRequirement;
       } | null)
     | ({
         relationTo: 'forms';
@@ -802,6 +838,28 @@ export interface TeamsSelect<T extends boolean = true> {
 export interface TeamsUsersSelect<T extends boolean = true> {
   team?: T;
   user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_skills_select".
+ */
+export interface TeamSkillsSelect<T extends boolean = true> {
+  team?: T;
+  skill?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_requirements_select".
+ */
+export interface TeamRequirementsSelect<T extends boolean = true> {
+  team?: T;
+  skill?: T;
+  desiredLevel?: T;
+  desiredMembers?: T;
   updatedAt?: T;
   createdAt?: T;
 }

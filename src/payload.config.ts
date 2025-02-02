@@ -19,6 +19,8 @@ import { Users_Skills } from './collections/Users_Skills';
 import Teams from './collections/Teams';
 import { Teams_Users } from './collections/Teams_Users';
 import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-nodemailer';
+import { Team_Skills } from './collections/Team_Skills';
+import { Team_Requirements } from './collections/Team_Requirements';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -101,6 +103,8 @@ export default buildConfig({
     Users_Skills,
     Teams,
     Teams_Users,
+    Team_Skills,
+    Team_Requirements,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   plugins: [

@@ -161,4 +161,41 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+
+  getTeamSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+    const teamId = input;
+    const payload = await getPayloadFromConfig();
+    const teamSkills = await payload.find({
+      collection: 'team_skills',
+      where: {
+        team: {
+          equals: teamId,
+        },
+      },
+    });
+
+    return teamSkills;
+  }),
+
+  getTeamRequirement: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+    const teamId = input;
+    const payload = await getPayloadFromConfig();
+    const teamRequirements = await payload.find({
+      collection: 'team_requirements',
+      where: {
+        team: {
+          equals: teamId,
+        },
+      },
+      populate: {
+        skills: {
+          name: true,
+          // TODO: find way to populate id, name only no need skills
+          category: true,
+        },
+      },
+    });
+
+    return teamRequirements;
+  }),
 });
