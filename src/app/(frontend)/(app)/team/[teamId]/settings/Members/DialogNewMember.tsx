@@ -13,6 +13,7 @@ import { User } from '@/payload-types';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/utilities/cn';
+import { useDebounce } from 'use-debounce';
 
 type DialogNewMemberProps = React.PropsWithChildren<{
   teamId: number;
@@ -22,15 +23,16 @@ type DialogNewMemberProps = React.PropsWithChildren<{
 const DialogNewMember: React.FC<DialogNewMemberProps> = ({ children, teamId, members }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 500);
   const [selectedUsers, setSelectedUsers] = useState<User>();
   const addTeamMemberMutation = api.team.addTeamMember.useMutation();
   const utils = api.useUtils();
-  const { data: searchUsers } = api.user.getUsers.useQuery(
+  const { data: searchUsers, isLoading } = api.user.getUsers.useQuery(
     {
-      email: search,
+      email: debouncedSearch,
     },
     {
-      enabled: !!search,
+      enabled: !!debouncedSearch,
     },
   );
 
@@ -103,6 +105,8 @@ const DialogNewMember: React.FC<DialogNewMemberProps> = ({ children, teamId, mem
             </ul>
           </>
         )}
+
+        {isLoading && <p>Loading...</p>}
 
         {selectedUsers && (
           <div className="flex gap-2 items-center">
