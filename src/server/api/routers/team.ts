@@ -68,16 +68,11 @@ export const teamRouter = createTRPCRouter({
           id: users.id,
           email: users.email,
           name: users.name,
-          // profile: {
-          //   id: profiles.id,
-          //   firstName: profiles.firstName,
-          //   lastName: profiles.lastName,
-          // },
+          profile: users.profile,
         },
       })
       .from(teams_users)
       .leftJoin(users, eq(teams_users.user, users.id))
-      // .leftJoin(profiles, eq(users.profile, profiles.id))
       .where(eq(teams_users.team, teamId));
 
     return teamUsersResults;

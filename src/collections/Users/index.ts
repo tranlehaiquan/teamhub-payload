@@ -2,6 +2,9 @@ import type { CollectionConfig } from 'payload';
 import { isAdminRole } from '@/access/isAdminRole';
 import { authenticated } from '../../access/authenticated';
 import { forgotPasswordTemplate, verifyEmailTemplate } from '../../email-templates/templates';
+import { getClientSideURL } from '@/utilities/getURL';
+
+const clientURL = getClientSideURL();
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -21,7 +24,7 @@ export const Users: CollectionConfig = {
     // handle logic expire in front end
     forgotPassword: {
       generateEmailHTML: (args) => {
-        const resetPasswordURL = `http://localhost:3000/reset?token=${args?.token}`;
+        const resetPasswordURL = `${clientURL}/reset?token=${args?.token}`;
         const template = forgotPasswordTemplate(args?.user, resetPasswordURL);
 
         return template;
@@ -29,7 +32,7 @@ export const Users: CollectionConfig = {
     },
     verify: {
       generateEmailHTML: (args) => {
-        const verifyEmailURL = `http://localhost:3000/verify?token=${args?.token}`;
+        const verifyEmailURL = `${clientURL}/verify?token=${args?.token}`;
         return verifyEmailTemplate(args?.user, verifyEmailURL);
       },
     },

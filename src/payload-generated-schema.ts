@@ -354,6 +354,7 @@ export const teams = pgTable(
   {
     id: serial('id').primaryKey(),
     name: varchar('name').notNull(),
+    description: varchar('description'),
     owner: integer('owner_id')
       .notNull()
       .references(() => users.id, {
@@ -396,6 +397,62 @@ export const teams_users = pgTable(
     teams_users_updated_at_idx: index('teams_users_updated_at_idx').on(columns.updatedAt),
     teams_users_created_at_idx: index('teams_users_created_at_idx').on(columns.createdAt),
     userIdTeamId: uniqueIndex('userIdTeamIdUnique').on(columns.user, columns.team),
+  }),
+);
+
+export const team_skills = pgTable(
+  'team_skills',
+  {
+    id: serial('id').primaryKey(),
+    team: integer('team_id').references(() => teams.id, {
+      onDelete: 'set null',
+    }),
+    skill: integer('skill_id').references(() => skills.id, {
+      onDelete: 'set null',
+    }),
+    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => ({
+    team_skills_team_idx: index('team_skills_team_idx').on(columns.team),
+    team_skills_skill_idx: index('team_skills_skill_idx').on(columns.skill),
+    team_skills_updated_at_idx: index('team_skills_updated_at_idx').on(columns.updatedAt),
+    team_skills_created_at_idx: index('team_skills_created_at_idx').on(columns.createdAt),
+  }),
+);
+
+export const team_requirements = pgTable(
+  'team_requirements',
+  {
+    id: serial('id').primaryKey(),
+    team: integer('team_id').references(() => teams.id, {
+      onDelete: 'set null',
+    }),
+    skill: integer('skill_id').references(() => skills.id, {
+      onDelete: 'set null',
+    }),
+    desiredLevel: numeric('desired_level'),
+    desiredMembers: numeric('desired_members'),
+    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => ({
+    team_requirements_team_idx: index('team_requirements_team_idx').on(columns.team),
+    team_requirements_skill_idx: index('team_requirements_skill_idx').on(columns.skill),
+    team_requirements_updated_at_idx: index('team_requirements_updated_at_idx').on(
+      columns.updatedAt,
+    ),
+    team_requirements_created_at_idx: index('team_requirements_created_at_idx').on(
+      columns.createdAt,
+    ),
   }),
 );
 
@@ -777,6 +834,8 @@ export const payload_locked_documents_rels = pgTable(
     users_skillsID: integer('users_skills_id'),
     teamsID: integer('teams_id'),
     teams_usersID: integer('teams_users_id'),
+    team_skillsID: integer('team_skills_id'),
+    team_requirementsID: integer('team_requirements_id'),
     formsID: integer('forms_id'),
     'form-submissionsID': integer('form_submissions_id'),
   },
@@ -811,6 +870,12 @@ export const payload_locked_documents_rels = pgTable(
     payload_locked_documents_rels_teams_users_id_idx: index(
       'payload_locked_documents_rels_teams_users_id_idx',
     ).on(columns.teams_usersID),
+    payload_locked_documents_rels_team_skills_id_idx: index(
+      'payload_locked_documents_rels_team_skills_id_idx',
+    ).on(columns.team_skillsID),
+    payload_locked_documents_rels_team_requirements_id_idx: index(
+      'payload_locked_documents_rels_team_requirements_id_idx',
+    ).on(columns.team_requirementsID),
     payload_locked_documents_rels_forms_id_idx: index(
       'payload_locked_documents_rels_forms_id_idx',
     ).on(columns.formsID),
@@ -866,6 +931,16 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns['teams_usersID']],
       foreignColumns: [teams_users.id],
       name: 'payload_locked_documents_rels_teams_users_fk',
+    }).onDelete('cascade'),
+    team_skillsIdFk: foreignKey({
+      columns: [columns['team_skillsID']],
+      foreignColumns: [team_skills.id],
+      name: 'payload_locked_documents_rels_team_skills_fk',
+    }).onDelete('cascade'),
+    team_requirementsIdFk: foreignKey({
+      columns: [columns['team_requirementsID']],
+      foreignColumns: [team_requirements.id],
+      name: 'payload_locked_documents_rels_team_requirements_fk',
     }).onDelete('cascade'),
     formsIdFk: foreignKey({
       columns: [columns['formsID']],
@@ -1063,6 +1138,30 @@ export const relations_teams_users = relations(teams_users, ({ one }) => ({
     relationName: 'user',
   }),
 }));
+export const relations_team_skills = relations(team_skills, ({ one }) => ({
+  team: one(teams, {
+    fields: [team_skills.team],
+    references: [teams.id],
+    relationName: 'team',
+  }),
+  skill: one(skills, {
+    fields: [team_skills.skill],
+    references: [skills.id],
+    relationName: 'skill',
+  }),
+}));
+export const relations_team_requirements = relations(team_requirements, ({ one }) => ({
+  team: one(teams, {
+    fields: [team_requirements.team],
+    references: [teams.id],
+    relationName: 'team',
+  }),
+  skill: one(skills, {
+    fields: [team_requirements.skill],
+    references: [skills.id],
+    relationName: 'skill',
+  }),
+}));
 export const relations_forms_blocks_checkbox = relations(forms_blocks_checkbox, ({ one }) => ({
   _parentID: one(forms, {
     fields: [forms_blocks_checkbox._parentID],
@@ -1251,6 +1350,16 @@ export const relations_payload_locked_documents_rels = relations(
       references: [teams_users.id],
       relationName: 'teams_users',
     }),
+    team_skillsID: one(team_skills, {
+      fields: [payload_locked_documents_rels.team_skillsID],
+      references: [team_skills.id],
+      relationName: 'team_skills',
+    }),
+    team_requirementsID: one(team_requirements, {
+      fields: [payload_locked_documents_rels.team_requirementsID],
+      references: [team_requirements.id],
+      relationName: 'team_requirements',
+    }),
     formsID: one(forms, {
       fields: [payload_locked_documents_rels.formsID],
       references: [forms.id],
@@ -1308,6 +1417,8 @@ type DatabaseSchema = {
   users_skills: typeof users_skills;
   teams: typeof teams;
   teams_users: typeof teams_users;
+  team_skills: typeof team_skills;
+  team_requirements: typeof team_requirements;
   forms_blocks_checkbox: typeof forms_blocks_checkbox;
   forms_blocks_country: typeof forms_blocks_country;
   forms_blocks_email: typeof forms_blocks_email;
@@ -1339,6 +1450,8 @@ type DatabaseSchema = {
   relations_users_skills: typeof relations_users_skills;
   relations_teams: typeof relations_teams;
   relations_teams_users: typeof relations_teams_users;
+  relations_team_skills: typeof relations_team_skills;
+  relations_team_requirements: typeof relations_team_requirements;
   relations_forms_blocks_checkbox: typeof relations_forms_blocks_checkbox;
   relations_forms_blocks_country: typeof relations_forms_blocks_country;
   relations_forms_blocks_email: typeof relations_forms_blocks_email;

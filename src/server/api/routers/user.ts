@@ -3,6 +3,9 @@ import { createTRPCRouter, isAuthedProcedure, adminProcedure } from '@/server/ap
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { createUserTemplate } from '@/email-templates/templates';
 import { Where } from 'payload';
+import { getClientSideURL } from '@/utilities/getURL';
+
+const clientURL = getClientSideURL();
 
 export const userRouter = createTRPCRouter({
   getUsers: isAuthedProcedure
@@ -74,7 +77,7 @@ export const userRouter = createTRPCRouter({
       });
 
       const tokenVerify = user._verificationToken;
-      const url = `http://localhost:3000/verify?token=${tokenVerify}`;
+      const url = `${clientURL}/verify?token=${tokenVerify}`;
       const html = createUserTemplate(user, url, randomPassword);
 
       await payload.sendEmail({
