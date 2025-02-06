@@ -21,4 +21,26 @@ export const skillRouter = createTRPCRouter({
 
       return skills;
     }),
+
+  getUserSkillByUserId: publicProcedure.input(z.number()).query(async ({ input }) => {
+    const payload = await getPayloadFromConfig();
+
+    const userSkills = await payload.find({
+      collection: 'users_skills',
+      where: {
+        user: {
+          equals: input,
+        },
+      },
+      populate: {
+        skills: {
+          name: true,
+          category: true,
+        },
+      },
+      depth: 1,
+    });
+
+    return userSkills;
+  }),
 });

@@ -62,6 +62,21 @@ const UserAvatar: React.FC<Props> = ({ className, avatar, onChange, fallback }) 
   );
 };
 
+export const UserAvatarOnlyByUserId: React.FC<{ userId: number }> = ({ userId }) => {
+  const { data, isFetched } = api.user.findUserById.useQuery({
+    id: userId,
+  });
+
+  if (!isFetched) {
+    return <Skeleton className="h-8 w-8 rounded-full" />;
+  }
+
+  const user = data as User;
+  const avatar = (user.profile as Profile).avatar as Media;
+
+  return <UserAvatar avatar={avatar} />;
+};
+
 export const UserAvatarByUserId: React.FC<{ userId: number }> = ({ userId }) => {
   const { data, isFetched } = api.user.findUserById.useQuery({
     id: userId,
