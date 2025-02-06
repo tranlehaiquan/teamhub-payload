@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
@@ -9,6 +8,7 @@ import { Skill } from '@/payload-types';
 import DialogAddSkills from './DialogAddSkills';
 import CategorySkills from './CategorySkills';
 import { api } from '@/trpc/react';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 const UserSkills: React.FC = () => {
   const removeCurrentUserSkillMutation = api.me.removeUserSkill.useMutation();
@@ -34,8 +34,7 @@ const UserSkills: React.FC = () => {
   };
 
   return (
-    <Card className="p-4">
-      <p className="mb-2 text-lg">Skills</p>
+    <SectionCard title="Skills">
       {categoriesByIdPair.map(([categoryId, userSkills]) => (
         <CategorySkills
           key={categoryId}
@@ -53,7 +52,7 @@ const UserSkills: React.FC = () => {
           Add Skill
         </Button>
       </DialogAddSkills>
-    </Card>
+    </SectionCard>
   );
 };
 

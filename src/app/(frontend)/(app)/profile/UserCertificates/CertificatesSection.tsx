@@ -1,5 +1,4 @@
 'use client';
-import { Card } from '@/components/ui/card';
 import React from 'react';
 import {
   Table,
@@ -16,6 +15,7 @@ import { Skill, UsersSkill } from '@/payload-types';
 import { toast } from 'sonner';
 import DialogCertificate from './DialogCertificate';
 import { api } from '@/trpc/react';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 const CertificatesSection: React.FC = () => {
   const removeCertificateMutation = api.me.removeCertificate.useMutation();
@@ -29,9 +29,7 @@ const CertificatesSection: React.FC = () => {
   };
 
   return (
-    <Card className="p-4">
-      <p className="mb-2 text-lg">Certificates</p>
-
+    <SectionCard className="p-4" title="Certificates">
       <Table>
         <TableHeader>
           <TableRow>
@@ -78,7 +76,7 @@ const CertificatesSection: React.FC = () => {
           Add Certificate
         </Button>
       </DialogCertificate>
-    </Card>
+    </SectionCard>
   );
 };
 

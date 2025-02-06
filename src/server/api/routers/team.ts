@@ -167,6 +167,7 @@ export const teamRouter = createTRPCRouter({
           equals: teamId,
         },
       },
+      limit: 100,
     });
 
     return teamSkills;

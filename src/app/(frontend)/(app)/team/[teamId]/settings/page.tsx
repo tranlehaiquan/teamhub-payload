@@ -1,25 +1,21 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import TeamSettingGeneralForm from './TeamSettingGeneralForm';
 import TeamMembers from './Members/TeamMembers';
 import DangerSetting from './DangerSetting';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 const Page = async ({ params }: { params: Promise<{ teamId: string }> }) => {
   const teamId = (await params).teamId;
 
   return (
     <div className="grid grid-cols-1 gap-4 p-4">
-      <Card className="p-4">
-        <h2 className="mb-2 text-lg">General</h2>
-
+      <SectionCard title="General">
         <TeamSettingGeneralForm teamId={teamId} />
-      </Card>
+      </SectionCard>
 
-      <Card className="p-4">
-        <h2 className="mb-2 text-lg">Members</h2>
-
+      <SectionCard title="Members">
         <TeamMembers teamId={teamId} />
-      </Card>
+      </SectionCard>
 
       <DangerSetting teamId={teamId} />
     </div>

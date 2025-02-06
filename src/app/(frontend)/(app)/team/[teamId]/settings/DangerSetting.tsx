@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 type DangerSettingProps = {
   teamId: string;
@@ -37,9 +37,7 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
   }
 
   return (
-    <Card className="p-4">
-      <h2 className="mb-2 text-lg">Danger zone</h2>
-
+    <SectionCard title="Danger zone">
       <div>
         <Button variant="outline" className="block mb-4">
           Transfer owner
@@ -55,7 +53,7 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
           </Button>
         </ConfirmDialog>
       </div>
-    </Card>
+    </SectionCard>
   );
 };
 

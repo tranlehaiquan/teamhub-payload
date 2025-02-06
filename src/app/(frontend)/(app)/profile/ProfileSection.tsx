@@ -1,12 +1,12 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { UserAvatar } from '@/components/UserProfile';
 import { Media } from '@/payload-types';
 import React from 'react';
 import { Edit } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 const ProfileSection: React.FC = () => {
   const [userProfile] = api.me.getProfile.useSuspenseQuery();
@@ -16,9 +16,7 @@ const ProfileSection: React.FC = () => {
 
   return (
     <div className="grid grid-cols-2 gap-2">
-      <Card className="p-4">
-        <p className="mb-2 text-lg">User Profile</p>
-
+      <SectionCard title="User Profile">
         <div className="flex gap-4">
           <UserAvatar className="w-20 h-20 rounded-full" avatar={userProfile?.avatar as Media} />
 
@@ -36,9 +34,9 @@ const ProfileSection: React.FC = () => {
             </Button>
           </Link>
         </div>
-      </Card>
+      </SectionCard>
 
-      <Card className="p-4">
+      <SectionCard>
         <div className="grid grid-cols-3 gap-4 text-center h-full">
           <div className="flex flex-col items-center justify-center">
             <p className="mb-2 text-lg">Skills</p>
@@ -53,7 +51,7 @@ const ProfileSection: React.FC = () => {
             <p className="text-xl font-bold">0</p>
           </div>
         </div>
-      </Card>
+      </SectionCard>
     </div>
   );
 };
