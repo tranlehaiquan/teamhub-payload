@@ -12,11 +12,11 @@ export const customFetch = async (
   let headers = {};
 
   if (typeof window === 'undefined') {
-    const { cookies } = await import('next/headers'); // Dynamically import to avoid errors in the client
+    const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
 
     headers = {
-      Cookie: cookieStore.toString(), // Convert cookies to a string if needed
+      Cookie: cookieStore.toString(),
     };
   }
 
