@@ -43,8 +43,7 @@ const GroupSkillsByCategory = ({
         <TableRow key={(skill as Skill).id}>
           <TableCell>{(skill as Skill).name}</TableCell>
           <TableCell></TableCell>
-          <TableCell>0%</TableCell>
-          <TableCell className="text-center">0</TableCell>
+          <TableCell className="text-center">0%</TableCell>
           <TableCell className="text-center">0</TableCell>
           <TableCell className="text-center">0</TableCell>
         </TableRow>
@@ -88,7 +87,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
               <TableRow>
                 <TableHead>❤️</TableHead>
                 <TableHead>Requirements</TableHead>
-                <TableHead>Progress</TableHead>
+                <TableHead className="text-center">Progress</TableHead>
                 {users.map((user) => (
                   <TableHead key={user.id} title={user.email}>
                     <div className="flex items-center flex-col gap-1">
