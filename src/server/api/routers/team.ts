@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { teams_users, users } from '@/payload-generated-schema';
+import { categories, teams_users, users } from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
 import { User } from '@/payload-types';
 
@@ -168,6 +168,13 @@ export const teamRouter = createTRPCRouter({
         },
       },
       limit: 100,
+      populate: {
+        teams: {}, // this make team only return { id }
+        skills: {
+          name: true,
+          category: true,
+        },
+      },
     });
 
     return teamSkills;
@@ -184,9 +191,9 @@ export const teamRouter = createTRPCRouter({
         },
       },
       populate: {
+        teams: {}, // this make team only return { id }
         skills: {
           name: true,
-          // TODO: find way to populate id, name only no need skills
           category: true,
         },
       },
