@@ -2,6 +2,7 @@
 
 import React, { Fragment, useCallback, useState } from 'react';
 import { toast } from '@payloadcms/ui';
+import { runSeed } from './seed-actions';
 
 import './index.scss';
 
@@ -42,9 +43,9 @@ export const SeedButton: React.FC = () => {
         toast.promise(
           new Promise((resolve, reject) => {
             try {
-              fetch('/next/seed', { method: 'POST', credentials: 'include' })
-                .then((res) => {
-                  if (res.ok) {
+              runSeed()
+                .then(({ success }) => {
+                  if (success) {
                     resolve(true);
                     setSeeded(true);
                   } else {
