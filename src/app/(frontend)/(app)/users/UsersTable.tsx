@@ -30,8 +30,8 @@ const UsersTable: React.FC = () => {
         {users.map((user) => (
           <TableRow key={user.id}>
             <TableCell className="font-medium">{user.id}</TableCell>
-            <TableCell>{(user.profile as Profile).firstName}</TableCell>
-            <TableCell>{(user.profile as Profile).lastName}</TableCell>
+            <TableCell>{(user.profile as Profile)?.firstName}</TableCell>
+            <TableCell>{(user.profile as Profile)?.lastName}</TableCell>
             <TableCell>{user.roles?.join(', ')}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>{user._verified && 'Yes'}</TableCell>
