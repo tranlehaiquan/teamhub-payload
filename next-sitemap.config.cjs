@@ -1,7 +1,7 @@
 const SITE_URL =
   process.env.NEXT_PUBLIC_SERVER_URL ||
   process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-  'https://example.com'
+  'https://example.com';
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
@@ -17,4 +17,4 @@ module.exports = {
     ],
     additionalSitemaps: [`${SITE_URL}/pages-sitemap.xml`, `${SITE_URL}/posts-sitemap.xml`],
   },
-}
+};

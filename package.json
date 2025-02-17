@@ -16,7 +16,8 @@
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@hookform/resolvers": "^4.0.0",
@@ -77,13 +78,14 @@
     "sharp": "0.33.5",
     "sonner": "^1.7.4",
     "superjson": "^2.2.2",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
+    "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-query": "^5.66.1",
     "@types/escape-html": "^1.0.4",
@@ -91,13 +93,12 @@
     "@types/node": "22.13.4",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
-    "autoprefixer": "^10.4.20",
     "copyfiles": "^2.4.1",
     "eslint": "^9.20.1",
     "eslint-config-next": "15.1.7",
     "postcss": "^8.5.2",
     "prettier": "^3.5.1",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.0.0",
     "typescript": "5.7.3"
   },
   "engines": {
