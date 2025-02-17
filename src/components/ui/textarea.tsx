@@ -3,7 +3,7 @@ import * as React from 'react';
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
-const Textarea: React.FC<TextareaProps> = ({ className, ...props }) => {
+const Textarea = ({ className, ...props }: TextareaProps) => {
   return (
     <textarea
       className={cn(
@@ -14,6 +14,5 @@ const Textarea: React.FC<TextareaProps> = ({ className, ...props }) => {
     />
   );
 };
-Textarea.displayName = 'Textarea';
 
 export { Textarea };

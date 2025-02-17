@@ -15,7 +15,7 @@ const TooltipContent = ({
   className,
   sideOffset = 4,
   ...props
-}: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>) => (
+}: React.ComponentProps<typeof TooltipPrimitive.Content>) => (
   <TooltipPrimitive.Content
     sideOffset={sideOffset}
     className={cn(
@@ -25,6 +25,5 @@ const TooltipContent = ({
     {...props}
   />
 );
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
