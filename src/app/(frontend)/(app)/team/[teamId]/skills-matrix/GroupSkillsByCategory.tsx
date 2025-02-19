@@ -42,7 +42,7 @@ export const GroupSkillsByCategory = ({
 
   const getUserSkillLevel = (userId: number, skillId: number) => {
     const userSkills = userSKillsByUserId[userId];
-    const currentLevel = userSkills.find((userSkill) => userSkill.skill === skillId)?.currentLevel;
+    const currentLevel = userSkills?.find((userSkill) => userSkill.skill === skillId)?.currentLevel;
 
     if (isUndefined(currentLevel)) {
       return undefined;
