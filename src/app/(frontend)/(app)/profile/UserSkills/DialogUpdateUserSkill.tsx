@@ -6,23 +6,10 @@ import { Dialog, DialogHeader, DialogContent, DialogTitle } from '@/components/u
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { api } from '@/trpc/react';
+import LevelSkillSelection from '@/components/LevelSkillSelection/LevelSkillSelection';
 
 const zSchema = z
   .object({
@@ -42,29 +29,6 @@ const zSchema = z
       message: 'Desired level should be greater than or equal current level',
     },
   );
-
-const LEVELS = [
-  {
-    value: 1,
-    label: 'Fundamental',
-  },
-  {
-    value: 2,
-    label: 'Novice',
-  },
-  {
-    value: 3,
-    label: 'Intermediate',
-  },
-  {
-    value: 4,
-    label: 'Advanced',
-  },
-  {
-    value: 5,
-    label: 'Expert',
-  },
-];
 
 const DialogUpdateUserSkill = ({
   userSkill,
@@ -120,25 +84,13 @@ const DialogUpdateUserSkill = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Current Level</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(Number(value));
+
+                    <LevelSkillSelection
+                      level={field.value ? Number(field.value) : undefined}
+                      onChange={(level) => {
+                        field.onChange(level);
                       }}
-                      defaultValue={field.value ? String(field.value) : undefined}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your current level" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {LEVELS.map((level) => (
-                          <SelectItem key={level.value} value={String(level.value)}>
-                            {level.value} - {level.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -151,25 +103,13 @@ const DialogUpdateUserSkill = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Desired Level</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(Number(value));
+
+                    <LevelSkillSelection
+                      level={field.value ? Number(field.value) : undefined}
+                      onChange={(level) => {
+                        field.onChange(level);
                       }}
-                      defaultValue={field.value ? String(field.value) : undefined}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your desired level" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {LEVELS.map((level) => (
-                          <SelectItem key={level.value} value={String(level.value)}>
-                            {level.value} - {level.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

@@ -72,7 +72,7 @@ export const UserAvatarOnlyByUserId: React.FC<{ userId: number }> = ({ userId })
   }
 
   const user = data as User;
-  const avatar = (user.profile as Profile).avatar as Media;
+  const avatar = (user.profile as Profile)?.avatar as Media;
 
   return <UserAvatar avatar={avatar} />;
 };
@@ -95,7 +95,7 @@ export const UserAvatarByUserId: React.FC<{ userId: number }> = ({ userId }) => 
   }
 
   const user = data as User;
-  const avatar = (user.profile as Profile).avatar as Media;
+  const avatar = (user.profile as Profile)?.avatar as Media;
 
   return (
     <div className="flex gap-2">

@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 interface Props {
-  teamId: string;
+  teamId: number;
 }
 
 const schema = zod.object({
@@ -30,7 +30,10 @@ const schema = zod.object({
 });
 
 const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, children }) => {
-  const [skills] = api.skill.getSkills.useSuspenseQuery();
+  const [skills] = api.skill.getSkills.useSuspenseQuery({
+    page: 1,
+    limit: 50,
+  });
   const [teamSkills] = api.team.getTeamSkills.useSuspenseQuery(Number(teamId));
   const [open, setOpen] = useState(false);
   const updateTeamSkillsMutation = api.team.updateTeamSkills.useMutation();

@@ -18,7 +18,7 @@ import { api, HydrateClient } from '@/trpc/server';
 const Profile: React.FC = async () => {
   void api.skill.getSkills.prefetch({
     page: 1,
-    limit: 100,
+    limit: 50,
   });
 
   void api.category.getCategories.prefetch({});

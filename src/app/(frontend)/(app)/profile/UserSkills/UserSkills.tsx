@@ -15,7 +15,7 @@ const UserSkills: React.FC = () => {
   const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery({});
   const [{ docs: skills }] = api.skill.getSkills.useSuspenseQuery({
     page: 1,
-    limit: 100,
+    limit: 50,
   });
   const [{ docs: userSkillsData }] = api.me.userSkill.useSuspenseQuery();
   const utils = api.useUtils();

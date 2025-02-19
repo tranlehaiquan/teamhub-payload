@@ -291,7 +291,7 @@ export const meRouter = createTRPCRouter({
             user: {
               equals: userId,
             },
-            skill: {
+            id: {
               equals: id,
             },
           },

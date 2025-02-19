@@ -2,9 +2,10 @@ import { z } from 'zod';
 
 import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { categories, teams_users, users } from '@/payload-generated-schema';
+import { categories, teams_users, users, users_skills } from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
 import { Skill, User } from '@/payload-types';
+import { inArray } from '@payloadcms/db-postgres/drizzle';
 
 export const teamRouter = createTRPCRouter({
   getTeams: isAuthedProcedure
@@ -75,7 +76,35 @@ export const teamRouter = createTRPCRouter({
       .leftJoin(users, eq(teams_users.user, users.id))
       .where(eq(teams_users.team, teamId));
 
-    return teamUsersResults;
+    const teamMemberIds = teamUsersResults.map((teamMember) => (teamMember.user as User).id);
+
+    // get the skills of the team members
+    const userSkills = await payload.db.drizzle
+      .select({
+        id: users_skills.id,
+        user: users_skills.user,
+        skill: users_skills.skill,
+        currentLevel: users_skills.currentLevel,
+      })
+      .from(users_skills)
+      .where(inArray(users_skills.user, teamMemberIds));
+
+    const teamUsersResultsWithSkills = teamUsersResults.map((teamUser) => {
+      const user = teamUser.user as User;
+      const userSkill = userSkills.filter((userSkill) => userSkill.user === user.id) as {
+        id: number;
+        user: number;
+        skill: number;
+        currentLevel: string | null;
+      }[];
+
+      return {
+        ...teamUser,
+        userSkills: userSkill,
+      };
+    });
+
+    return teamUsersResultsWithSkills;
   }),
 
   removeTeamMember: isAuthedProcedure
@@ -246,4 +275,43 @@ export const teamRouter = createTRPCRouter({
 
     return teamRequirements;
   }),
+
+  updateUserSkills: isAuthedProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.number().optional(),
+          user: z.number(),
+          skill: z.number(),
+          currentLevel: z.number().nullable(),
+        }),
+      ),
+    )
+    .mutation(async ({ input }) => {
+      const payload = await getPayloadFromConfig();
+      const newUserSkillsUpdate = input.filter((userSkill) => !userSkill.id);
+      const userSkillsUpdate = input.filter((userSkill) => userSkill.id) as {
+        id: number;
+        user: number;
+        skill: number;
+        currentLevel: number;
+      }[];
+
+      const newUserSkills = newUserSkillsUpdate.map(async (userSkill) => {
+        await payload.create({
+          collection: 'users_skills',
+          data: userSkill,
+        });
+      });
+
+      const updateUserSkills = userSkillsUpdate.map(async (userSkillUpdate) => {
+        return await payload.update({
+          collection: 'users_skills',
+          id: userSkillUpdate.id,
+          data: userSkillUpdate,
+        });
+      });
+
+      return await Promise.all([...newUserSkills, ...updateUserSkills]);
+    }),
 });
