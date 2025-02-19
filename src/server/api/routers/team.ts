@@ -4,7 +4,7 @@ import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/ap
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { categories, teams_users, users } from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
-import { User } from '@/payload-types';
+import { Skill, User } from '@/payload-types';
 
 export const teamRouter = createTRPCRouter({
   getTeams: isAuthedProcedure
@@ -179,6 +179,51 @@ export const teamRouter = createTRPCRouter({
 
     return teamSkills;
   }),
+
+  updateTeamSkills: isAuthedProcedure
+    .input(z.object({ teamId: z.number(), skills: z.array(z.number()) }))
+    .mutation(async ({ input }) => {
+      const { teamId, skills } = input;
+      const payload = await getPayloadFromConfig();
+
+      const currentTeamSkills = await payload.find({
+        collection: 'team_skills',
+        where: {
+          team: {
+            equals: teamId,
+          },
+        },
+      });
+
+      // diff the skills
+      const skillsToRemove = currentTeamSkills.docs.filter(
+        (teamSkill) => !skills.includes((teamSkill.skill as Skill).id),
+      );
+
+      const skillsToAdd = skills.filter(
+        (skill) =>
+          !currentTeamSkills.docs.some((teamSkill) => (teamSkill.skill as Skill).id === skill),
+      );
+
+      const removeSkills = skillsToRemove.map(async (teamSkill) => {
+        return await payload.delete({
+          collection: 'team_skills',
+          id: teamSkill.id,
+        });
+      });
+
+      const addSkills = skillsToAdd.map(async (skillId) => {
+        return await payload.create({
+          collection: 'team_skills',
+          data: {
+            team: teamId,
+            skill: skillId,
+          },
+        });
+      });
+
+      return await Promise.all([...removeSkills, ...addSkills]);
+    }),
 
   getTeamRequirement: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
     const teamId = input;

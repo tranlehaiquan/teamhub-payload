@@ -14,6 +14,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { groupBy } from 'lodash';
+import TeamSkillsMatrix from '@/components/team-skills-matrix';
+import DialogTeamSkills from './DialogTeamSkills';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   className?: string;
@@ -55,8 +58,8 @@ const GroupSkillsByCategory = ({
 const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [team] = api.team.getTeamById.useSuspenseQuery(Number(teamId));
   const [teamSkills] = api.team.getTeamSkills.useSuspenseQuery(Number(teamId));
-  const [teamRequirements] = api.team.getTeamRequirement.useSuspenseQuery(Number(teamId));
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(Number(teamId));
+  // const [teamRequirements] = api.team.getTeamRequirement.useSuspenseQuery(Number(teamId));
 
   const categories = uniqBy(
     teamSkills.docs.map((teamSkill) => (teamSkill.skill as Skill).category as Category),
@@ -64,7 +67,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   );
   const groupSkillsByCategory = groupBy(
     teamSkills.docs,
-    (teamSkill) => ((teamSkill.skill as Skill).category as Category).id,
+    (teamSkill) => ((teamSkill.skill as Skill)?.category as Category)?.id,
   );
 
   const users = teamMembers.map((teamMember) => teamMember.user as User);
@@ -75,13 +78,16 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
 
       <SectionCard title="todo" className="mb-4">
         <ul>
-          <li>Team Config, update team skills</li>
           <li>Find way to show team requirements</li>
         </ul>
       </SectionCard>
 
       <div className="grid gap-4">
         <SectionCard title="Skills">
+          <DialogTeamSkills teamId={teamId}>
+            <Button className="btn">Update team skills</Button>
+          </DialogTeamSkills>
+
           <Table>
             <TableHeader>
               <TableRow>
@@ -111,6 +117,8 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
           </Table>
         </SectionCard>
       </div>
+
+      <TeamSkillsMatrix teamId={teamId} className="mt-4" />
     </div>
   );
 };
