@@ -155,7 +155,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
               <TableRow>
                 <TableHead></TableHead>
                 {users.map((user) => (
-                  <TableHead key={user.id} title={user.email} className="w-[250px]">
+                  <TableHead key={user.id} title={user.email} className="w-[250px] py-2">
                     <div className="flex items-center flex-col gap-1">
                       <UserAvatarOnlyByUserId userId={user.id} />
                       <p className="text-sm">{user.email}</p>

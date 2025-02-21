@@ -11,6 +11,7 @@ const Layout = async ({
   void api.team.getTeamById.prefetch(Number(teamId));
   void api.team.getTeamSkills.prefetch(Number(teamId));
   void api.team.getTeamRequirement.prefetch(Number(teamId));
+  void api.team.getTeamMembers.prefetch(Number(teamId));
 
   return <HydrateClient>{children}</HydrateClient>;
 };

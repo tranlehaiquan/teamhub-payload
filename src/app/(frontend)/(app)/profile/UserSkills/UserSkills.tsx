@@ -29,8 +29,10 @@ const UserSkills: React.FC = () => {
   const handleRemoveSkill = async (skillId: number) => {
     await removeCurrentUserSkillMutation.mutateAsync(skillId);
     toast.success('Skill removed successfully');
+
     utils.me.userSkill.invalidate();
     utils.me.getCertificates.invalidate();
+    utils.team.getTeamMembers.reset();
   };
 
   return (
