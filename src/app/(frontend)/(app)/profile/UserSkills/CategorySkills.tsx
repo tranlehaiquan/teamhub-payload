@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Pen, XIcon } from 'lucide-react';
 import { api } from '@/trpc/react';
 import DialogUpdateUserSkill from './DialogUpdateUserSkill';
+import { getLevelOption } from '@/components/LevelSkillSelection/LevelSkillSelection';
 
 interface CategorySkillsProps {
   categoryId: string;
@@ -72,10 +73,10 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
                 <p>{(userSkill.skill as Skill).name}</p>
               </TableCell>
               <TableCell className="text-center">
-                <p>{userSkill.currentLevel || '---'}</p>
+                <p>{getLevelOption(userSkill?.currentLevel)?.label || '---'}</p>
               </TableCell>
               <TableCell className="text-center">
-                <p>{userSkill.desiredLevel || '---'}</p>
+                <p>{getLevelOption(userSkill?.desiredLevel)?.label || '---'}</p>
               </TableCell>
               <TableCell className="text-center">
                 <p>---</p>

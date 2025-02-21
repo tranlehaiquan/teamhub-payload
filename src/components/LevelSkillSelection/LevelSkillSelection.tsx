@@ -24,7 +24,11 @@ const getColorForSkillLevel = (level?: number) => {
   return currentOption ? currentOption.color : '';
 };
 
-const skillLevelOptions = [
+export const getLevelOption = (level?: number | null) => {
+  return skillLevelOptions.find((option) => option.value === level);
+};
+
+export const skillLevelOptions = [
   {
     value: 1,
     label: 'Novice',
