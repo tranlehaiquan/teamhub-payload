@@ -58,16 +58,24 @@ const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, ch
 
   const handleSubmit = formMethods.handleSubmit(async (data) => {
     const skills = data.skills.map((skill) => skill.value);
+    const removeSkills = teamSkills.docs
+      .filter((teamSkill) => !skills.includes((teamSkill.skill as Skill).id))
+      .map((teamSkill) => teamSkill.id);
+    const addSkills = skills.filter(
+      (skill) => !teamSkills.docs.some((teamSkill) => (teamSkill.skill as Skill).id === skill),
+    );
 
     try {
       await updateTeamSkillsMutation.mutateAsync({
         teamId: Number(teamId),
-        skills,
+        remove: removeSkills,
+        add: addSkills,
       });
 
       await utils.team.getTeamSkills.invalidate(Number(teamId));
 
       toast.success('Team skills updated');
+      setOpen(false);
     } catch {
       toast.error('Failed to update team skills');
     }
@@ -88,6 +96,7 @@ const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, ch
           onChange={(value) => {
             formMethods.setValue('skills', [...value]);
           }}
+          isDisabled={updateTeamSkillsMutation.isPending}
         />
 
         <Button

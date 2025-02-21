@@ -210,38 +210,25 @@ export const teamRouter = createTRPCRouter({
   }),
 
   updateTeamSkills: isAuthedProcedure
-    .input(z.object({ teamId: z.number(), skills: z.array(z.number()) }))
+    .input(
+      z.object({
+        teamId: z.number(),
+        remove: z.array(z.number()).optional(),
+        add: z.array(z.number()).optional(),
+      }),
+    )
     .mutation(async ({ input }) => {
-      const { teamId, skills } = input;
+      const { teamId, remove, add } = input;
       const payload = await getPayloadFromConfig();
 
-      const currentTeamSkills = await payload.find({
-        collection: 'team_skills',
-        where: {
-          team: {
-            equals: teamId,
-          },
-        },
-      });
-
-      // diff the skills
-      const skillsToRemove = currentTeamSkills.docs.filter(
-        (teamSkill) => !skills.includes((teamSkill.skill as Skill).id),
-      );
-
-      const skillsToAdd = skills.filter(
-        (skill) =>
-          !currentTeamSkills.docs.some((teamSkill) => (teamSkill.skill as Skill).id === skill),
-      );
-
-      const removeSkills = skillsToRemove.map(async (teamSkill) => {
+      const removeSkills = (remove || []).map(async (teamSkill) => {
         return await payload.delete({
           collection: 'team_skills',
-          id: teamSkill.id,
+          id: teamSkill,
         });
       });
 
-      const addSkills = skillsToAdd.map(async (skillId) => {
+      const addSkills = (add || []).map(async (skillId) => {
         return await payload.create({
           collection: 'team_skills',
           data: {
