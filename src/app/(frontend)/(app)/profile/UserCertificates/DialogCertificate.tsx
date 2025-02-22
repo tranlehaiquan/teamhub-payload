@@ -30,21 +30,33 @@ interface Props {
   className?: string;
 }
 
-const zSchema = zod.object({
-  name: zod.string().nonempty({
-    message: 'Name is required',
-  }),
-  issuingOrganization: zod.string().min(1, {
-    message: 'Issuing organization is required',
-  }),
-  deliveryDate: zod.date().optional().nullable(),
-  expiryDate: zod.date().optional().nullable(),
-  skill: zod
-    .number({
+const zSchema = zod
+  .object({
+    name: zod.string().nonempty({
+      message: 'Name is required',
+    }),
+    issuingOrganization: zod.string().min(1, {
+      message: 'Issuing organization is required',
+    }),
+    deliveryDate: zod.date().optional().nullable().optional(),
+    expiryDate: zod.date().optional().nullable().optional(),
+    skill: zod.number({
       message: 'Skill is required',
-    })
-    .nullable(),
-});
+    }),
+  })
+  .refine(
+    (data) => {
+      if (data.deliveryDate && data.expiryDate && data.expiryDate < data.deliveryDate) {
+        return false;
+      }
+
+      return true;
+    },
+    {
+      path: ['expiryDate'],
+      message: 'Expiry date must great than delivery date',
+    },
+  );
 
 const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
   const utils = api.useUtils();
@@ -56,7 +68,6 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
       deliveryDate: null,
       expiryDate: null,
       issuingOrganization: '',
-      skill: null,
     },
   });
   const addCertificateMutation = api.me.addCertificate.useMutation();
@@ -75,6 +86,7 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
       utils.me.getCertificates.invalidate();
       toast.success('Certificate added');
       setOpen(false);
+      form.reset();
     } catch {
       toast.error('Failed to add certificate');
     }
@@ -197,7 +209,9 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
               />
             </FormItem>
 
-            <Button type="submit">Save</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              Save
+            </Button>
           </form>
         </Form>
       </DialogContent>

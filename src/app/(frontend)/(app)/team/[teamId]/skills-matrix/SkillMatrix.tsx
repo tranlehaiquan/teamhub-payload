@@ -179,16 +179,16 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
             </TableBody>
           </Table>
 
-          <div className="flex gap-2 justify-end">
+          <div className="flex gap-2 justify-end mt-2">
             <Button
               variant={'outline'}
-              disabled={userSkillsUpdate.length === 0 || updateUserSkills.isPending}
+              disabled={!userSkillsUpdate.length || updateUserSkills.isPending}
               onClick={handleCancel}
             >
               Cancel
             </Button>
             <Button
-              disabled={userSkillsUpdate.length === 0 || updateUserSkills.isPending}
+              disabled={!userSkillsUpdate.length || updateUserSkills.isPending}
               onClick={handleSubmit}
             >
               Submit

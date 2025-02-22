@@ -4,6 +4,7 @@ import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile, Team } from '@/payload-types';
 import { unionBy } from 'lodash';
+import { users_skills } from '@/payload-generated-schema';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -213,19 +214,13 @@ export const meRouter = createTRPCRouter({
     const payload = await getPayloadFromConfig();
     const skills = input;
 
-    // TODO: consider insert with drizzle (N + 1)
     try {
-      await Promise.all(
-        skills.map(async (skill) =>
-          payload.create({
-            collection: 'users_skills',
-            data: {
-              user: userId,
-              skill: skill,
-            },
-          }),
-        ),
-      );
+      const newUserSkills = skills.map((skill) => ({
+        user: userId,
+        skill: skill,
+      }));
+
+      await payload.db.drizzle.insert(users_skills).values(newUserSkills);
 
       return {
         success: true,

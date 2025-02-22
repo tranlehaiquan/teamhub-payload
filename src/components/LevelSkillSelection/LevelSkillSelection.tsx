@@ -13,6 +13,7 @@ interface Props {
   level?: number;
   onChange: (newLevel: number) => void;
   disabled?: boolean;
+  // clearable?: boolean;
 }
 
 const getColorForSkillLevel = (level?: number) => {

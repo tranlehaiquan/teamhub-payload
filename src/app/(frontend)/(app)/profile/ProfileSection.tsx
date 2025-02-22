@@ -35,7 +35,6 @@ const ProfileSection: React.FC = () => {
           </Link>
         </div>
       </SectionCard>
-
       <SectionCard>
         <div className="grid grid-cols-3 gap-4 text-center h-full">
           <div className="flex flex-col items-center justify-center">

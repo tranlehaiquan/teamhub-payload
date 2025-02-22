@@ -63,7 +63,9 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
                   key={skill.id}
                   id={String(skill.id)}
                   label={skill?.name}
-                  disabled={disabledSkillIds.includes(skill.id)}
+                  disabled={
+                    disabledSkillIds.includes(skill.id) || addCurrentUserSkillsMutation.isPending
+                  }
                   checked={checkedSkillIds.includes(skill.id) || selectedSkills.includes(skill.id)}
                   onCheckedChange={() => handleOnCheck(skill.id)}
                 />
@@ -72,7 +74,10 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
           </div>
         ))}
 
-        <Button onClick={handleSubmit} disabled={!selectedSkills.length}>
+        <Button
+          onClick={handleSubmit}
+          disabled={!selectedSkills.length || addCurrentUserSkillsMutation.isPending}
+        >
           <Plus />
           Add Skill
         </Button>
