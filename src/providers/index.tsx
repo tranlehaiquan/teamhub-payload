@@ -1,21 +1,18 @@
 import React from 'react';
 
-import { HeaderThemeProvider } from './HeaderTheme';
-import { ThemeProvider } from './Theme';
 import { TRPCReactProvider } from '@/trpc/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ThemeProvider } from './NextTheme/theme-provider';
 
 export const Providers: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   return (
-    <ThemeProvider>
-      <HeaderThemeProvider>
-        <TRPCReactProvider>
-          {children}
-          <ReactQueryDevtools initialIsOpen={false} />
-        </TRPCReactProvider>
-      </HeaderThemeProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <TRPCReactProvider>
+        {children}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </TRPCReactProvider>
     </ThemeProvider>
   );
 };

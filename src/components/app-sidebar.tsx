@@ -7,6 +7,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import { NavTeamActions } from './nav-team-action';
 import { api } from '@/trpc/react';
+import { ModeToggle } from '@/providers/NextTheme/theme-toggle';
 
 const data = {
   main: [
@@ -50,6 +51,8 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
+        <ModeToggle />
+
         <React.Suspense fallback="loading...">
           <NavUser user={user} />
         </React.Suspense>

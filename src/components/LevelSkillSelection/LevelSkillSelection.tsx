@@ -60,12 +60,16 @@ const LevelSkillSelection: React.FC<Props> = ({ level, onChange, disabled }) => 
       onValueChange={(newLevel) => onChange(Number(newLevel))}
       disabled={disabled}
     >
-      <SelectTrigger className={cn('w-full', getColorForSkillLevel(level))}>
+      <SelectTrigger className={cn('w-full dark:text-black', getColorForSkillLevel(level))}>
         <SelectValue placeholder="Select level" />
       </SelectTrigger>
       <SelectContent>
         {skillLevelOptions.map(({ value, label }) => (
-          <SelectItem key={value} value={String(value)} className={getColorForSkillLevel(value)}>
+          <SelectItem
+            key={value}
+            value={String(value)}
+            className={cn(getColorForSkillLevel(value), 'dark:text-black')}
+          >
             {value} - {label}
           </SelectItem>
         ))}
