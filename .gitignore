@@ -16,3 +16,5 @@ data
 .env.development
 .env.production
 .env.test
+
+.turbo
