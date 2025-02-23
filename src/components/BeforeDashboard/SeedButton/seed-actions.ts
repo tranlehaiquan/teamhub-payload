@@ -129,9 +129,50 @@ const skills = [
   },
 ];
 
+const levels = [
+  {
+    id: '67badef6d6bcff5d9b16240a',
+    name: 'Novice',
+    description: 'Novice',
+    level: 1,
+    levelColor: '#ffc9c9',
+  },
+
+  {
+    id: '67badf394b9bc0ca4ddddaa8',
+    name: 'Intermediate',
+    description: 'Intermediate',
+    level: 2,
+    levelColor: '#fff085',
+  },
+
+  {
+    id: '67bae4f1c29fb0e3abe854dd',
+    name: 'Advanced',
+    description: 'Advanced',
+    level: 3,
+    levelColor: '#b9f8cf',
+  },
+
+  {
+    id: '67bae517c29fb0e3abe854df',
+    name: 'Expert',
+    description: 'Expert',
+    level: 4,
+    levelColor: '#05df72',
+  },
+];
+
 const seed = async ({ payload, req }: { payload: BasePayload; req: PayloadRequest }) => {
   payload.logger.info('Seeding database...');
   payload.logger.info(`— Clearing collections and globals...`);
+  await payload.updateGlobal({
+    slug: 'levels',
+    data: {
+      items: levels,
+    },
+  });
+
   payload.logger.info(`— Seeding demo author and user...`);
   await Promise.all(
     users.map((user) => payload.create({ collection: 'users', data: user as any, req })),
