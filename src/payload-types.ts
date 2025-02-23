@@ -119,8 +119,12 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    levels: Level;
+  };
+  globalsSelect: {
+    levels: LevelsSelect<false> | LevelsSelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -1097,6 +1101,40 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "levels".
+ */
+export interface Level {
+  id: number;
+  items: {
+    name: string;
+    description: string;
+    level: number;
+    levelColor: string;
+    id?: string | null;
+  }[];
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "levels_select".
+ */
+export interface LevelsSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+        level?: T;
+        levelColor?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
