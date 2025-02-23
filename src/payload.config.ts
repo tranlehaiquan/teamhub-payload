@@ -21,6 +21,7 @@ import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-node
 import { Team_Skills } from './collections/Team_Skills';
 import { Team_Requirements } from './collections/Team_Requirements';
 import { Levels } from './globalConfigs/Levels/levels';
+import { migrations } from './migrations';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -73,6 +74,7 @@ export default buildConfig({
         return schema;
       },
     ],
+    prodMigrations: migrations,
   }),
   collections: [
     Media,
