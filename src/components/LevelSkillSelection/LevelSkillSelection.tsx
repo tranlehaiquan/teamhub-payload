@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import {
   Select,
@@ -7,70 +8,41 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/utilities/cn';
+import { Level } from '@/payload-types';
+import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
   level?: number;
   onChange: (newLevel: number) => void;
   disabled?: boolean;
-  // clearable?: boolean;
+  options: Level['items'];
 }
 
-const getColorForSkillLevel = (level?: number) => {
-  if (level === undefined) {
-    return '';
-  }
+const LevelSkillSelection: React.FC<Props> = ({ level, onChange, disabled, options }) => {
+  const currentOption = options.find((option) => option.level === level);
 
-  const currentOption = skillLevelOptions.find((option) => option.value === level);
-  return currentOption ? currentOption.color : '';
-};
-
-export const getLevelOption = (level?: number | null) => {
-  return skillLevelOptions.find((option) => option.value === level);
-};
-
-export const skillLevelOptions = [
-  {
-    value: 1,
-    label: 'Novice',
-    color: 'bg-red-200 hover:bg-red-200',
-  },
-  {
-    value: 2,
-    label: 'Intermediate',
-    color: 'bg-yellow-200 hover:bg-yellow-200',
-  },
-  {
-    value: 3,
-    label: 'Advanced',
-    color: 'bg-green-200 hover:bg-green-200',
-  },
-  {
-    value: 4,
-    label: 'Expert',
-    color: 'bg-green-400 hover:bg-green-400',
-  },
-];
-
-const LevelSkillSelection: React.FC<Props> = ({ level, onChange, disabled }) => {
-  const currentOption = skillLevelOptions.find((option) => option.value === level);
   return (
     <Select
-      value={(currentOption ? String(currentOption.value) : null) as any}
+      value={(currentOption ? String(currentOption.level) : null) as any}
       onValueChange={(newLevel) => onChange(Number(newLevel))}
       disabled={disabled}
     >
-      <SelectTrigger className={cn('w-full dark:text-black', getColorForSkillLevel(level))}>
+      <SelectTrigger
+        className={cn('w-full dark:text-black')}
+        style={{ backgroundColor: currentOption?.levelColor }}
+      >
         <SelectValue placeholder="Select level" />
       </SelectTrigger>
       <SelectContent>
-        {skillLevelOptions.map(({ value, label }) => (
+        {options.map(({ id, level, name, levelColor }) => (
           <SelectItem
-            key={value}
-            value={String(value)}
-            className={cn(getColorForSkillLevel(value), 'dark:text-black')}
+            key={id}
+            value={String(level)}
+            className={cn('dark:text-black')}
+            style={{ backgroundColor: levelColor }}
           >
-            {value} - {label}
+            {level} - {name}
           </SelectItem>
         ))}
       </SelectContent>
@@ -78,4 +50,21 @@ const LevelSkillSelection: React.FC<Props> = ({ level, onChange, disabled }) => 
   );
 };
 
-export default LevelSkillSelection;
+const LevelSkillSelectionGlobal: React.FC<Omit<Props, 'options'>> = ({
+  level,
+  onChange,
+  disabled,
+}) => {
+  const [data] = api.global.getLevels.useSuspenseQuery();
+
+  return (
+    <LevelSkillSelection
+      level={level}
+      onChange={onChange}
+      disabled={disabled}
+      options={data.items}
+    />
+  );
+};
+
+export default LevelSkillSelectionGlobal;

@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import { Pen, XIcon } from 'lucide-react';
 import { api } from '@/trpc/react';
 import DialogUpdateUserSkill from './DialogUpdateUserSkill';
-import { getLevelOption } from '@/components/LevelSkillSelection/LevelSkillSelection';
 
 interface CategorySkillsProps {
   categoryId: string;
@@ -33,6 +32,11 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
   const category = categories.find((s) => s.id === Number(categoryId));
   const selectedUserSkill = userSkills.find((s) => s.id === openUpdateDialog);
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
+  const [globalLevels] = api.global.getLevels.useSuspenseQuery();
+
+  const getLevelOption = (level?: number | null) => {
+    return globalLevels.items.find((i) => i.level === level);
+  };
 
   const certificatesByUserSkillId = certificates.reduce((acc, certificate) => {
     const userSkills = certificate.userSkills as UsersSkill[];
@@ -73,10 +77,10 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
                 <p>{(userSkill.skill as Skill).name}</p>
               </TableCell>
               <TableCell className="text-center">
-                <p>{getLevelOption(userSkill?.currentLevel)?.label || '---'}</p>
+                <p>{getLevelOption(userSkill?.currentLevel)?.name || '---'}</p>
               </TableCell>
               <TableCell className="text-center">
-                <p>{getLevelOption(userSkill?.desiredLevel)?.label || '---'}</p>
+                <p>{getLevelOption(userSkill?.desiredLevel)?.name || '---'}</p>
               </TableCell>
               <TableCell className="text-center">
                 <p>---</p>

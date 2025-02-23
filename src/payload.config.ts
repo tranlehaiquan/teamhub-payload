@@ -1,6 +1,5 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres';
-
 import sharp from 'sharp'; // sharp-import
 import path from 'path';
 import { buildConfig } from 'payload';
@@ -21,6 +20,7 @@ import { Teams_Users } from './collections/Teams_Users';
 import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-nodemailer';
 import { Team_Skills } from './collections/Team_Skills';
 import { Team_Requirements } from './collections/Team_Requirements';
+import { Levels } from './globalConfigs/Levels/levels';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -55,28 +55,6 @@ export default buildConfig({
     components: {
       beforeDashboard: ['@/components/BeforeDashboard'],
     },
-    // livePreview: {
-    //   breakpoints: [
-    //     {
-    //       label: 'Mobile',
-    //       name: 'mobile',
-    //       width: 375,
-    //       height: 667,
-    //     },
-    //     {
-    //       label: 'Tablet',
-    //       name: 'tablet',
-    //       width: 768,
-    //       height: 1024,
-    //     },
-    //     {
-    //       label: 'Desktop',
-    //       name: 'desktop',
-    //       width: 1440,
-    //       height: 900,
-    //     },
-    //   ],
-    // },
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
@@ -123,4 +101,5 @@ export default buildConfig({
     disable: true,
     disablePlaygroundInProduction: true,
   },
+  globals: [Levels],
 });
