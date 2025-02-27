@@ -14,6 +14,7 @@ import { User } from '@/payload-types';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/utilities/cn';
+import { useDebounce } from '@/utilities/useDebounce';
 
 interface Props {
   className?: string;
@@ -25,6 +26,8 @@ const DialogTransferOwner: React.FC<React.PropsWithChildren<Props>> = ({ childre
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const params = useParams();
   const router = useRouter();
+
+  const debouncedQuery = useDebounce(query, 500);
 
   const transferTeamOwnership = api.team.transferTeamOwnership.useMutation({
     onSuccess: () => {
@@ -38,8 +41,8 @@ const DialogTransferOwner: React.FC<React.PropsWithChildren<Props>> = ({ childre
   });
 
   const { data: searchUsers, isLoading } = api.user.getUsers.useQuery(
-    { email: query },
-    { enabled: !!query },
+    { email: debouncedQuery },
+    { enabled: !!debouncedQuery },
   );
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
