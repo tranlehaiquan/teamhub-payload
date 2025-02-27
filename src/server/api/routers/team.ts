@@ -301,4 +301,52 @@ export const teamRouter = createTRPCRouter({
 
       return await Promise.all([...newUserSkills, ...updateUserSkills]);
     }),
+
+  transferTeamOwnership: isAuthedProcedure
+    .input(
+      z.object({
+        teamId: z.number(),
+        newOwnerId: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const payload = await getPayloadFromConfig();
+      const me = ctx.user;
+
+      if (!me) {
+        throw new Error('Unauthorized');
+      }
+
+      const { teamId, newOwnerId } = input;
+      const currentUserId = me.user.id;
+
+      // Verify current user is the team owner
+      const team = await payload.findByID({
+        collection: 'teams',
+        id: teamId,
+      });
+
+      if (!team || (team.owner as User).id !== currentUserId) {
+        throw new Error('Unauthorized: Only team owner can transfer ownership');
+      }
+
+      // Verify new owner exists
+      const newOwner = await payload.findByID({
+        collection: 'users',
+        id: newOwnerId,
+      });
+
+      if (!newOwner) {
+        throw new Error('New owner not found');
+      }
+
+      // Transfer ownership
+      return await payload.update({
+        collection: 'teams',
+        id: teamId,
+        data: {
+          owner: newOwnerId,
+        },
+      });
+    }),
 });

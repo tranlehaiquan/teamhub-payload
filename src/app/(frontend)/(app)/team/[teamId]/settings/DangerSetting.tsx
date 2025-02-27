@@ -6,6 +6,7 @@ import { api } from '@/trpc/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import SectionCard from '@/components/SectionCard/SectionCard';
+import DialogTransferOwner from './DialogTransferOwner';
 
 type DangerSettingProps = {
   teamId: string;
@@ -39,9 +40,11 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
   return (
     <SectionCard title="Danger zone">
       <div>
-        <Button variant="outline" className="block mb-4">
-          Transfer owner
-        </Button>
+        <DialogTransferOwner>
+          <Button variant="outline" className="block mb-4">
+            Transfer owner
+          </Button>
+        </DialogTransferOwner>
 
         <ConfirmDialog
           title="Delete team"

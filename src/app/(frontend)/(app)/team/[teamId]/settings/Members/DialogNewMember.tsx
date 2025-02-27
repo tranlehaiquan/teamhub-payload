@@ -89,7 +89,7 @@ const DialogNewMember: React.FC<DialogNewMemberProps> = ({ children, teamId, mem
                   <Button
                     className={cn(
                       'block w-full text-left',
-                      members?.includes(user.id) && 'bg-gray-100 opacity-50',
+                      members?.includes(user.id) && 'opacity-50',
                     )}
                     variant={'ghost'}
                     onClick={() => {
