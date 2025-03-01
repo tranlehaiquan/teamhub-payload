@@ -29,16 +29,27 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { api } from '@/trpc/react';
+import { useDebounce, useDebounceCallBack } from '@/utilities/useDebounce';
 import { columns } from './columns';
 
 const UsersTable: React.FC = () => {
-  const [{ docs: users = [] }] = api.user.getUsers.useSuspenseQuery({});
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [search, setSearch] = React.useState('');
+  const debouncedSearch = useDebounce(search, 500);
+  const [{ docs: users = [], page, hasNextPage, totalPages }] = api.user.getUsers.useSuspenseQuery({
+    page: currentPage,
+    email: debouncedSearch,
+  });
+
+  const handleSearch = useDebounceCallBack((input: string) => {
+    setSearch(input);
+    setCurrentPage(1);
+  }, 500);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState('');
 
   const table = useReactTable({
     data: users,
@@ -48,29 +59,41 @@ const UsersTable: React.FC = () => {
       columnFilters,
       columnVisibility,
       rowSelection,
-      globalFilter,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
+    manualPagination: true,
+    pageCount: page,
   });
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   return (
     <div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Search all columns..."
-          value={globalFilter ?? ''}
-          onChange={(event) => setGlobalFilter(event.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
           className="max-w-sm"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -119,23 +142,24 @@ const UsersTable: React.FC = () => {
           ))}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleNextPage} disabled={!hasNextPage}>
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

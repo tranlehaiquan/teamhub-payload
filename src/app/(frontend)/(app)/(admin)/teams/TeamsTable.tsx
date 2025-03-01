@@ -19,13 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { User } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { columns } from './columns';
 import { Input } from '@/components/ui/input';
 
 const TeamsTable: React.FC = () => {
-  const [{ docs: teams = [] }] = api.team.findTeams.useSuspenseQuery({});
+  const [page, setPage] = React.useState(1);
+  const [{ docs: teams = [] }] = api.team.findTeams.useSuspenseQuery({
+    page,
+  });
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

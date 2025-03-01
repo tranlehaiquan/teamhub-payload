@@ -13,10 +13,9 @@ import { Button } from '@/components/ui/button';
 import UsersTable from './UsersTable';
 import DialogNewUser from './DialogNewUser';
 import { api, HydrateClient } from '@/trpc/server';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const PageUsers = async () => {
-  // TODO: integrate pagination
-  // Data table https://ui.shadcn.com/docs/components/data-table
   void api.user.getUsers.prefetch({});
 
   return (
@@ -48,7 +47,17 @@ const PageUsers = async () => {
           </DialogNewUser>
         </div>
 
-        <UsersTable />
+        <React.Suspense
+          fallback={
+            <div className="space-y-4">
+              <Skeleton className="h-8" />
+              <Skeleton className="h-8" />
+              <Skeleton className="h-8" />
+            </div>
+          }
+        >
+          <UsersTable />
+        </React.Suspense>
       </div>
     </HydrateClient>
   );
