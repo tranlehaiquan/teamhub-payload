@@ -8,7 +8,7 @@ import React from 'react';
 import { Providers } from '@/providers';
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph';
 import { Toaster } from '@/components/ui/sonner';
-
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import { getServerSideURL } from '@/utilities/getURL';
 
@@ -22,6 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <Providers>{children}</Providers>
         <Toaster />
+        <SpeedInsights />
       </body>
     </html>
   );
