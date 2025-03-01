@@ -252,9 +252,10 @@ export interface Category {
   id: number;
   title: string;
   skills?: {
-    docs?: (number | Skill)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
+    docs?: (number | Skill)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   parent?: (number | null) | Category;
   breadcrumbs?:
     | {
@@ -276,9 +277,10 @@ export interface Skill {
   name: string;
   description?: string | null;
   relatedUsers?: {
-    docs?: (number | UsersSkill)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
+    docs?: (number | UsersSkill)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   category?: (number | null) | Category;
   updatedAt: string;
   createdAt: string;
@@ -304,13 +306,15 @@ export interface User {
   id: number;
   name?: string | null;
   relatedSkills?: {
-    docs?: (number | UsersSkill)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
+    docs?: (number | UsersSkill)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   certificates?: {
-    docs?: (number | Certificate)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
+    docs?: (number | Certificate)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   roles?: ('admin' | 'editor')[] | null;
   profile?: (number | null) | Profile;
   updatedAt: string;
@@ -363,9 +367,10 @@ export interface Team {
   description?: string | null;
   owner: number | User;
   members?: {
-    docs?: (number | TeamsUser)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
+    docs?: (number | TeamsUser)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }

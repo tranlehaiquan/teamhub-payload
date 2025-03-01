@@ -15,7 +15,7 @@ import TeamsTable from './TeamsTable';
 import { api, HydrateClient } from '@/trpc/server';
 
 const PageTeams = async () => {
-  void api.team.getTeams.prefetch({});
+  void api.team.findTeams.prefetch({});
 
   return (
     <HydrateClient>

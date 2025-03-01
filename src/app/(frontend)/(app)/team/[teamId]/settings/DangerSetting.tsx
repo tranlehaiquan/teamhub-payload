@@ -23,11 +23,9 @@ const DangerSetting: React.FC<DangerSettingProps> = ({ teamId }) => {
   const handleOnDelete = async () => {
     try {
       await deleteTeamMutation.mutateAsync(Number(teamId));
-
       toast.success('Team deleted successfully');
-
-      await utils.me.getTeams.invalidate();
       router.push('/');
+      await utils.me.getTeams.invalidate();
     } catch {
       toast.error('Failed to delete team');
     }

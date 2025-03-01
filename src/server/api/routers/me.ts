@@ -47,10 +47,11 @@ export const meRouter = createTRPCRouter({
       },
       populate: {},
     });
+
     const teamsIsMember = unionBy(
-      [...teamUsers.docs.map((teamUser) => teamUser.team), ...teamsOwned.docs],
+      teamUsers.docs.map((teamUser) => teamUser.team as Team).concat(teamsOwned.docs),
       'id',
-    );
+    ).filter((team) => team.id);
 
     return teamsIsMember as Team[];
   }),

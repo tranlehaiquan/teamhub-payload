@@ -2,13 +2,13 @@ import { z } from 'zod';
 
 import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { categories, teams_users, users, users_skills } from '@/payload-generated-schema';
+import { teams_users, users, users_skills } from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
-import { Skill, User } from '@/payload-types';
+import { User } from '@/payload-types';
 import { inArray } from '@payloadcms/db-postgres/drizzle';
 
 export const teamRouter = createTRPCRouter({
-  getTeams: isAuthedProcedure
+  findTeams: isAuthedProcedure
     .input(
       z.object({
         page: z.number().optional().default(1),
@@ -154,10 +154,65 @@ export const teamRouter = createTRPCRouter({
       throw new Error('Team not found');
     }
 
-    return await payload.delete({
+    const transactionID = (await payload.db.beginTransaction()) as string;
+    console.log('transactionID', transactionID);
+
+    // TODO: soft delete?
+    const deleteTeamSkills = payload.delete({
+      collection: 'team_skills',
+      where: {
+        team: {
+          equals: teamId,
+        },
+      },
+      req: {
+        transactionID,
+      },
+    });
+
+    const deleteTeamRequirements = payload.delete({
+      collection: 'team_requirements',
+      where: {
+        team: {
+          equals: teamId,
+        },
+      },
+      req: {
+        transactionID,
+      },
+    });
+
+    // teams_users
+    const deleteTeamUsers = payload.delete({
+      collection: 'teams_users',
+      where: {
+        team: {
+          equals: teamId,
+        },
+      },
+      req: {
+        transactionID,
+      },
+    });
+
+    const deleteTeam = payload.delete({
       collection: 'teams',
       id: teamId,
+      req: {
+        transactionID,
+      },
     });
+
+    const result = await Promise.all([
+      deleteTeamSkills,
+      deleteTeamRequirements,
+      deleteTeamUsers,
+      deleteTeam,
+    ]);
+
+    await payload.db.commitTransaction(transactionID);
+
+    return result;
   }),
 
   createTeam: adminProcedure
