@@ -13,6 +13,7 @@ export const teamRouter = createTRPCRouter({
       z.object({
         page: z.number().optional().default(1),
         limit: z.number().optional().default(10),
+        name: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
@@ -22,6 +23,11 @@ export const teamRouter = createTRPCRouter({
         collection: 'teams',
         limit,
         page,
+        where: {
+          name: {
+            contains: input.name,
+          },
+        },
       });
 
       return teams;

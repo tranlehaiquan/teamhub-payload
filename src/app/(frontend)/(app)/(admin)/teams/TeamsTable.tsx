@@ -22,12 +22,21 @@ import {
 import { api } from '@/trpc/react';
 import { columns } from './columns';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useDebounceCallBack } from '@/utilities/useDebounce';
 
 const TeamsTable: React.FC = () => {
-  const [page, setPage] = React.useState(1);
-  const [{ docs: teams = [] }] = api.team.findTeams.useSuspenseQuery({
-    page,
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [search, setSearch] = React.useState('');
+  const [{ docs: teams = [], hasNextPage, totalPages }] = api.team.findTeams.useSuspenseQuery({
+    page: currentPage,
+    name: search,
   });
+
+  const handleSearch = useDebounceCallBack((input: string) => {
+    setSearch(input);
+    setCurrentPage(1);
+  }, 500);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -50,15 +59,27 @@ const TeamsTable: React.FC = () => {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
   });
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   return (
     <div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Search all columns..."
-          value={globalFilter ?? ''}
-          onChange={(event) => setGlobalFilter(event.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
           className="max-w-sm"
         />
       </div>
@@ -90,6 +111,25 @@ const TeamsTable: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleNextPage} disabled={!hasNextPage}>
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
