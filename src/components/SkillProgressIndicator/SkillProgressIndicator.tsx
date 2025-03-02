@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -76,7 +77,6 @@ const SkillProgressIndicator: React.FC<Props> = ({ levels, current, desired, onS
           >
             {current ? current : '-'}
           </div>
-
           {!!desired && (
             <>
               <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -88,7 +88,6 @@ const SkillProgressIndicator: React.FC<Props> = ({ levels, current, desired, onS
               </div>
             </>
           )}
-
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
         </div>
       </DialogTrigger>
