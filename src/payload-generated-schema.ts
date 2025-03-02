@@ -1031,6 +1031,34 @@ export const payload_migrations = pgTable(
   }),
 );
 
+export const levels_items = pgTable(
+  'levels_items',
+  {
+    _order: integer('_order').notNull(),
+    _parentID: integer('_parent_id').notNull(),
+    id: varchar('id').primaryKey(),
+    name: varchar('name').notNull(),
+    description: varchar('description').notNull(),
+    level: numeric('level').notNull(),
+    levelColor: varchar('level_color').notNull(),
+  },
+  (columns) => ({
+    _orderIdx: index('levels_items_order_idx').on(columns._order),
+    _parentIDIdx: index('levels_items_parent_id_idx').on(columns._parentID),
+    _parentIDFk: foreignKey({
+      columns: [columns['_parentID']],
+      foreignColumns: [levels.id],
+      name: 'levels_items_parent_id_fk',
+    }).onDelete('cascade'),
+  }),
+);
+
+export const levels = pgTable('levels', {
+  id: serial('id').primaryKey(),
+  updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 }),
+  createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 }),
+});
+
 export const relations_media = relations(media, () => ({}));
 export const relations_categories_breadcrumbs = relations(categories_breadcrumbs, ({ one }) => ({
   _parentID: one(categories, {
@@ -1401,6 +1429,18 @@ export const relations_payload_preferences = relations(payload_preferences, ({ m
   }),
 }));
 export const relations_payload_migrations = relations(payload_migrations, () => ({}));
+export const relations_levels_items = relations(levels_items, ({ one }) => ({
+  _parentID: one(levels, {
+    fields: [levels_items._parentID],
+    references: [levels.id],
+    relationName: 'items',
+  }),
+}));
+export const relations_levels = relations(levels, ({ many }) => ({
+  items: many(levels_items, {
+    relationName: 'items',
+  }),
+}));
 
 type DatabaseSchema = {
   enum_users_roles: typeof enum_users_roles;
@@ -1438,6 +1478,8 @@ type DatabaseSchema = {
   payload_preferences: typeof payload_preferences;
   payload_preferences_rels: typeof payload_preferences_rels;
   payload_migrations: typeof payload_migrations;
+  levels_items: typeof levels_items;
+  levels: typeof levels;
   relations_media: typeof relations_media;
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs;
   relations_categories: typeof relations_categories;
@@ -1471,6 +1513,8 @@ type DatabaseSchema = {
   relations_payload_preferences_rels: typeof relations_payload_preferences_rels;
   relations_payload_preferences: typeof relations_payload_preferences;
   relations_payload_migrations: typeof relations_payload_migrations;
+  relations_levels_items: typeof relations_levels_items;
+  relations_levels: typeof relations_levels;
 };
 
 declare module '@payloadcms/db-postgres/types' {

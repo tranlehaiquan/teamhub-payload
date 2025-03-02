@@ -1,10 +1,11 @@
 'use client';
 import React from 'react';
-import { Category, Skill, TeamSkill } from '@/payload-types';
+import { Category, Skill, TeamSkill, UsersSkill } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { groupBy, isUndefined } from 'lodash';
-import LevelSkillSelection from '@/components/LevelSkillSelection/LevelSkillSelection';
+import SkillProgressIndicator from '@/components/SkillProgressIndicator/SkillProgressIndicator';
+import { toast } from 'sonner';
 
 const GroupHeader = ({ name }: { name: string }) => (
   <TableRow className="bg-gray-100 dark:bg-gray-700">
@@ -19,49 +20,69 @@ export const GroupSkillsByCategory = ({
   category,
   teamId,
   userSkills,
-  onUpdateUserSkillLevel,
 }: {
   teamSkills: TeamSkill[];
   category: Category;
   teamId: number;
-  onUpdateUserSkillLevel: (input: {
-    id: number | string | undefined;
-    user: number;
-    skill: number;
-    currentLevel: string | null;
-  }) => void;
   userSkills: {
     id: number | string;
     user: number;
     skill: number;
-    currentLevel: string | null;
+    currentLevel: number | null;
+    desiredLevel: number | null;
   }[];
 }) => {
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
   const userSKillsByUserId = groupBy(userSkills, 'user');
+  const [levels] = api.global.getLevels.useSuspenseQuery();
+  const utils = api.useUtils();
+  const updateUserSkills = api.team.updateUserSkills.useMutation();
 
-  const getUserSkillLevel = (userId: number, skillId: number) => {
+  const getUserSkill = (userId: number, skillId: number) => {
     const userSkills = userSKillsByUserId[userId];
-    const currentLevel = userSkills?.find((userSkill) => userSkill.skill === skillId)?.currentLevel;
+    const userSkill = userSkills?.find((userSkill) => userSkill.skill === skillId);
 
-    if (isUndefined(currentLevel)) {
+    if (isUndefined(userSkill)) {
       return undefined;
     }
 
-    return currentLevel ? Number(currentLevel) : undefined;
+    return {
+      id: userSkill.id,
+      skill: userSkill.skill,
+      current: userSkill.currentLevel,
+      desired: userSkill.desiredLevel,
+    };
   };
 
-  const handleUpdateSkillLevel = async (user: number, skill: number, currentLevel: number) => {
-    const userSkillsId = userSkills.find((userSkill) => {
-      return userSkill.user === user && userSkill.skill === skill;
-    })?.id;
+  const handleUpdateTeamUserSkills = async ({
+    id,
+    current,
+    desired,
+    skill,
+    user,
+  }: {
+    id: number | undefined;
+    skill: number;
+    user: number;
+    current: number | null;
+    desired: number | null;
+  }) => {
+    try {
+      await updateUserSkills.mutateAsync([
+        {
+          id,
+          skill,
+          user,
+          currentLevel: current,
+          desiredLevel: desired,
+        },
+      ]);
 
-    onUpdateUserSkillLevel({
-      id: userSkillsId,
-      user,
-      skill,
-      currentLevel: String(currentLevel),
-    });
+      await utils.team.getTeamUserSkills.invalidate(teamId);
+      toast.success('Skill updated');
+    } catch (error) {
+      toast.error('Failed to update');
+    }
   };
 
   return (
@@ -73,17 +94,20 @@ export const GroupSkillsByCategory = ({
           <TableCell>{(skill as Skill).name}</TableCell>
           {teamMembers.map((teamMember) => (
             <TableCell key={teamMember.id} className="text-center">
-              <LevelSkillSelection
-                level={getUserSkillLevel(
-                  teamMember.user?.id as number,
-                  (skill as Skill).id as number,
-                )}
-                onChange={(level) => {
-                  handleUpdateSkillLevel(
-                    teamMember.user?.id as number,
-                    (skill as Skill).id as number,
-                    level,
-                  );
+              <SkillProgressIndicator
+                levels={levels}
+                {...getUserSkill(teamMember.user.id, (skill as Skill).id)}
+                onSubmit={async (current, desired) => {
+                  const userId = teamMember.user.id as number;
+                  const userSkill = getUserSkill(userId, (skill as Skill).id);
+
+                  await handleUpdateTeamUserSkills({
+                    id: userSkill?.id as number | undefined,
+                    skill: (skill as Skill).id,
+                    user: userId,
+                    current,
+                    desired,
+                  });
                 }}
               />
             </TableCell>

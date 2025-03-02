@@ -113,9 +113,11 @@
   "packageManager": "pnpm@10.4.1",
   "pnpm": {
     "ignoredBuiltDependencies": [
+      "@vercel/speed-insights",
       "sharp"
     ],
     "onlyBuiltDependencies": [
+      "@vercel/speed-insights",
       "esbuild"
     ]
   }
