@@ -93,6 +93,11 @@ export const GroupSkillsByCategory = ({
       {teamSkills.map(({ skill }) => (
         <TableRow key={(skill as Skill).id} className="group">
           <TableCell>{(skill as Skill).name}</TableCell>
+
+          {/* requirements */}
+          <TableCell className="text-center">-</TableCell>
+
+          {/* User skill */}
           {teamMembers.map((teamMember) => {
             const userId = teamMember.user.id as number;
             const userSkill = getUserSkill(userId, (skill as Skill).id);

@@ -24,6 +24,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [teamUserSkills] = api.team.getTeamUserSkills.useSuspenseQuery(teamId);
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const userSkills = teamUserSkills.flatMap((teamMember) => teamMember.userSkills);
+  const [teamRequirements] = api.team.getTeamRequirements.useSuspenseQuery(teamId);
 
   const categories = uniqBy(
     teamSkills.docs.map((teamSkill) => (teamSkill.skill as Skill).category as Category),
@@ -66,6 +67,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
             <TableHeader>
               <TableRow>
                 <TableHead></TableHead>
+                <TableHead className="w-[250px] text-center">Requirements</TableHead>
                 {users.map((user) => (
                   <TableHead key={user.id} title={user.email} className="w-[250px] py-2">
                     <div className="flex items-center flex-col gap-1">

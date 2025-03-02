@@ -13,7 +13,7 @@ const SkillLevelLegend: React.FC<Props> = ({ levels, className }) => {
         {levels.items.map((level) => (
           <div key={level.id} className="flex items-center gap-2">
             <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center`}
+              className={`w-6 h-6 rounded-full flex items-center justify-center dark:text-black`}
               style={{ backgroundColor: level.levelColor }}
             >
               {level.level}

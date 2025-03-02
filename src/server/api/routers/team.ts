@@ -328,7 +328,7 @@ export const teamRouter = createTRPCRouter({
       return await Promise.all([...removeSkills, ...addSkills]);
     }),
 
-  getTeamRequirement: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+  getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
     const teamId = input;
     const payload = await getPayloadFromConfig();
     const teamRequirements = await payload.find({
@@ -342,7 +342,6 @@ export const teamRouter = createTRPCRouter({
         teams: {}, // this make team only return { id }
         skills: {
           name: true,
-          category: true,
         },
       },
     });
