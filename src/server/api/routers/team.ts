@@ -82,7 +82,16 @@ export const teamRouter = createTRPCRouter({
       .leftJoin(users, eq(teams_users.user, users.id))
       .where(eq(teams_users.team, teamId));
 
-    return teamUsersResults;
+    return teamUsersResults as {
+      id: number;
+      team: number | null;
+      user: {
+        name: string | null;
+        id: number;
+        email: string;
+        profile: number | null;
+      };
+    }[];
   }),
 
   getTeamUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
@@ -113,12 +122,13 @@ export const teamRouter = createTRPCRouter({
 
     const teamUsersResultsWithSkills = teamUsersResults.map((teamUser) => {
       const user = teamUser.user;
-      const userSkill = userSkills.filter((userSkill) => userSkill.user === user) as {
-        id: number;
-        user: number;
-        skill: number;
-        currentLevel: number | null;
-      }[];
+      const userSkill = userSkills
+        .filter((userSkill) => userSkill.user === user)
+        .map((userSkill) => ({
+          ...userSkill,
+          currentLevel: userSkill.currentLevel ? Number(userSkill.currentLevel) : undefined,
+          desiredLevel: userSkill.desiredLevel ? Number(userSkill.desiredLevel) : undefined,
+        }));
 
       return {
         ...teamUser,
@@ -348,12 +358,13 @@ export const teamRouter = createTRPCRouter({
           user: z.number(),
           skill: z.number(),
           currentLevel: z.number().nullable(),
+          desiredLevel: z.number().nullable(),
         }),
       ),
     )
     .mutation(async ({ input }) => {
       const payload = await getPayloadFromConfig();
-      const newUserSkillsUpdate = input.filter((userSkill) => !userSkill.id);
+      const newUserSkills = input.filter((userSkill) => !userSkill.id);
       const userSkillsUpdate = input.filter((userSkill) => userSkill.id) as {
         id: number;
         user: number;
@@ -361,14 +372,19 @@ export const teamRouter = createTRPCRouter({
         currentLevel: number;
       }[];
 
-      const newUserSkills = newUserSkillsUpdate.map(async (userSkill) => {
+      const newUserSkillsRs = newUserSkills.map(async (userSkill) => {
         await payload.create({
           collection: 'users_skills',
-          data: userSkill,
+          data: {
+            user: userSkill.user,
+            skill: userSkill.skill,
+            currentLevel: userSkill.currentLevel,
+            desiredLevel: userSkill.desiredLevel,
+          },
         });
       });
 
-      const updateUserSkills = userSkillsUpdate.map(async (userSkillUpdate) => {
+      const updateUserSkillsRs = userSkillsUpdate.map(async (userSkillUpdate) => {
         return await payload.update({
           collection: 'users_skills',
           id: userSkillUpdate.id,
@@ -376,7 +392,7 @@ export const teamRouter = createTRPCRouter({
         });
       });
 
-      return await Promise.all([...newUserSkills, ...updateUserSkills]);
+      return await Promise.all([...newUserSkillsRs, ...updateUserSkillsRs]);
     }),
 
   transferTeamOwnership: isAuthedProcedure

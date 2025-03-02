@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { UserAvatarOnlyByUserId } from '@/components/UserProfile/UserAvatar';
 import { Category, Skill, User } from '@/payload-types';
@@ -10,7 +10,6 @@ import groupBy from 'lodash/groupBy';
 import DialogTeamSkills from './DialogTeamSkills';
 import { Button } from '@/components/ui/button';
 import { GroupSkillsByCategory } from './GroupSkillsByCategory';
-import { toast } from 'sonner';
 import SkillLevelLegend from '@/components/SkillLevelLegend/SkillLevelLegend';
 
 interface Props {
@@ -25,11 +24,6 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [teamUserSkills] = api.team.getTeamUserSkills.useSuspenseQuery(teamId);
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const userSkills = teamUserSkills.flatMap((teamMember) => teamMember.userSkills);
-  const [userSkillsUpdate, setUserSkillsDataUpdate] = useState<
-    { id: number | string; user: number; skill: number; currentLevel: number | null }[]
-  >([]);
-  const updateUserSkills = api.team.updateUserSkills.useMutation();
-  const utils = api.useUtils();
 
   const categories = uniqBy(
     teamSkills.docs.map((teamSkill) => (teamSkill.skill as Skill).category as Category),
@@ -41,101 +35,13 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   );
   const users = teamMembers.map((teamMember) => teamMember.user as User);
 
-  const handleOnUpdateUserSkillLevel = (input: {
+  const mergedUserSkills = userSkills as {
     id: number | string;
     user: number;
     skill: number;
     currentLevel: number | null;
-  }) => {
-    const isNewUserSKill = !input.id;
-    if (isNewUserSKill) {
-      const newId = `new-${userSkillsUpdate.length}`;
-      const newInput = { ...input, id: newId };
-      const newUserSkillsUpdate = [...userSkillsUpdate, newInput];
-      setUserSkillsDataUpdate(newUserSkillsUpdate);
-      return;
-    }
-
-    const isInUpdateList = userSkillsUpdate.some(
-      (userSkillUpdate) => userSkillUpdate.id === input.id,
-    );
-
-    if (!isInUpdateList) {
-      setUserSkillsDataUpdate([...userSkillsUpdate, input]);
-      return;
-    }
-
-    const newUserSkillsUpdate = userSkillsUpdate.map((userSkillUpdate) => {
-      if (userSkillUpdate.id === input.id) {
-        return input;
-      }
-
-      return userSkillUpdate;
-    });
-
-    setUserSkillsDataUpdate(newUserSkillsUpdate);
-  };
-
-  // merge userSkillsData with userSkills
-  const mergedUserSkills = [...userSkills] as {
-    id: number | string;
-    user: number;
-    skill: number;
-    currentLevel: number | null;
+    desiredLevel: number | null;
   }[];
-
-  userSkillsUpdate.forEach((userSkillUpdate) => {
-    const userSkillIndex = mergedUserSkills.findIndex(
-      (userSkill) =>
-        userSkill.user === userSkillUpdate.user && userSkill.skill === userSkillUpdate.skill,
-    );
-
-    if (userSkillIndex === -1) {
-      mergedUserSkills.push(userSkillUpdate);
-      return;
-    }
-
-    mergedUserSkills[userSkillIndex] = userSkillUpdate;
-  });
-
-  const handleCancel = () => {
-    setUserSkillsDataUpdate([]);
-  };
-
-  const handleSubmit = async () => {
-    const data = userSkillsUpdate.map((item) => {
-      if (typeof item.id === 'string') {
-        return {
-          id: undefined,
-          user: item.user,
-          skill: item.skill,
-          currentLevel: Number(item.currentLevel),
-        };
-      }
-
-      return {
-        id: item.id,
-        user: item.user,
-        skill: item.skill,
-        currentLevel: item.currentLevel ? Number(item.currentLevel) : null,
-      };
-    }) as {
-      id: undefined | number;
-      user: number;
-      skill: number;
-      currentLevel: number | null;
-    }[];
-
-    try {
-      await updateUserSkills.mutateAsync(data);
-      await utils.team.getTeamMembers.invalidate(teamId);
-      setUserSkillsDataUpdate([]);
-
-      toast.success('User skills updated');
-    } catch {
-      toast.error('Failed to update user skills');
-    }
-  };
 
   return (
     <div className="p-4">
@@ -155,8 +61,6 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
               <Button className="btn">Update team skills</Button>
             </DialogTeamSkills>
           </div>
-
-          {JSON.stringify(teamUserSkills)}
 
           <Table>
             <TableHeader>
@@ -181,27 +85,10 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
                   teamSkills={groupSkillsByCategory[category.id]}
                   teamId={teamId}
                   userSkills={mergedUserSkills}
-                  onUpdateUserSkillLevel={handleOnUpdateUserSkillLevel}
                 />
               ))}
             </TableBody>
           </Table>
-
-          <div className="flex gap-2 justify-end mt-2">
-            <Button
-              variant={'outline'}
-              disabled={!userSkillsUpdate.length || updateUserSkills.isPending}
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={!userSkillsUpdate.length || updateUserSkills.isPending}
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
-          </div>
         </SectionCard>
       </div>
     </div>

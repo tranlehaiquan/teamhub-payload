@@ -13,7 +13,7 @@ import { api } from '@/trpc/react';
 
 interface Props {
   className?: string;
-  level?: number;
+  level?: number | null;
   onChange: (newLevel: number) => void;
   disabled?: boolean;
   options: Level['items'];
