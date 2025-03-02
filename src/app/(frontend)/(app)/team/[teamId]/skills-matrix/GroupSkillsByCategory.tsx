@@ -6,6 +6,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { groupBy, isUndefined } from 'lodash';
 import SkillProgressIndicator from '@/components/SkillProgressIndicator/SkillProgressIndicator';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const GroupHeader = ({ name }: { name: string }) => (
   <TableRow className="bg-gray-100 dark:bg-gray-700">
@@ -90,28 +91,45 @@ export const GroupSkillsByCategory = ({
       <GroupHeader name={category.title} />
 
       {teamSkills.map(({ skill }) => (
-        <TableRow key={(skill as Skill).id}>
+        <TableRow key={(skill as Skill).id} className="group">
           <TableCell>{(skill as Skill).name}</TableCell>
-          {teamMembers.map((teamMember) => (
-            <TableCell key={teamMember.id} className="text-center">
-              <SkillProgressIndicator
-                levels={levels}
-                {...getUserSkill(teamMember.user.id, (skill as Skill).id)}
-                onSubmit={async (current, desired) => {
-                  const userId = teamMember.user.id as number;
-                  const userSkill = getUserSkill(userId, (skill as Skill).id);
+          {teamMembers.map((teamMember) => {
+            const userId = teamMember.user.id as number;
+            const userSkill = getUserSkill(userId, (skill as Skill).id);
 
-                  await handleUpdateTeamUserSkills({
-                    id: userSkill?.id as number | undefined,
-                    skill: (skill as Skill).id,
-                    user: userId,
-                    current,
-                    desired,
-                  });
-                }}
-              />
-            </TableCell>
-          ))}
+            return (
+              <TableCell key={teamMember.id} className="text-center">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="inline-block">
+                        <SkillProgressIndicator
+                          levels={levels}
+                          {...getUserSkill(teamMember.user.id, (skill as Skill).id)}
+                          onSubmit={async (current, desired) => {
+                            await handleUpdateTeamUserSkills({
+                              id: userSkill?.id as number | undefined,
+                              skill: (skill as Skill).id,
+                              user: userId,
+                              current,
+                              desired,
+                            });
+                          }}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-sm">
+                        <div className="font-semibold">{(skill as Skill).name}</div>
+                        <div>Current: {userSkill?.current || '-'}</div>
+                        <div>Desired: {userSkill?.desired || '-'}</div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+            );
+          })}
         </TableRow>
       ))}
     </>

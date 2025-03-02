@@ -55,7 +55,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
 
       <div className="grid gap-4">
         <SectionCard title="Skills">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center mb-2">
             <SkillLevelLegend levels={levels} />
             <DialogTeamSkills teamId={teamId}>
               <Button className="btn">Update team skills</Button>
