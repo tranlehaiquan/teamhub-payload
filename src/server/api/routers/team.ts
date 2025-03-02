@@ -82,26 +82,42 @@ export const teamRouter = createTRPCRouter({
       .leftJoin(users, eq(teams_users.user, users.id))
       .where(eq(teams_users.team, teamId));
 
-    const teamMemberIds = teamUsersResults.map((teamMember) => (teamMember.user as User).id);
+    return teamUsersResults;
+  }),
 
-    // get the skills of the team members
+  getTeamUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+    const payload = await getPayloadFromConfig();
+    const teamId = input;
+
+    const teamUsersResults = await payload.db.drizzle
+      .select({
+        id: teams_users.id,
+        team: teams_users.team,
+        user: teams_users.user,
+      })
+      .from(teams_users)
+      .leftJoin(users, eq(teams_users.user, users.id))
+      .where(eq(teams_users.team, teamId));
+
+    const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
     const userSkills = await payload.db.drizzle
       .select({
         id: users_skills.id,
         user: users_skills.user,
         skill: users_skills.skill,
         currentLevel: users_skills.currentLevel,
+        desiredLevel: users_skills.desiredLevel,
       })
       .from(users_skills)
       .where(inArray(users_skills.user, teamMemberIds));
 
     const teamUsersResultsWithSkills = teamUsersResults.map((teamUser) => {
-      const user = teamUser.user as User;
-      const userSkill = userSkills.filter((userSkill) => userSkill.user === user.id) as {
+      const user = teamUser.user;
+      const userSkill = userSkills.filter((userSkill) => userSkill.user === user) as {
         id: number;
         user: number;
         skill: number;
-        currentLevel: string | null;
+        currentLevel: number | null;
       }[];
 
       return {

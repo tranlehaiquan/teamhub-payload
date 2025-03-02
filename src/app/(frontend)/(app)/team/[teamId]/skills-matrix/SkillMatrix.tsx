@@ -11,6 +11,7 @@ import DialogTeamSkills from './DialogTeamSkills';
 import { Button } from '@/components/ui/button';
 import { GroupSkillsByCategory } from './GroupSkillsByCategory';
 import { toast } from 'sonner';
+import SkillLevelLegend from '@/components/SkillLevelLegend/SkillLevelLegend';
 
 interface Props {
   className?: string;
@@ -21,9 +22,11 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [team] = api.team.getTeamById.useSuspenseQuery(teamId);
   const [teamSkills] = api.team.getTeamSkills.useSuspenseQuery(teamId);
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
-  const userSkills = teamMembers.flatMap((teamMember) => teamMember.userSkills);
+  const [teamUserSkills] = api.team.getTeamUserSkills.useSuspenseQuery(teamId);
+  const [levels] = api.global.getLevels.useSuspenseQuery();
+  const userSkills = teamUserSkills.flatMap((teamMember) => teamMember.userSkills);
   const [userSkillsUpdate, setUserSkillsDataUpdate] = useState<
-    { id: number | string; user: number; skill: number; currentLevel: string | null }[]
+    { id: number | string; user: number; skill: number; currentLevel: number | null }[]
   >([]);
   const updateUserSkills = api.team.updateUserSkills.useMutation();
   const utils = api.useUtils();
@@ -42,7 +45,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
     id: number | string;
     user: number;
     skill: number;
-    currentLevel: string | null;
+    currentLevel: number | null;
   }) => {
     const isNewUserSKill = !input.id;
     if (isNewUserSKill) {
@@ -78,7 +81,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
     id: number | string;
     user: number;
     skill: number;
-    currentLevel: string | null;
+    currentLevel: number | null;
   }[];
 
   userSkillsUpdate.forEach((userSkillUpdate) => {
@@ -146,9 +149,14 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
 
       <div className="grid gap-4">
         <SectionCard title="Skills">
-          <DialogTeamSkills teamId={teamId}>
-            <Button className="btn">Update team skills</Button>
-          </DialogTeamSkills>
+          <div className="flex justify-between">
+            <SkillLevelLegend levels={levels} />
+            <DialogTeamSkills teamId={teamId}>
+              <Button className="btn">Update team skills</Button>
+            </DialogTeamSkills>
+          </div>
+
+          {JSON.stringify(teamUserSkills)}
 
           <Table>
             <TableHeader>
