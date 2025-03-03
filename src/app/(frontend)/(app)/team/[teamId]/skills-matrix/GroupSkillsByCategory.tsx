@@ -7,6 +7,7 @@ import { groupBy, isUndefined } from 'lodash';
 import SkillProgressIndicator from '@/components/SkillProgressIndicator/SkillProgressIndicator';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import RequirementIndicator from '@/components/RequirementIndicator/RequirementIndicator';
 
 const GroupHeader = ({ name }: { name: string }) => (
   <TableRow className="bg-gray-100 dark:bg-gray-700">
@@ -95,7 +96,11 @@ export const GroupSkillsByCategory = ({
           <TableCell>{(skill as Skill).name}</TableCell>
 
           {/* requirements */}
-          <TableCell className="text-center">-</TableCell>
+          <TableCell>
+            <div className="flex items-center justify-center">
+              <RequirementIndicator skill={(skill as Skill).name} />
+            </div>
+          </TableCell>
 
           {/* User skill */}
           {teamMembers.map((teamMember) => {
