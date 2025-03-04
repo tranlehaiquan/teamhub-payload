@@ -24,7 +24,6 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [teamUserSkills] = api.team.getTeamUserSkills.useSuspenseQuery(teamId);
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const userSkills = teamUserSkills.flatMap((teamMember) => teamMember.userSkills);
-  const [teamRequirements] = api.team.getTeamRequirements.useSuspenseQuery(teamId);
 
   const categories = uniqBy(
     teamSkills.docs.map((teamSkill) => (teamSkill.skill as Skill).category as Category),
