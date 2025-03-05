@@ -57,7 +57,7 @@ export const GroupSkillsByCategory = ({
   };
 
   const getTeamRequirementsBySkillId = (skillId: number) => {
-    const teamRequirementsForSkill = teamRequirements.docs.find(
+    const teamRequirementsForSkill = teamRequirements.docs.filter(
       (teamRequirement) => (teamRequirement.skill as Skill).id === skillId,
     );
 
@@ -96,8 +96,10 @@ export const GroupSkillsByCategory = ({
           <TableCell>{(skill as Skill).name}</TableCell>
           <TableCell>
             <div className="flex items-center justify-center">
-              <RequirementIndicator skill={skill as Skill} />
-              {JSON.stringify(getTeamRequirementsBySkillId((skill as Skill).id))}
+              <RequirementIndicator
+                skill={skill as Skill}
+                teamRequirements={getTeamRequirementsBySkillId((skill as Skill).id)}
+              />
             </div>
           </TableCell>
 

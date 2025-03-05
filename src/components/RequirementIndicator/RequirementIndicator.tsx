@@ -14,16 +14,32 @@ import {
   SelectValue,
   SelectItem,
 } from '@/components/ui/select';
-import { Skill } from '@/payload-types';
+import { Button } from '@/components/ui/button';
+import { Skill, TeamRequirement } from '@/payload-types';
 import { api } from '@/trpc/react';
-import { Edit } from 'lucide-react';
+import { Edit, Plus, Trash } from 'lucide-react';
 import LevelSkillSelection from '../LevelSkillSelection/LevelSkillSelection';
+import { cn } from '@/utilities/cn';
+import z from 'zod';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 type Props = {
   skill: Skill;
+  teamRequirements?: TeamRequirement[];
 };
 
-const RequirementIndicator: React.FC<Props> = ({ skill }) => {
+// Schema list of requirement, each item have desiredLevel, desiredMembers
+const requirementSchema = z.object({
+  desiredLevel: z.number().min(1).max(5),
+  desiredMembers: z.number().min(1).max(10),
+});
+
+const requirementsListSchema = z.object({
+  requirements: z.array(requirementSchema),
+});
+
+const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const requirement = {
     level: 2,
@@ -31,20 +47,41 @@ const RequirementIndicator: React.FC<Props> = ({ skill }) => {
   };
   const level = levels.items.find((level) => level.level === requirement.level);
   const currentCount = 0;
+  const requirementPlaceholder = levels.items.map((level) => ({
+    desiredLevel: level.level,
+    desiredMembers: 0,
+  }));
+
+  const formMethods = useForm({
+    resolver: zodResolver(requirementsListSchema),
+    defaultValues: {
+      requirements: requirementPlaceholder,
+    },
+  });
+
+  const { fields } = useFieldArray({
+    name: 'requirements',
+    control: formMethods.control,
+  });
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+        <div className="flex items-center space-x-2 cursor-pointer p-1 rounded">
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center`}
+            className={cn(
+              `w-6 h-6 rounded-full flex items-center justify-center dark:text-black`,
+              level?.levelColor ?? 'bg-gray-200',
+            )}
             style={{ backgroundColor: level?.levelColor }}
           >
-            {level?.level}
+            {level?.level || '-'}
           </div>
-          <div className="text-sm">
-            <span className="font-medium">{currentCount}</span>/{requirement.required}
-          </div>
+          {teamRequirements && (
+            <div className="text-sm">
+              <span className="font-medium">{currentCount}</span>/{requirement.required}
+            </div>
+          )}
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
         </div>
       </DialogTrigger>
@@ -57,39 +94,42 @@ const RequirementIndicator: React.FC<Props> = ({ skill }) => {
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Required Level</label>
-              <LevelSkillSelection
-                level={levels.items.find((level) => level.level === requirement.level)?.level}
-                onChange={(level) => {
-                  console.log(level);
-                }}
-              />
-            </div>
+          {fields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-[1fr_1fr] gap-4 items-end">
+              <div>
+                <LevelSkillSelection
+                  level={formMethods.watch(`requirements.${index}.desiredLevel`)}
+                  onChange={(level) => {
+                    formMethods.setValue(`requirements.${index}.desiredLevel`, level);
+                  }}
+                  disabled
+                />
+              </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">Required Team Members</label>
-              <Select
-                value={requirement.required.toString()}
-                onValueChange={(value) => {
-                  console.log(value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select number" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SelectItem key={num} value={num.toString()}>
-                      {num}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <Select
+                  value={formMethods.watch(`requirements.${index}.desiredMembers`)?.toString()}
+                  onValueChange={(value) => {
+                    formMethods.setValue(`requirements.${index}.desiredMembers`, Number(value));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select number" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[0, 1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+
+        <Button>Save</Button>
       </DialogContent>
     </Dialog>
   );
