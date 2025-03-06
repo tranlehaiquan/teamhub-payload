@@ -68,20 +68,27 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
     <Dialog>
       <DialogTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer p-1 rounded">
-          <div
-            className={cn(
-              `w-6 h-6 rounded-full flex items-center justify-center dark:text-black`,
-              level?.levelColor ?? 'bg-gray-200',
-            )}
-            style={{ backgroundColor: level?.levelColor }}
-          >
-            {level?.level || '-'}
+          <div className="grid gap-2">
+            {teamRequirements?.map((requirement) => {
+              const level = levels.items.find((level) => level.level === requirement.desiredLevel);
+              return (
+                <div key={requirement.desiredLevel} className="flex items-center space-x-2">
+                  <div
+                    className={cn(
+                      `w-6 h-6 rounded-full flex items-center justify-center dark:text-black`,
+                      level?.levelColor ?? 'bg-gray-200',
+                    )}
+                    style={{ backgroundColor: level?.levelColor }}
+                  >
+                    {level?.level}
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-medium">0</span>/0
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {teamRequirements && (
-            <div className="text-sm">
-              <span className="font-medium">{currentCount}</span>/{requirement.required}
-            </div>
-          )}
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
         </div>
       </DialogTrigger>
