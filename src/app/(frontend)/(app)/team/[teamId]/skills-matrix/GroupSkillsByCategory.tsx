@@ -1,12 +1,20 @@
 'use client';
 import React from 'react';
-import { Category, Skill, TeamSkill, UsersSkill } from '@/payload-types';
+import { Category, Skill, TeamSkill } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { groupBy, isUndefined } from 'lodash';
-import SkillProgressIndicator from '@/components/SkillProgressIndicator/SkillProgressIndicator';
+import { groupBy } from 'lodash';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import RequirementIndicator from '@/components/RequirementIndicator/RequirementIndicator';
+import { TeamMemberSkillCell } from './TeamMemberSkillCell';
+
+type UserSkill = {
+  id: number | string;
+  user: number;
+  skill: number;
+  currentLevel: number | null;
+  desiredLevel: number | null;
+};
 
 const GroupHeader = ({ name }: { name: string }) => (
   <TableRow className="bg-gray-100 dark:bg-gray-700">
@@ -25,34 +33,35 @@ export const GroupSkillsByCategory = ({
   teamSkills: TeamSkill[];
   category: Category;
   teamId: number;
-  userSkills: {
-    id: number | string;
-    user: number;
-    skill: number;
-    currentLevel: number | null;
-    desiredLevel: number | null;
-  }[];
+  userSkills: UserSkill[];
 }) => {
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
-  const userSKillsByUserId = groupBy(userSkills, 'user');
+  const userSkillsByUserId = groupBy(userSkills, 'user');
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const utils = api.useUtils();
   const updateUserSkills = api.team.updateUserSkills.useMutation();
+  const [teamRequirements] = api.team.getTeamRequirements.useSuspenseQuery(teamId);
 
   const getUserSkill = (userId: number, skillId: number) => {
-    const userSkills = userSKillsByUserId[userId];
-    const userSkill = userSkills?.find((userSkill) => userSkill.skill === skillId);
+    const skills = userSkillsByUserId[userId];
+    const skill = skills?.find((s) => s.skill === skillId);
 
-    if (isUndefined(userSkill)) {
-      return undefined;
-    }
+    if (!skill) return undefined;
 
     return {
-      id: userSkill.id,
-      skill: userSkill.skill,
-      current: userSkill.currentLevel,
-      desired: userSkill.desiredLevel,
+      id: skill.id,
+      skill: skill.skill,
+      current: skill.currentLevel,
+      desired: skill.desiredLevel,
     };
+  };
+
+  const getTeamRequirementsBySkillId = (skillId: number) => {
+    const teamRequirementsForSkill = teamRequirements.docs.filter(
+      (teamRequirement) => (teamRequirement.skill as Skill).id === skillId,
+    );
+
+    return teamRequirementsForSkill;
   };
 
   const handleUpdateTeamUserSkills = async ({
@@ -62,7 +71,7 @@ export const GroupSkillsByCategory = ({
     skill,
     user,
   }: {
-    id: number | undefined;
+    id?: number;
     skill: number;
     user: number;
     current: number | null;
@@ -70,18 +79,11 @@ export const GroupSkillsByCategory = ({
   }) => {
     try {
       await updateUserSkills.mutateAsync([
-        {
-          id,
-          skill,
-          user,
-          currentLevel: current,
-          desiredLevel: desired,
-        },
+        { id, skill, user, currentLevel: current, desiredLevel: desired },
       ]);
-
       await utils.team.getTeamUserSkills.invalidate(teamId);
       toast.success('Skill updated');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update');
     }
   };
@@ -89,47 +91,29 @@ export const GroupSkillsByCategory = ({
   return (
     <>
       <GroupHeader name={category.title} />
-
       {teamSkills.map(({ skill }) => (
         <TableRow key={(skill as Skill).id} className="group">
           <TableCell>{(skill as Skill).name}</TableCell>
-          {teamMembers.map((teamMember) => {
-            const userId = teamMember.user.id as number;
-            const userSkill = getUserSkill(userId, (skill as Skill).id);
+          <TableCell>
+            <div className="flex items-center justify-center">
+              <RequirementIndicator
+                skill={skill as Skill}
+                teamRequirements={getTeamRequirementsBySkillId((skill as Skill).id)}
+                teamId={teamId}
+              />
+            </div>
+          </TableCell>
 
-            return (
-              <TableCell key={teamMember.id} className="text-center">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="inline-block">
-                        <SkillProgressIndicator
-                          levels={levels}
-                          {...getUserSkill(teamMember.user.id, (skill as Skill).id)}
-                          onSubmit={async (current, desired) => {
-                            await handleUpdateTeamUserSkills({
-                              id: userSkill?.id as number | undefined,
-                              skill: (skill as Skill).id,
-                              user: userId,
-                              current,
-                              desired,
-                            });
-                          }}
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="text-sm">
-                        <div className="font-semibold">{(skill as Skill).name}</div>
-                        <div>Current: {userSkill?.current || '-'}</div>
-                        <div>Desired: {userSkill?.desired || '-'}</div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </TableCell>
-            );
-          })}
+          {teamMembers.map((teamMember) => (
+            <TeamMemberSkillCell
+              key={teamMember.id}
+              teamMember={teamMember}
+              skill={skill as Skill}
+              userSkill={getUserSkill(teamMember.user.id, (skill as Skill).id)}
+              levels={levels}
+              onUpdateSkill={handleUpdateTeamUserSkills}
+            />
+          ))}
         </TableRow>
       ))}
     </>

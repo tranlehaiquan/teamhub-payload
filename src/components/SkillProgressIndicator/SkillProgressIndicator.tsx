@@ -72,7 +72,7 @@ const SkillProgressIndicator: React.FC<Props> = ({ levels, current, desired, onS
       <DialogTrigger asChild>
         <div className="flex items-center space-x-1 cursor-pointer p-1 justify-center">
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center`}
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-black bg-gray-200`}
             style={{ backgroundColor: currentLevel?.levelColor }}
           >
             {current ? current : '-'}
@@ -81,7 +81,7 @@ const SkillProgressIndicator: React.FC<Props> = ({ levels, current, desired, onS
             <>
               <ChevronRight className="h-4 w-4 text-gray-400" />
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center`}
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-black`}
                 style={{ backgroundColor: desiredLevel?.levelColor }}
               >
                 {desired}

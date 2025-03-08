@@ -66,6 +66,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
             <TableHeader>
               <TableRow>
                 <TableHead></TableHead>
+                <TableHead className="w-[250px] text-center">Requirements</TableHead>
                 {users.map((user) => (
                   <TableHead key={user.id} title={user.email} className="w-[250px] py-2">
                     <div className="flex items-center flex-col gap-1">
