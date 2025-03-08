@@ -34,7 +34,7 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
   const [open, setOpen] = useState(false);
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const utils = api.useUtils();
-  const { formMethods, fields } = useRequirementForm(levels);
+  const { formMethods, fields } = useRequirementForm(levels, teamRequirements || []);
   const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
 
   const updateRequirements = api.team.updateTeamRequirements.useMutation({
