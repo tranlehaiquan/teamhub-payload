@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Level } from '@/payload-types';
+import { Level, TeamRequirement } from '@/payload-types';
 
 const requirementSchema = z.object({
   desiredLevel: z.number().min(1).nullable(),
@@ -14,11 +14,15 @@ export const requirementsListSchema = z.object({
 
 export type RequirementFormData = z.infer<typeof requirementsListSchema>;
 
-export const useRequirementForm = (levels: Level) => {
-  const requirementPlaceholder = levels.items.map((level) => ({
-    desiredLevel: level.level,
-    desiredMembers: 0,
-  }));
+export const useRequirementForm = (levels: Level, teamRequirements: TeamRequirement[]) => {
+  const requirementPlaceholder = levels.items.map((level) => {
+    const teamRequirement = teamRequirements.find((req) => req.desiredLevel === level.level);
+
+    return {
+      desiredLevel: level.level,
+      desiredMembers: teamRequirement?.desiredMembers ?? 0,
+    };
+  });
 
   const formMethods = useForm<RequirementFormData>({
     resolver: zodResolver(requirementsListSchema),
