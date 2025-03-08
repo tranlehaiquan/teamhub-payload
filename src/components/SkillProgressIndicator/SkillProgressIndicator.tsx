@@ -16,8 +16,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import LevelSkillSelectionGlobal from '../LevelSkillSelection/LevelSkillSelection';
-import LevelSlot from '../LevelSlot';
+import LevelSkillSelectionGlobal from '@/components/LevelSkillSelection/LevelSkillSelection';
+import LevelSlot from '@/components/LevelSlot';
 
 interface Props {
   className?: string;

@@ -1,5 +1,5 @@
 import { TeamRequirement, Level, UsersSkill, Skill } from '@/payload-types';
-import LevelSlot from '../LevelSlot';
+import LevelSlot from '@/components/LevelSlot';
 
 type Props = {
   requirements: TeamRequirement[];
