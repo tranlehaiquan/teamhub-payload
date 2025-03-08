@@ -17,40 +17,48 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skill, TeamRequirement } from '@/payload-types';
 import { api } from '@/trpc/react';
-import { Edit, Plus, Trash } from 'lucide-react';
+import { Edit } from 'lucide-react';
 import LevelSkillSelection from '../LevelSkillSelection/LevelSkillSelection';
 import { cn } from '@/utilities/cn';
 import z from 'zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 type Props = {
   skill: Skill;
   teamRequirements?: TeamRequirement[];
+  teamId: number;
 };
 
 // Schema list of requirement, each item have desiredLevel, desiredMembers
 const requirementSchema = z.object({
-  desiredLevel: z.number().min(1).max(5),
-  desiredMembers: z.number().min(1).max(10),
+  desiredLevel: z.number().min(1).nullable(),
+  desiredMembers: z.number().min(0).nullable(),
 });
 
 const requirementsListSchema = z.object({
   requirements: z.array(requirementSchema),
 });
 
-const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
+const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId }) => {
+  const [open, setOpen] = useState(false);
   const [levels] = api.global.getLevels.useSuspenseQuery();
-  const requirement = {
-    level: 2,
-    required: 2,
-  };
-  const level = levels.items.find((level) => level.level === requirement.level);
-  const currentCount = 0;
-  const requirementPlaceholder = levels.items.map((level) => ({
-    desiredLevel: level.level,
-    desiredMembers: 0,
-  }));
+  // sort teamRequirements by desiredLevel
+  const teamRequirementsSorted = teamRequirements?.sort(
+    (a, b) => (a.desiredLevel as number) - (b.desiredLevel as number),
+  );
+  const requirementPlaceholder = levels.items.map((level) => {
+    const teamRequirementsItem = teamRequirementsSorted?.find(
+      (requirement) => requirement.desiredLevel === level.level,
+    );
+
+    return {
+      desiredLevel: level.level,
+      desiredMembers: teamRequirementsItem?.desiredMembers || 0,
+    };
+  });
 
   const formMethods = useForm({
     resolver: zodResolver(requirementsListSchema),
@@ -64,13 +72,35 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
     control: formMethods.control,
   });
 
+  const utils = api.useUtils();
+  const updateRequirements = api.team.updateTeamRequirements.useMutation({
+    onSuccess: () => {
+      utils.team.getTeamRequirements.invalidate();
+      toast.success('Skill requirement updated');
+    },
+    onError: () => {
+      toast.error('Failed to update skill requirement');
+    },
+  });
+
+  const handleOnSubmit = formMethods.handleSubmit((data) => {
+    updateRequirements.mutate({
+      teamId,
+      skillId: skill.id,
+      requirements: data.requirements,
+    });
+
+    setOpen(false);
+  });
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen} aria-label="Update skill requirement">
       <DialogTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer p-1 rounded">
           <div className="grid gap-2">
-            {teamRequirements?.map((requirement) => {
+            {teamRequirementsSorted?.map((requirement) => {
               const level = levels.items.find((level) => level.level === requirement.desiredLevel);
+
               return (
                 <div key={requirement.desiredLevel} className="flex items-center space-x-2">
                   <div
@@ -83,7 +113,7 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
                     {level?.level}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">0</span>/0
+                    <span className="font-medium">0</span>/{requirement.desiredMembers}
                   </div>
                 </div>
               );
@@ -126,7 +156,7 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
                   <SelectContent>
                     {[0, 1, 2, 3, 4, 5].map((num) => (
                       <SelectItem key={num} value={num.toString()}>
-                        {num}
+                        {num.toString()}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -136,7 +166,7 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements }) => {
           ))}
         </div>
 
-        <Button>Save</Button>
+        <Button onClick={handleOnSubmit}>Save</Button>
       </DialogContent>
     </Dialog>
   );

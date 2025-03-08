@@ -441,4 +441,61 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+
+  updateTeamRequirements: isAuthedProcedure
+    .input(
+      z.object({
+        teamId: z.number(),
+        skillId: z.number(),
+        requirements: z.array(
+          z.object({
+            desiredLevel: z.number().nullable(),
+            desiredMembers: z.number().nullable(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const payload = await getPayloadFromConfig();
+      const { teamId, skillId, requirements } = input;
+
+      // Delete existing requirements for this team and skill
+      await payload.delete({
+        collection: 'team_requirements',
+        where: {
+          AND: [
+            {
+              team: {
+                equals: teamId,
+              },
+            },
+            {
+              skill: {
+                equals: skillId,
+              },
+            },
+          ],
+        },
+      });
+
+      // Create new requirements
+      const createRequirements = requirements
+        .filter(
+          (req) =>
+            req.desiredLevel !== null && req.desiredMembers !== null && req.desiredMembers > 0,
+        )
+        .map(async (requirement) => {
+          return await payload.create({
+            collection: 'team_requirements',
+            data: {
+              team: teamId,
+              skill: skillId,
+              desiredLevel: requirement.desiredLevel,
+              desiredMembers: requirement.desiredMembers,
+            },
+          });
+        });
+
+      return await Promise.all(createRequirements);
+    }),
 });

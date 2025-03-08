@@ -99,6 +99,7 @@ export const GroupSkillsByCategory = ({
               <RequirementIndicator
                 skill={skill as Skill}
                 teamRequirements={getTeamRequirementsBySkillId((skill as Skill).id)}
+                teamId={teamId}
               />
             </div>
           </TableCell>
