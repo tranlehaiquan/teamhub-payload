@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Edit } from 'lucide-react';
-import { ChevronRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Level } from '@/payload-types';
 import { Button } from '@/components/ui/button';
 import { z } from 'zod';
@@ -79,7 +79,7 @@ const SkillProgressIndicator: React.FC<Props> = ({ levels, current, desired, onS
           </div>
           {!!desired && (
             <>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <ArrowRight className="h-4 w-4 text-gray-400" />
               <div
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-black`}
                 style={{ backgroundColor: desiredLevel?.levelColor }}

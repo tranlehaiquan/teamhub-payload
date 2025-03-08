@@ -19,12 +19,11 @@ import { Skill, TeamRequirement } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { Edit } from 'lucide-react';
 import LevelSkillSelection from '../LevelSkillSelection/LevelSkillSelection';
-import { cn } from '@/utilities/cn';
 import z from 'zod';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useRequirementForm } from './useRequirementForm';
+import { RequirementDisplay } from './RequirementDisplay';
 
 type Props = {
   skill: Skill;
@@ -32,51 +31,17 @@ type Props = {
   teamId: number;
 };
 
-// Schema list of requirement, each item have desiredLevel, desiredMembers
-const requirementSchema = z.object({
-  desiredLevel: z.number().min(1).nullable(),
-  desiredMembers: z.number().min(0).nullable(),
-});
-
-const requirementsListSchema = z.object({
-  requirements: z.array(requirementSchema),
-});
-
 const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId }) => {
   const [open, setOpen] = useState(false);
   const [levels] = api.global.getLevels.useSuspenseQuery();
-  // sort teamRequirements by desiredLevel
-  const teamRequirementsSorted = teamRequirements?.sort(
-    (a, b) => (a.desiredLevel as number) - (b.desiredLevel as number),
-  );
-  const requirementPlaceholder = levels.items.map((level) => {
-    const teamRequirementsItem = teamRequirementsSorted?.find(
-      (requirement) => requirement.desiredLevel === level.level,
-    );
-
-    return {
-      desiredLevel: level.level,
-      desiredMembers: teamRequirementsItem?.desiredMembers || 0,
-    };
-  });
-
-  const formMethods = useForm({
-    resolver: zodResolver(requirementsListSchema),
-    defaultValues: {
-      requirements: requirementPlaceholder,
-    },
-  });
-
-  const { fields } = useFieldArray({
-    name: 'requirements',
-    control: formMethods.control,
-  });
-
   const utils = api.useUtils();
+  const { formMethods, fields } = useRequirementForm(levels);
+
   const updateRequirements = api.team.updateTeamRequirements.useMutation({
     onSuccess: () => {
       utils.team.getTeamRequirements.invalidate();
       toast.success('Skill requirement updated');
+      setOpen(false);
     },
     onError: () => {
       toast.error('Failed to update skill requirement');
@@ -89,39 +54,19 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
       skillId: skill.id,
       requirements: data.requirements,
     });
-
-    setOpen(false);
   });
 
   return (
     <Dialog open={open} onOpenChange={setOpen} aria-label="Update skill requirement">
       <DialogTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer p-1 rounded">
-          <div className="grid gap-2">
-            {teamRequirementsSorted?.map((requirement) => {
-              const level = levels.items.find((level) => level.level === requirement.desiredLevel);
-
-              return (
-                <div key={requirement.desiredLevel} className="flex items-center space-x-2">
-                  <div
-                    className={cn(
-                      `w-6 h-6 rounded-full flex items-center justify-center dark:text-black`,
-                      level?.levelColor ?? 'bg-gray-200',
-                    )}
-                    style={{ backgroundColor: level?.levelColor }}
-                  >
-                    {level?.level}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">0</span>/{requirement.desiredMembers}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {teamRequirements && (
+            <RequirementDisplay requirements={teamRequirements} levels={levels} />
+          )}
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
         </div>
       </DialogTrigger>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Update Skill Requirement</DialogTitle>
