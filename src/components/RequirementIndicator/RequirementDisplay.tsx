@@ -1,5 +1,5 @@
 import { TeamRequirement, Level, UsersSkill, Skill } from '@/payload-types';
-import { cn } from '@/utilities/cn';
+import LevelSlot from '../LevelSlot';
 
 type Props = {
   requirements: TeamRequirement[];
@@ -22,16 +22,8 @@ export const RequirementDisplay = ({ requirements, levels, userSkills }: Props) 
         );
 
         return (
-          <div key={requirement.desiredLevel} className="flex flex-col text-center">
-            <div
-              className={cn(
-                `w-6 h-6 rounded-full flex items-center justify-center dark:text-black`,
-                level?.levelColor ?? 'bg-gray-200',
-              )}
-              style={{ backgroundColor: level?.levelColor }}
-            >
-              {level?.level}
-            </div>
+          <div key={requirement.desiredLevel} className="flex flex-col text-center gap-1">
+            <LevelSlot level={level} />
             <div className="text-sm">
               <span className="font-medium">{userSkillsMatch.length}</span>/
               {requirement.desiredMembers}

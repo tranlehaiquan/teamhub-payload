@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import LevelSkillSelectionGlobal from '../LevelSkillSelection/LevelSkillSelection';
+import LevelSlot from '../LevelSlot';
 
 interface Props {
   className?: string;
@@ -71,21 +72,11 @@ const SkillProgressIndicator: React.FC<Props> = ({ levels, current, desired, onS
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <div className="flex items-center space-x-1 cursor-pointer p-1 justify-center">
-          <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-black bg-gray-200`}
-            style={{ backgroundColor: currentLevel?.levelColor }}
-          >
-            {current ? current : '-'}
-          </div>
+          <LevelSlot level={currentLevel} />
           {!!desired && (
             <>
               <ArrowRight className="h-4 w-4 text-gray-400" />
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-black`}
-                style={{ backgroundColor: desiredLevel?.levelColor }}
-              >
-                {desired}
-              </div>
+              <LevelSlot level={desiredLevel} />
             </>
           )}
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
