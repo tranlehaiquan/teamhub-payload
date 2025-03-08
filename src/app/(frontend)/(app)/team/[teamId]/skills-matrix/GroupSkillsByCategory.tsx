@@ -81,7 +81,7 @@ export const GroupSkillsByCategory = ({
       await updateUserSkills.mutateAsync([
         { id, skill, user, currentLevel: current, desiredLevel: desired },
       ]);
-      await utils.team.getTeamUserSkills.invalidate(teamId);
+      await utils.team.getUserSkills.invalidate(teamId);
       toast.success('Skill updated');
     } catch {
       toast.error('Failed to update');

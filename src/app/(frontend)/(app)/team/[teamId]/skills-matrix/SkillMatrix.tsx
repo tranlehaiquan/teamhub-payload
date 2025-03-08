@@ -21,9 +21,8 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [team] = api.team.getTeamById.useSuspenseQuery(teamId);
   const [teamSkills] = api.team.getTeamSkills.useSuspenseQuery(teamId);
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
-  const [teamUserSkills] = api.team.getTeamUserSkills.useSuspenseQuery(teamId);
+  const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
   const [levels] = api.global.getLevels.useSuspenseQuery();
-  const userSkills = teamUserSkills.flatMap((teamMember) => teamMember.userSkills);
 
   const categories = uniqBy(
     teamSkills.docs.map((teamSkill) => (teamSkill.skill as Skill).category as Category),
@@ -34,14 +33,6 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
     (teamSkill) => ((teamSkill.skill as Skill)?.category as Category)?.id,
   );
   const users = teamMembers.map((teamMember) => teamMember.user as User);
-
-  const mergedUserSkills = userSkills as {
-    id: number | string;
-    user: number;
-    skill: number;
-    currentLevel: number | null;
-    desiredLevel: number | null;
-  }[];
 
   return (
     <div className="p-4">
@@ -68,7 +59,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
                 <TableHead></TableHead>
                 <TableHead className="w-[250px] text-center">Requirements</TableHead>
                 {users.map((user) => (
-                  <TableHead key={user.id} title={user.email} className="w-[250px] py-2">
+                  <TableHead key={user.id} title={user.email} className="py-2">
                     <div className="flex items-center flex-col gap-1">
                       <UserAvatarOnlyByUserId userId={user.id} />
                       <p className="text-sm">{user.email}</p>
@@ -85,7 +76,8 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
                   category={category}
                   teamSkills={groupSkillsByCategory[category.id]}
                   teamId={teamId}
-                  userSkills={mergedUserSkills}
+                  // TODO: fix this type
+                  userSkills={teamUserSkills as any}
                 />
               ))}
             </TableBody>

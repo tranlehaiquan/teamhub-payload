@@ -19,7 +19,6 @@ import { Skill, TeamRequirement } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { Edit } from 'lucide-react';
 import LevelSkillSelection from '../LevelSkillSelection/LevelSkillSelection';
-import z from 'zod';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRequirementForm } from './useRequirementForm';
@@ -36,6 +35,7 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const utils = api.useUtils();
   const { formMethods, fields } = useRequirementForm(levels);
+  const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
 
   const updateRequirements = api.team.updateTeamRequirements.useMutation({
     onSuccess: () => {

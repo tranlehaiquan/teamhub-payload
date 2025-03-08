@@ -94,7 +94,7 @@ export const teamRouter = createTRPCRouter({
     }[];
   }),
 
-  getTeamUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+  getUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
     const payload = await getPayloadFromConfig();
     const teamId = input;
 
@@ -120,21 +120,20 @@ export const teamRouter = createTRPCRouter({
       .from(users_skills)
       .where(inArray(users_skills.user, teamMemberIds));
 
-    const teamUsersResultsWithSkills = teamUsersResults.map((teamUser) => {
-      const user = teamUser.user;
-      const userSkill = userSkills
-        .filter((userSkill) => userSkill.user === user)
-        .map((userSkill) => ({
-          ...userSkill,
-          currentLevel: userSkill.currentLevel ? Number(userSkill.currentLevel) : undefined,
-          desiredLevel: userSkill.desiredLevel ? Number(userSkill.desiredLevel) : undefined,
-        }));
+    const teamUsersResultsWithSkills = teamUsersResults
+      .map((teamUser) => {
+        const user = teamUser.user;
+        const userSkill = userSkills
+          .filter((userSkill) => userSkill.user === user)
+          .map((userSkill) => ({
+            ...userSkill,
+            currentLevel: userSkill.currentLevel ? Number(userSkill.currentLevel) : undefined,
+            desiredLevel: userSkill.desiredLevel ? Number(userSkill.desiredLevel) : undefined,
+          }));
 
-      return {
-        ...teamUser,
-        userSkills: userSkill,
-      };
-    });
+        return userSkill;
+      })
+      .flat();
 
     return teamUsersResultsWithSkills;
   }),
