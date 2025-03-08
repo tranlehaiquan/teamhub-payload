@@ -76,7 +76,6 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
                   category={category}
                   teamSkills={groupSkillsByCategory[category.id]}
                   teamId={teamId}
-                  // TODO: fix this type
                   userSkills={teamUserSkills as any}
                 />
               ))}

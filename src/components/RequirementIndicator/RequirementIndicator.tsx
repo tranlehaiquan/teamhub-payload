@@ -61,7 +61,11 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
       <DialogTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer p-1 rounded">
           {teamRequirements && (
-            <RequirementDisplay requirements={teamRequirements} levels={levels} />
+            <RequirementDisplay
+              requirements={teamRequirements}
+              levels={levels}
+              userSkills={teamUserSkills}
+            />
           )}
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
         </div>
