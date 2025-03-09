@@ -7,10 +7,10 @@ import { api } from '@/trpc/react';
 import uniqBy from 'lodash/uniqBy';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import groupBy from 'lodash/groupBy';
-import DialogTeamSkills from './DialogTeamSkills';
 import { Button } from '@/components/ui/button';
-import { GroupSkillsByCategory } from './GroupSkillsByCategory';
 import SkillLevelLegend from '@/components/SkillLevelLegend/SkillLevelLegend';
+import DialogTeamSkills from './DialogTeamSkills';
+import { GroupSkillsByCategory } from './GroupSkillsByCategory';
 
 interface Props {
   className?: string;
@@ -37,12 +37,6 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   return (
     <div className="p-4">
       <h1 className="text-lg mb-4">Skill matrix {team.name}</h1>
-
-      <SectionCard title="todo" className="mb-4">
-        <ul>
-          <li>Find way to show team requirements</li>
-        </ul>
-      </SectionCard>
 
       <div className="grid gap-4">
         <SectionCard title="Skills">
