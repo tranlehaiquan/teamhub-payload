@@ -57,6 +57,7 @@
     "@trpc/react-query": "11.0.0-rc.729",
     "@trpc/server": "11.0.0-rc.729",
     "@vercel/speed-insights": "^1.2.0",
+    "babel-plugin-react-compiler": "19.0.0-beta-40c6c23-20250301",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
