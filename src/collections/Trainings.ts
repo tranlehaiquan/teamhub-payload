@@ -67,6 +67,16 @@ export const Trainings: CollectionConfig = {
       name: 'endDate',
       label: 'End Date',
       type: 'date',
+      validate: (value, { siblingData }: { siblingData: { startDate?: string } }) => {
+        if (value && siblingData.startDate) {
+          const endDate = new Date(value);
+          const startDate = new Date(siblingData.startDate);
+          if (endDate < startDate) {
+            return 'End date must be after the start date';
+          }
+        }
+        return true;
+      },
     },
     {
       name: 'certificate',
