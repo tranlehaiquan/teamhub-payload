@@ -77,7 +77,7 @@ export interface Config {
     teams_users: TeamsUser;
     team_skills: TeamSkill;
     team_requirements: TeamRequirement;
-    Trainings: Training;
+    trainings: Training;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-locked-documents': PayloadLockedDocument;
@@ -111,7 +111,7 @@ export interface Config {
     teams_users: TeamsUsersSelect<false> | TeamsUsersSelect<true>;
     team_skills: TeamSkillsSelect<false> | TeamSkillsSelect<true>;
     team_requirements: TeamRequirementsSelect<false> | TeamRequirementsSelect<true>;
-    Trainings: TrainingsSelect<false> | TrainingsSelect<true>;
+    trainings: TrainingsSelect<false> | TrainingsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -413,14 +413,14 @@ export interface TeamRequirement {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Trainings".
+ * via the `definition` "trainings".
  */
 export interface Training {
   id: number;
   name: string;
   link?: string | null;
   description?: string | null;
-  user?: (number | null) | User;
+  user: number | User;
   status?: ('ongoing' | 'completed' | 'not-started' | 'on-hold') | null;
   startDate?: string | null;
   endDate?: string | null;
@@ -670,7 +670,7 @@ export interface PayloadLockedDocument {
         value: number | TeamRequirement;
       } | null)
     | ({
-        relationTo: 'Trainings';
+        relationTo: 'trainings';
         value: number | Training;
       } | null)
     | ({
@@ -952,7 +952,7 @@ export interface TeamRequirementsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Trainings_select".
+ * via the `definition` "trainings_select".
  */
 export interface TrainingsSelect<T extends boolean = true> {
   name?: T;

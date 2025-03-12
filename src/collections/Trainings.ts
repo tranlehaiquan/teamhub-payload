@@ -2,7 +2,7 @@ import { authenticated } from '@/access/authenticated';
 import type { CollectionConfig } from 'payload';
 
 export const Trainings: CollectionConfig = {
-  slug: 'Trainings',
+  slug: 'trainings',
   access: {
     admin: authenticated,
     create: authenticated,
@@ -23,6 +23,17 @@ export const Trainings: CollectionConfig = {
     {
       name: 'link',
       type: 'text',
+      validate: (value) => {
+        if (value) {
+          try {
+            new URL(value);
+            return true;
+          } catch (e) {
+            return 'Please enter a valid URL';
+          }
+        }
+        return true;
+      },
     },
     {
       name: 'description',
@@ -31,6 +42,7 @@ export const Trainings: CollectionConfig = {
     {
       name: 'user',
       type: 'relationship',
+      required: true,
       admin: {
         position: 'sidebar',
       },
@@ -39,6 +51,7 @@ export const Trainings: CollectionConfig = {
     {
       name: 'status',
       type: 'select',
+      defaultValue: 'not-started',
       options: [
         {
           label: 'Ongoing',
@@ -82,6 +95,9 @@ export const Trainings: CollectionConfig = {
       name: 'certificate',
       type: 'relationship',
       relationTo: 'certificates',
+      admin: {
+        condition: (data) => data.status === 'completed',
+      },
     },
   ],
   timestamps: true,

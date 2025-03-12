@@ -362,7 +362,7 @@ export const meRouter = createTRPCRouter({
     const payload = await getPayloadFromConfig();
 
     const trainings = await payload.find({
-      collection: 'Trainings',
+      collection: 'trainings',
       where: {
         user: {
           equals: userId,
@@ -391,7 +391,7 @@ export const meRouter = createTRPCRouter({
       const { name, link, description, status, startDate, endDate } = input;
 
       const training = await payload.create({
-        collection: 'Trainings',
+        collection: 'trainings',
         data: {
           name,
           link,
@@ -426,7 +426,7 @@ export const meRouter = createTRPCRouter({
 
       try {
         await payload.update({
-          collection: 'Trainings',
+          collection: 'trainings',
           where: {
             user: {
               equals: userId,
