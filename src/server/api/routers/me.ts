@@ -161,6 +161,53 @@ export const meRouter = createTRPCRouter({
       return certificate;
     }),
 
+  updateCertificate: isAuthedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().nonempty({
+          message: 'Name is required',
+        }),
+        issuingOrganization: z.string().min(1, {
+          message: 'Issuing organization is required',
+        }),
+        deliveryDate: z.date().optional().nullable(),
+        expiryDate: z.date().optional().nullable(),
+        userSkills: z.array(
+          z.number({
+            message: 'Skill is required',
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { id, name, issuingOrganization, deliveryDate, expiryDate, userSkills } = input;
+
+      const certificate = await payload.update({
+        collection: 'certificates',
+        where: {
+          id: {
+            equals: id,
+          },
+          user: {
+            equals: userId,
+          },
+        },
+        data: {
+          name,
+          issuingOrganization,
+          deliveryDate: deliveryDate ? new Date(deliveryDate).toISOString() : null,
+          expiryDate: expiryDate ? new Date(expiryDate).toISOString() : null,
+          userSkills,
+        },
+      });
+
+      return certificate;
+    }),
+
   removeCertificate: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
     const payload = await getPayloadFromConfig();
     const userId = ctx.user.user.id;

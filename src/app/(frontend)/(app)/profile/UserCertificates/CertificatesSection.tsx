@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/table';
 import { format } from 'date-fns/format';
 import { Button } from '@/components/ui/button';
-import { Plus, XIcon } from 'lucide-react';
+import { Pen, Plus, XIcon } from 'lucide-react';
 import { Skill, UsersSkill } from '@/payload-types';
 import { toast } from 'sonner';
-import DialogCertificate from './DialogCertificate';
+import DialogCertificate, { FormValues } from './DialogCertificate';
 import { api } from '@/trpc/react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 
@@ -26,6 +26,43 @@ const CertificatesSection: React.FC = () => {
     await removeCertificateMutation.mutateAsync(certificateId);
     toast.success('Certificate removed successfully');
     utils.me.getCertificates.invalidate();
+  };
+  const addCertificateMutation = api.me.addCertificate.useMutation();
+  const updateCertificateMutation = api.me.updateCertificate.useMutation();
+
+  const onCreateNewCertificate = async (data: FormValues) => {
+    try {
+      await addCertificateMutation.mutateAsync({
+        name: data.name,
+        issuingOrganization: data.issuingOrganization,
+        deliveryDate: data.deliveryDate,
+        expiryDate: data.expiryDate,
+        userSkills: data.skill ? [data.skill] : [],
+      });
+
+      utils.me.getCertificates.invalidate();
+      toast.success('Certificate added');
+    } catch {
+      toast.error('Failed to add certificate');
+    }
+  };
+
+  const onUpdateCertificate = async (data: FormValues & { id: number }) => {
+    try {
+      await updateCertificateMutation.mutateAsync({
+        id: data.id,
+        name: data.name,
+        issuingOrganization: data.issuingOrganization,
+        deliveryDate: data.deliveryDate,
+        expiryDate: data.expiryDate,
+        userSkills: data.skill ? [data.skill] : [],
+      });
+
+      utils.me.getCertificates.invalidate();
+      toast.success('Certificate updated');
+    } catch {
+      toast.error('Failed to update certificate');
+    }
   };
 
   return (
@@ -56,6 +93,22 @@ const CertificatesSection: React.FC = () => {
                 {certificate.userSkills?.map((i: UsersSkill) => (i.skill as Skill).name).join(', ')}
               </TableCell>
               <TableCell className="text-right">
+                <DialogCertificate
+                  onSubmit={(data) => onUpdateCertificate({ ...data, id: certificate.id })}
+                  defaultValues={{
+                    name: certificate.name,
+                    issuingOrganization: certificate.issuingOrganization,
+                    deliveryDate: certificate.deliveryDate
+                      ? new Date(certificate.deliveryDate)
+                      : null,
+                    expiryDate: certificate.expiryDate ? new Date(certificate.expiryDate) : null,
+                    skill: (certificate.userSkills?.[0] as UsersSkill)?.id,
+                  }}
+                >
+                  <Button size={'icon'} variant={'ghost'} className="rounded-full">
+                    <Pen size={16} />
+                  </Button>
+                </DialogCertificate>
                 <Button
                   size={'icon'}
                   variant={'ghost'}
@@ -70,7 +123,7 @@ const CertificatesSection: React.FC = () => {
         </TableBody>
       </Table>
 
-      <DialogCertificate>
+      <DialogCertificate onSubmit={onCreateNewCertificate}>
         <Button className="mt-4">
           <Plus size={16} className="mr-2" />
           Add Certificate
