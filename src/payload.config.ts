@@ -21,6 +21,7 @@ import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-node
 import { Team_Skills } from './collections/Team_Skills';
 import { Team_Requirements } from './collections/Team_Requirements';
 import { Levels } from './globalConfigs/Levels/levels';
+import { Trainings } from './collections/Trainings';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -86,6 +87,7 @@ export default buildConfig({
     Teams_Users,
     Team_Skills,
     Team_Requirements,
+    Trainings,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   plugins: [

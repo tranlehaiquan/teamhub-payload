@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import ProfileSection from './ProfileSection';
 import UserSkills from './UserSkills/UserSkills';
 import CertificatesSection from './UserCertificates/CertificatesSection';
-import TrainingsSection from './TrainingsSection';
+import TrainingsSection from './UserTranings/TrainingsSection';
 import { api, HydrateClient } from '@/trpc/server';
 
 const Profile: React.FC = async () => {
