@@ -10,6 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import DialogTraining from './DialogTraining';
+import { Button } from '@/components/ui/button';
 
 const TrainingsSection: React.FC = () => {
   const [data] = api.me.getTrainings.useSuspenseQuery();
@@ -37,6 +39,12 @@ const TrainingsSection: React.FC = () => {
           </TableBody>
         </Table>
       ))}
+
+      <DialogTraining>
+        <Button variant={'default'} className="mt-4">
+          Add Training
+        </Button>
+      </DialogTraining>
     </SectionCard>
   );
 };
