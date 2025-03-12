@@ -75,6 +75,7 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({
       deliveryDate: null,
       expiryDate: null,
       issuingOrganization: '',
+      skill: undefined,
     },
   });
   const [{ docs: userSkills }] = api.me.userSkill.useSuspenseQuery();
