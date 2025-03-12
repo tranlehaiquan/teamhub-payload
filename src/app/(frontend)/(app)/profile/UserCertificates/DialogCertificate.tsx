@@ -15,7 +15,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import DatePicker from '@/components/ui/datepicker';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import {
   Select,
   SelectContent,
@@ -25,10 +24,6 @@ import {
 } from '@/components/ui/select';
 import { Skill } from '@/payload-types';
 import { api } from '@/trpc/react';
-
-interface Props {
-  className?: string;
-}
 
 const zSchema = zod
   .object({
@@ -58,38 +53,36 @@ const zSchema = zod
     },
   );
 
-const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children }) => {
-  const utils = api.useUtils();
+// infer the type of the form
+export type FormValues = zod.infer<typeof zSchema>;
+
+interface Props {
+  className?: string;
+  onSubmit: (data: FormValues) => Promise<void>;
+  defaultValues?: FormValues;
+}
+
+const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({
+  children,
+  onSubmit,
+  defaultValues,
+}) => {
   const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(zSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       name: '',
       deliveryDate: null,
       expiryDate: null,
       issuingOrganization: '',
+      skill: undefined,
     },
   });
-  const addCertificateMutation = api.me.addCertificate.useMutation();
   const [{ docs: userSkills }] = api.me.userSkill.useSuspenseQuery();
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    try {
-      await addCertificateMutation.mutateAsync({
-        name: data.name,
-        issuingOrganization: data.issuingOrganization,
-        deliveryDate: data.deliveryDate,
-        expiryDate: data.expiryDate,
-        userSkills: data.skill ? [data.skill] : [],
-      });
-
-      utils.me.getCertificates.invalidate();
-      toast.success('Certificate added');
-      setOpen(false);
-      form.reset();
-    } catch {
-      toast.error('Failed to add certificate');
-    }
+  const handleOnSubmit = form.handleSubmit(async (data) => {
+    await onSubmit(data);
+    setOpen(false);
   });
 
   return (
@@ -97,11 +90,13 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({ children 
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Certificate</DialogTitle>
+          <DialogTitle>
+            {defaultValues?.name ? 'Update Certificate' : 'Add Certificate'}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleOnSubmit}>
             <FormItem>
               <FormField
                 control={form.control}
