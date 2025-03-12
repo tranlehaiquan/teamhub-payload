@@ -355,4 +355,105 @@ export const meRouter = createTRPCRouter({
         };
       }
     }),
+
+  getTrainings: isAuthedProcedure.query(async ({ ctx }) => {
+    const me = ctx.user;
+    const userId = me.user.id;
+    const payload = await getPayloadFromConfig();
+
+    const trainings = await payload.find({
+      collection: 'Trainings',
+      where: {
+        user: {
+          equals: userId,
+        },
+      },
+    });
+
+    return trainings;
+  }),
+
+  addTraining: isAuthedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        link: z.string().optional(),
+        description: z.string().optional(),
+        status: z.enum(['ongoing', 'completed', 'not-started', 'on-hold']).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { name, link, description, status, startDate, endDate } = input;
+
+      const training = await payload.create({
+        collection: 'Trainings',
+        data: {
+          name,
+          link,
+          description,
+          status,
+          user: userId,
+          startDate: startDate ? new Date(startDate).toISOString() : null,
+          endDate: endDate ? new Date(endDate).toISOString() : null,
+        },
+      });
+
+      return training;
+    }),
+
+  updateTraining: isAuthedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        link: z.string().optional(),
+        description: z.string().optional(),
+        status: z.enum(['ongoing', 'completed', 'not-started', 'on-hold']).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { id, name, link, description, status, startDate, endDate } = input;
+
+      try {
+        await payload.update({
+          collection: 'Trainings',
+          where: {
+            user: {
+              equals: userId,
+            },
+            id: {
+              equals: id,
+            },
+          },
+          data: {
+            name,
+            link,
+            description,
+            status,
+            startDate: startDate ? new Date(startDate).toISOString() : null,
+            endDate: endDate ? new Date(endDate).toISOString() : null,
+          },
+        });
+
+        return {
+          success: true,
+          message: 'Training updated successfully',
+        };
+      } catch {
+        return {
+          success: false,
+          message: 'Failed to update training',
+        };
+      }
+    }),
 });
