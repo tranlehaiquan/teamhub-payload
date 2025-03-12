@@ -89,7 +89,9 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Certificate</DialogTitle>
+          <DialogTitle>
+            {defaultValues?.name ? 'Update Certificate' : 'Add Certificate'}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
