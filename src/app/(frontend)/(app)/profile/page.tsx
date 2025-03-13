@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import ProfileSection from './ProfileSection';
 import UserSkills from './UserSkills/UserSkills';
 import CertificatesSection from './UserCertificates/CertificatesSection';
-import TrainingsSection from './TrainingsSection';
+import TrainingsSection from './UserTranings/TrainingsSection';
 import { api, HydrateClient } from '@/trpc/server';
 
 const Profile: React.FC = async () => {
@@ -24,6 +24,7 @@ const Profile: React.FC = async () => {
   void api.category.getCategories.prefetch({});
   void api.me.userSkill.prefetch();
   void api.me.getProfile.prefetch();
+  void api.me.getTrainings.prefetch();
 
   return (
     <HydrateClient>

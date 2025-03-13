@@ -22,7 +22,7 @@ const UserSkill: React.FC<Props> = ({ className, skill, currentLevel, desiredLev
 
       <div className="ml-auto flex gap-2">
         <Button size="icon" variant={'ghost'} className="rounded-full">
-          <Pen />
+          <Pen size={16} />
         </Button>
 
         <Button size="icon" variant={'ghost'} className="rounded-full">

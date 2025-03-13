@@ -95,7 +95,7 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
                   className="rounded-full"
                   onClick={() => setOpenUpdateDialog(userSkill.id)}
                 >
-                  <Pen />
+                  <Pen size={16} />
                 </Button>
                 <Button
                   size="icon"

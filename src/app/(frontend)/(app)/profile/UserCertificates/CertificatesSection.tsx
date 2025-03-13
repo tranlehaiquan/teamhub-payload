@@ -125,7 +125,7 @@ const CertificatesSection: React.FC = () => {
 
       <DialogCertificate onSubmit={onCreateNewCertificate}>
         <Button className="mt-4">
-          <Plus size={16} className="mr-2" />
+          <Plus size={16} />
           Add Certificate
         </Button>
       </DialogCertificate>

@@ -77,6 +77,7 @@ export interface Config {
     teams_users: TeamsUser;
     team_skills: TeamSkill;
     team_requirements: TeamRequirement;
+    trainings: Training;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-locked-documents': PayloadLockedDocument;
@@ -110,6 +111,7 @@ export interface Config {
     teams_users: TeamsUsersSelect<false> | TeamsUsersSelect<true>;
     team_skills: TeamSkillsSelect<false> | TeamSkillsSelect<true>;
     team_requirements: TeamRequirementsSelect<false> | TeamRequirementsSelect<true>;
+    trainings: TrainingsSelect<false> | TrainingsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -411,6 +413,23 @@ export interface TeamRequirement {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trainings".
+ */
+export interface Training {
+  id: number;
+  name: string;
+  link?: string | null;
+  description?: string | null;
+  user: number | User;
+  status?: ('ongoing' | 'not-started' | 'completed' | 'on-hold') | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  certificate?: (number | null) | Certificate;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms".
  */
 export interface Form {
@@ -649,6 +668,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'team_requirements';
         value: number | TeamRequirement;
+      } | null)
+    | ({
+        relationTo: 'trainings';
+        value: number | Training;
       } | null)
     | ({
         relationTo: 'forms';
@@ -924,6 +947,22 @@ export interface TeamRequirementsSelect<T extends boolean = true> {
   skill?: T;
   desiredLevel?: T;
   desiredMembers?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trainings_select".
+ */
+export interface TrainingsSelect<T extends boolean = true> {
+  name?: T;
+  link?: T;
+  description?: T;
+  user?: T;
+  status?: T;
+  startDate?: T;
+  endDate?: T;
+  certificate?: T;
   updatedAt?: T;
   createdAt?: T;
 }

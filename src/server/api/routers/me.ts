@@ -1,10 +1,10 @@
 import { z } from 'zod';
-
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile, Team } from '@/payload-types';
 import { unionBy } from 'lodash';
 import { users_skills } from '@/payload-generated-schema';
+import { TrainingStatusValues } from '@/collections/Trainings/constants';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -355,4 +355,153 @@ export const meRouter = createTRPCRouter({
         };
       }
     }),
+
+  getTrainings: isAuthedProcedure
+    .input(
+      z
+        .object({
+          page: z.number().default(1),
+          limit: z.number().default(10),
+        })
+        .optional(),
+    )
+    .query(async ({ input, ctx }) => {
+      const me = ctx.user;
+      const userId = me.user.id;
+      const payload = await getPayloadFromConfig();
+      const { page = 1, limit = 10 } = input || {};
+
+      const trainings = await payload.find({
+        collection: 'trainings',
+        where: {
+          user: {
+            equals: userId,
+          },
+        },
+        page,
+        limit,
+      });
+
+      return trainings;
+    }),
+  addTraining: isAuthedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        link: z.string().optional(),
+        description: z.string().optional(),
+        status: z.enum(TrainingStatusValues).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { name, link, description, status, startDate, endDate } = input;
+
+      const training = await payload.create({
+        collection: 'trainings',
+        data: {
+          name,
+          link,
+          description,
+          status,
+          user: userId,
+          startDate: startDate ? new Date(startDate).toISOString() : null,
+          endDate: endDate ? new Date(endDate).toISOString() : null,
+        },
+      });
+
+      return training;
+    }),
+
+  updateTraining: isAuthedProcedure
+    .input(
+      z
+        .object({
+          id: z.number(),
+          name: z.string().nonempty({
+            message: 'Training name is required',
+          }),
+          link: z.string().optional(),
+          description: z.string().optional(),
+          status: z.enum(TrainingStatusValues).optional(),
+          startDate: z.date().optional(),
+          endDate: z.date().optional(),
+        })
+        .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
+          message: 'End date must be after start date',
+          path: ['endDate'],
+        }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const me = ctx.user.user;
+      const userId = me.id;
+      const payload = await getPayloadFromConfig();
+      const { id, name, link, description, status, startDate, endDate } = input;
+
+      try {
+        await payload.update({
+          collection: 'trainings',
+          where: {
+            user: {
+              equals: userId,
+            },
+            id: {
+              equals: id,
+            },
+          },
+          data: {
+            name,
+            link,
+            description,
+            status,
+            startDate: startDate ? new Date(startDate).toISOString() : null,
+            endDate: endDate ? new Date(endDate).toISOString() : null,
+          },
+        });
+
+        return {
+          success: true,
+          message: 'Training updated successfully',
+        };
+      } catch {
+        return {
+          success: false,
+          message: 'Failed to update training',
+        };
+      }
+    }),
+
+  removeTraining: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const payload = await getPayloadFromConfig();
+    const userId = ctx.user.user.id;
+    const trainingId = input;
+
+    try {
+      await payload.delete({
+        collection: 'trainings',
+        where: {
+          id: {
+            equals: trainingId,
+          },
+          user: {
+            equals: userId,
+          },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Training removed successfully',
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Failed to remove training',
+      };
+    }
+  }),
 });
