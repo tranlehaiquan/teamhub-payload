@@ -33,14 +33,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { TrainingStatusValues, trainingStatusOptions } from '@/collections/Trainings/constants';
 
 // Define the schema for the form
-const trainingSchema = z.object({
-  name: z.string().nonempty('Name is required'),
-  link: z.string().url().optional(),
-  description: z.string().optional(),
-  status: z.enum(TrainingStatusValues).optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-});
+const trainingSchema = z
+  .object({
+    name: z.string().nonempty('Name is required'),
+    link: z.string().url().optional(),
+    description: z.string().optional(),
+    status: z.enum(TrainingStatusValues).optional(),
+    startDate: z.date().optional(),
+    endDate: z.date().optional(),
+  })
+  .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
+    message: 'End date must be after start date',
+    path: ['endDate'],
+  });
 
 // type infer
 export type FormValues = z.infer<typeof trainingSchema>;

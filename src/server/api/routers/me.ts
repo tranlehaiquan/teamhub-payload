@@ -356,23 +356,34 @@ export const meRouter = createTRPCRouter({
       }
     }),
 
-  getTrainings: isAuthedProcedure.query(async ({ ctx }) => {
-    const me = ctx.user;
-    const userId = me.user.id;
-    const payload = await getPayloadFromConfig();
+  getTrainings: isAuthedProcedure
+    .input(
+      z
+        .object({
+          page: z.number().default(1),
+          limit: z.number().default(10),
+        })
+        .optional(),
+    )
+    .query(async ({ input, ctx }) => {
+      const me = ctx.user;
+      const userId = me.user.id;
+      const payload = await getPayloadFromConfig();
+      const { page = 1, limit = 10 } = input || {};
 
-    const trainings = await payload.find({
-      collection: 'trainings',
-      where: {
-        user: {
-          equals: userId,
+      const trainings = await payload.find({
+        collection: 'trainings',
+        where: {
+          user: {
+            equals: userId,
+          },
         },
-      },
-    });
+        page,
+        limit,
+      });
 
-    return trainings;
-  }),
-
+      return trainings;
+    }),
   addTraining: isAuthedProcedure
     .input(
       z.object({
@@ -408,15 +419,22 @@ export const meRouter = createTRPCRouter({
 
   updateTraining: isAuthedProcedure
     .input(
-      z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        link: z.string().optional(),
-        description: z.string().optional(),
-        status: z.enum(TrainingStatusValues).optional(),
-        startDate: z.date().optional(),
-        endDate: z.date().optional(),
-      }),
+      z
+        .object({
+          id: z.number(),
+          name: z.string().nonempty({
+            message: 'Training name is required',
+          }),
+          link: z.string().optional(),
+          description: z.string().optional(),
+          status: z.enum(TrainingStatusValues).optional(),
+          startDate: z.date().optional(),
+          endDate: z.date().optional(),
+        })
+        .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
+          message: 'End date must be after start date',
+          path: ['endDate'],
+        }),
     )
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;

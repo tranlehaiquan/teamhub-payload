@@ -74,9 +74,17 @@ const TrainingsSection: React.FC = () => {
           {trainings.map((training) => (
             <TableRow key={training.id}>
               <TableCell>{training.name}</TableCell>
-              <TableCell>{training.link}</TableCell>
-              <TableCell>{training.description}</TableCell>
-              <TableCell>{training.status}</TableCell>
+              <TableCell>
+                {training.link ? (
+                  <a href={training.link} target="_blank" rel="noopener noreferrer">
+                    {training.link}
+                  </a>
+                ) : (
+                  '---'
+                )}
+              </TableCell>
+              <TableCell>{training.description || '---'}</TableCell>
+              <TableCell>{training.status || '---'}</TableCell>
               <TableCell className="text-right">
                 <DialogTraining
                   defaultValues={{
@@ -95,7 +103,7 @@ const TrainingsSection: React.FC = () => {
                   }
                 >
                   <Button size={'icon'} variant={'ghost'} className="rounded-full">
-                    <Pen />
+                    <Pen size={16} />
                   </Button>
                 </DialogTraining>
                 <Button
