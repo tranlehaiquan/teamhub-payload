@@ -421,7 +421,7 @@ export interface Training {
   link?: string | null;
   description?: string | null;
   user: number | User;
-  status?: ('ongoing' | 'completed' | 'not-started' | 'on-hold') | null;
+  status?: ('ongoing' | 'not-started' | 'completed' | 'on-hold') | null;
   startDate?: string | null;
   endDate?: string | null;
   certificate?: (number | null) | Certificate;

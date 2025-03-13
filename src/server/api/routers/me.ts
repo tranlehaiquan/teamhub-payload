@@ -1,10 +1,10 @@
 import { z } from 'zod';
-
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile, Team } from '@/payload-types';
 import { unionBy } from 'lodash';
 import { users_skills } from '@/payload-generated-schema';
+import { TrainingStatusValues } from '@/collections/Trainings/constants';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -379,7 +379,7 @@ export const meRouter = createTRPCRouter({
         name: z.string(),
         link: z.string().optional(),
         description: z.string().optional(),
-        status: z.enum(['ongoing', 'completed', 'not-started', 'on-hold']).optional(),
+        status: z.enum(TrainingStatusValues).optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
       }),
@@ -413,7 +413,7 @@ export const meRouter = createTRPCRouter({
         name: z.string().optional(),
         link: z.string().optional(),
         description: z.string().optional(),
-        status: z.enum(['ongoing', 'completed', 'not-started', 'on-hold']).optional(),
+        status: z.enum(TrainingStatusValues).optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
       }),
@@ -456,4 +456,34 @@ export const meRouter = createTRPCRouter({
         };
       }
     }),
+
+  removeTraining: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const payload = await getPayloadFromConfig();
+    const userId = ctx.user.user.id;
+    const trainingId = input;
+
+    try {
+      await payload.delete({
+        collection: 'trainings',
+        where: {
+          id: {
+            equals: trainingId,
+          },
+          user: {
+            equals: userId,
+          },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Training removed successfully',
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Failed to remove training',
+      };
+    }
+  }),
 });

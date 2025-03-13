@@ -7,9 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Training } from '@/payload-types';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { api } from '@/trpc/react';
 import z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -32,25 +30,51 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { TrainingStatusValues, trainingStatusOptions } from '@/collections/Trainings/constants';
 
 // Define the schema for the form
 const trainingSchema = z.object({
   name: z.string().nonempty('Name is required'),
   link: z.string().url().optional(),
   description: z.string().optional(),
-  status: z.enum(['Planned', 'Ongoing', 'Completed']),
-  startDate: z.date(),
+  status: z.enum(TrainingStatusValues).optional(),
+  startDate: z.date().optional(),
   endDate: z.date().optional(),
 });
 
-const DialogTraining: React.FC<React.PropsWithChildren> = ({ children }) => {
+// type infer
+export type FormValues = z.infer<typeof trainingSchema>;
+
+type Props = {
+  onSubmit: (data: FormValues) => Promise<void>;
+  defaultValues?: FormValues;
+};
+
+const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
+  children,
+  defaultValues,
+  onSubmit,
+}) => {
   const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(trainingSchema),
+    defaultValues: defaultValues ?? {
+      name: '',
+      link: '',
+      description: '',
+      status: undefined,
+      startDate: undefined,
+      endDate: undefined,
+    },
   });
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data);
+  const handleOnSubmit = form.handleSubmit(async (data) => {
+    try {
+      await onSubmit(data);
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   return (
@@ -59,10 +83,10 @@ const DialogTraining: React.FC<React.PropsWithChildren> = ({ children }) => {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Training</DialogTitle>
+          <DialogTitle>{defaultValues ? 'Edit Training' : 'Add Training'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleOnSubmit}>
             <FormItem>
               <FormField
                 control={form.control}
@@ -119,14 +143,21 @@ const DialogTraining: React.FC<React.PropsWithChildren> = ({ children }) => {
                   <FormItem className="mb-4">
                     <FormLabel>Status</FormLabel>
                     <FormControl>
-                      <Select {...field}>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                        }}
+                        defaultValue={field.value}
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Planned">Planned</SelectItem>
-                          <SelectItem value="Ongoing">Ongoing</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
+                          {trainingStatusOptions.map(({ value, label }) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -174,7 +205,9 @@ const DialogTraining: React.FC<React.PropsWithChildren> = ({ children }) => {
               />
             </FormItem>
 
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              Submit
+            </Button>
           </form>
         </Form>
       </DialogContent>

@@ -1,5 +1,6 @@
 import { authenticated } from '@/access/authenticated';
 import type { CollectionConfig } from 'payload';
+import { trainingStatusOptions } from './constants';
 
 export const Trainings: CollectionConfig = {
   slug: 'trainings',
@@ -52,24 +53,7 @@ export const Trainings: CollectionConfig = {
       name: 'status',
       type: 'select',
       defaultValue: 'not-started',
-      options: [
-        {
-          label: 'Ongoing',
-          value: 'ongoing',
-        },
-        {
-          label: 'Completed',
-          value: 'completed',
-        },
-        {
-          label: 'Not Started',
-          value: 'not-started',
-        },
-        {
-          label: 'On Hold',
-          value: 'on-hold',
-        },
-      ],
+      options: trainingStatusOptions,
     },
     {
       name: 'startDate',
