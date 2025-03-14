@@ -18,8 +18,8 @@ type UserSkill = {
 
 const GroupHeader = ({ name }: { name: string }) => (
   <TableRow className="bg-gray-100 dark:bg-gray-700">
-    <TableCell colSpan={15} className="font-bold py-2 px-4">
-      {name}
+    <TableCell colSpan={15} className="font-bold py-2 relative px-0">
+      <p className="px-4 sticky left-0 inline-block">{name}</p>
     </TableCell>
   </TableRow>
 );
@@ -93,7 +93,7 @@ export const GroupSkillsByCategory = ({
       <GroupHeader name={category.title} />
       {teamSkills.map(({ skill }) => (
         <TableRow key={(skill as Skill).id} className="group">
-          <TableCell>{(skill as Skill).name}</TableCell>
+          <TableCell className="sticky left-0 bg-white">{(skill as Skill).name}</TableCell>
           <TableCell>
             <div className="flex items-center justify-center">
               <RequirementIndicator

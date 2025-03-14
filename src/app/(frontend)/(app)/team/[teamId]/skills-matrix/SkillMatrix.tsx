@@ -39,18 +39,17 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
       <h1 className="text-lg mb-4">Skill matrix {team.name}</h1>
 
       <div className="grid gap-4">
-        <SectionCard title="Skills">
+        <SectionCard title="Skills" className="overflow-hidden">
           <div className="flex justify-between items-center mb-2">
             <SkillLevelLegend levels={levels} />
             <DialogTeamSkills teamId={teamId}>
               <Button className="btn">Update team skills</Button>
             </DialogTeamSkills>
           </div>
-
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead></TableHead>
+                <TableHead className="sticky left-0 z-10"></TableHead>
                 <TableHead className="w-[250px] text-center">Requirements</TableHead>
                 {users.map((user) => (
                   <TableHead key={user.id} title={user.email} className="py-2">
