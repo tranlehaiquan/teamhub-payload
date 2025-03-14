@@ -8,7 +8,7 @@ interface SectionCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const SectionCard: React.FC<SectionCardProps> = ({ title, children, className, ...props }) => {
   return (
-    <Card className={cn('p-4', className)} {...props}>
+    <Card className={cn('p-4', className)} {...props} aria-roledescription="section">
       {title && <h2 className="text-lg font-medium mb-4">{title}</h2>}
       {children}
     </Card>
