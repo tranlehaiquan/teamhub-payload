@@ -12,9 +12,10 @@ import { cn } from '@/utilities/cn';
 type Props = {
   selected?: Date | null;
   onSelect?: (date?: Date) => void;
+  placeHolder?: string;
 };
 
-const DatePicker: React.FC<Props> = ({ selected, onSelect }) => {
+const DatePicker: React.FC<Props> = ({ selected, onSelect, placeHolder = 'Pick a date' }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,7 +27,7 @@ const DatePicker: React.FC<Props> = ({ selected, onSelect }) => {
           )}
         >
           <CalendarIcon />
-          {selected ? format(selected, 'PPP') : <span>Pick a date</span>}
+          {selected ? format(selected, 'PPP') : <span>{placeHolder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
