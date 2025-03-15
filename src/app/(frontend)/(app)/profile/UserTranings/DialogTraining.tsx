@@ -183,6 +183,7 @@ const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
                       <DatePicker
                         selected={field.value}
                         onSelect={(date) => field.onChange(date)}
+                        placeHolder="Select date (MM/DD/YYYY)"
                       />
                     </FormControl>
                     <FormMessage />
@@ -202,6 +203,7 @@ const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
                       <DatePicker
                         selected={field.value}
                         onSelect={(date) => field.onChange(date)}
+                        placeHolder="Select date (MM/DD/YYYY)"
                       />
                     </FormControl>
                     <FormMessage />

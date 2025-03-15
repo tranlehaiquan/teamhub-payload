@@ -73,7 +73,11 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
             <FormItem className="mb-4">
               <FormLabel>Delivery Date</FormLabel>
               <FormControl>
-                <DatePicker selected={field.value} onSelect={(date) => field.onChange(date)} />
+                <DatePicker
+                  selected={field.value}
+                  onSelect={(date) => field.onChange(date)}
+                  placeHolder="Select date (MM/DD/YYYY)"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,7 +92,11 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
             <FormItem className="mb-4">
               <FormLabel>Expiry Date</FormLabel>
               <FormControl>
-                <DatePicker selected={field.value} onSelect={(date) => field.onChange(date)} />
+                <DatePicker
+                  selected={field.value}
+                  onSelect={(date) => field.onChange(date)}
+                  placeHolder="Select date (MM/DD/YYYY)"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -116,7 +124,11 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
                   </FormControl>
                   <SelectContent>
                     {userSkills.map((userSkill) => (
-                      <SelectItem key={userSkill.id} value={String(userSkill.id)}>
+                      <SelectItem
+                        key={userSkill.id}
+                        value={String(userSkill.id)}
+                        data-testid="select-item"
+                      >
                         {(userSkill.skill as Skill).name}
                       </SelectItem>
                     ))}
