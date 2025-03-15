@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Pen, Plus, XIcon } from 'lucide-react';
 import { Skill, UsersSkill } from '@/payload-types';
 import { toast } from 'sonner';
-import DialogCertificate, { FormValues } from './DialogCertificate';
+import DialogCertificate from './DialogCertificate';
+import { CertificateFormValues } from './certificateSchema';
 import { api } from '@/trpc/react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 
@@ -30,7 +31,7 @@ const CertificatesSection: React.FC = () => {
   const addCertificateMutation = api.me.addCertificate.useMutation();
   const updateCertificateMutation = api.me.updateCertificate.useMutation();
 
-  const onCreateNewCertificate = async (data: FormValues) => {
+  const onCreateNewCertificate = async (data: CertificateFormValues) => {
     try {
       await addCertificateMutation.mutateAsync({
         name: data.name,
@@ -42,12 +43,13 @@ const CertificatesSection: React.FC = () => {
 
       utils.me.getCertificates.invalidate();
       toast.success('Certificate added');
-    } catch {
-      toast.error('Failed to add certificate');
+    } catch (error) {
+      console.error('Failed to add certificate:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to add certificate');
     }
   };
 
-  const onUpdateCertificate = async (data: FormValues & { id: number }) => {
+  const onUpdateCertificate = async (data: CertificateFormValues & { id: number }) => {
     try {
       await updateCertificateMutation.mutateAsync({
         id: data.id,
@@ -60,8 +62,8 @@ const CertificatesSection: React.FC = () => {
 
       utils.me.getCertificates.invalidate();
       toast.success('Certificate updated');
-    } catch {
-      toast.error('Failed to update certificate');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update certificate');
     }
   };
 
