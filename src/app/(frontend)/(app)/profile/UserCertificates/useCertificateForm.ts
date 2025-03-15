@@ -16,7 +16,7 @@ export const useCertificateForm = (
       deliveryDate: null,
       expiryDate: null,
       issuingOrganization: '',
-      skill: undefined,
+      skill: 0,
     },
   });
 

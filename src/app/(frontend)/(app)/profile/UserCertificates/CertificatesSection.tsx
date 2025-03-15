@@ -43,8 +43,9 @@ const CertificatesSection: React.FC = () => {
 
       utils.me.getCertificates.invalidate();
       toast.success('Certificate added');
-    } catch {
-      toast.error('Failed to add certificate');
+    } catch (error) {
+      console.error('Failed to add certificate:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to add certificate');
     }
   };
 
@@ -61,8 +62,8 @@ const CertificatesSection: React.FC = () => {
 
       utils.me.getCertificates.invalidate();
       toast.success('Certificate updated');
-    } catch {
-      toast.error('Failed to update certificate');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update certificate');
     }
   };
 

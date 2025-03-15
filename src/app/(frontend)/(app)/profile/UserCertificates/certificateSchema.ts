@@ -8,18 +8,16 @@ export const certificateSchema = zod
     issuingOrganization: zod.string().min(1, {
       message: 'Issuing organization is required',
     }),
-    deliveryDate: zod.date().optional().nullable().optional(),
-    expiryDate: zod.date().optional().nullable().optional(),
+    deliveryDate: zod.date().nullable().optional(),
+    expiryDate: zod.date().nullable().optional(),
     skill: zod.number({
-      message: 'Skill is required',
+      required_error: 'Skill is required',
+      invalid_type_error: 'Skill must be a number',
     }),
   })
   .refine(
     (data) => {
-      if (data.deliveryDate && data.expiryDate && data.expiryDate < data.deliveryDate) {
-        return false;
-      }
-      return true;
+      return !(data.deliveryDate && data.expiryDate && data.expiryDate < data.deliveryDate);
     },
     {
       path: ['expiryDate'],

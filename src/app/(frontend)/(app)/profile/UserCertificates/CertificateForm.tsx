@@ -111,13 +111,13 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select your desired level" />
+                      <SelectValue placeholder="Select a skill" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {userSkills.map((userSkill) => (
                       <SelectItem key={userSkill.id} value={String(userSkill.id)}>
-                        {(userSkill.skill as Skill)?.name}
+                        {(userSkill.skill as Skill).name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -129,7 +129,7 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
         />
 
         <Button type="submit" disabled={isSubmitting}>
-          Save
+          {isSubmitting ? 'Saving...' : 'Save'}
         </Button>
       </form>
     </Form>
