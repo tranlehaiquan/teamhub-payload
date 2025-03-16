@@ -319,6 +319,10 @@ export interface User {
   };
   roles?: ('admin' | 'editor')[] | null;
   profile?: (number | null) | Profile;
+  /**
+   * Select the user's manager/supervisor
+   */
+  reportTo?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -845,6 +849,7 @@ export interface UsersSelect<T extends boolean = true> {
   certificates?: T;
   roles?: T;
   profile?: T;
+  reportTo?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
