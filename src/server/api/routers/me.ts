@@ -393,13 +393,14 @@ export const meRouter = createTRPCRouter({
         status: z.enum(TrainingStatusValues).optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
+        userSkills: z.array(z.number()).nullable(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;
       const userId = me.id;
       const payload = await getPayloadFromConfig();
-      const { name, link, description, status, startDate, endDate } = input;
+      const { name, link, description, status, startDate, endDate, userSkills } = input;
 
       const training = await payload.create({
         collection: 'trainings',
@@ -411,6 +412,7 @@ export const meRouter = createTRPCRouter({
           user: userId,
           startDate: startDate ? new Date(startDate).toISOString() : null,
           endDate: endDate ? new Date(endDate).toISOString() : null,
+          userSkills,
         },
       });
 

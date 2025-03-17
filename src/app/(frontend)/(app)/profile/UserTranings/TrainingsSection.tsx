@@ -61,7 +61,10 @@ const TrainingsSection: React.FC = () => {
   };
 
   const getSkillsLabels = (userSkills: UsersSkill[]) => {
-    return userSkills.map((i) => (i.skill as Skill).name).join(', ');
+    return userSkills
+      .filter((i) => i.skill)
+      .map((i) => (i.skill as Skill).name)
+      .join(', ');
   };
 
   return (

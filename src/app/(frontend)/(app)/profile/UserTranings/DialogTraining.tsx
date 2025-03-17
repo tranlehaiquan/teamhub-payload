@@ -76,7 +76,6 @@ const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
       userSkills: [],
     },
   });
-  console.log(defaultValues);
   const [userSkills] = api.me.userSkill.useSuspenseQuery();
   const userSkillOptions = userSkills.docs.map((i) => ({
     label: (i.skill as Skill).name,
