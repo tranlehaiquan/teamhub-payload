@@ -83,6 +83,12 @@ export const Trainings: CollectionConfig = {
         condition: (data) => data.status === 'completed',
       },
     },
+    {
+      name: 'userSkills',
+      type: 'relationship',
+      relationTo: 'users_skills',
+      hasMany: true,
+    },
   ],
   timestamps: true,
 };

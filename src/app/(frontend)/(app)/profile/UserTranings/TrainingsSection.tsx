@@ -14,6 +14,7 @@ import DialogTraining, { FormValues } from './DialogTraining';
 import { Button } from '@/components/ui/button';
 import { Pen, Plus, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { Skill, UsersSkill } from '@/payload-types';
 
 const TrainingsSection: React.FC = () => {
   const [data] = api.me.getTrainings.useSuspenseQuery();
@@ -59,6 +60,13 @@ const TrainingsSection: React.FC = () => {
     await updateTrainingMutation.mutateAsync(data);
   };
 
+  const getSkillsLabels = (userSkills: UsersSkill[]) => {
+    return userSkills
+      .filter((i) => i.skill)
+      .map((i) => (i.skill as Skill).name)
+      .join(', ');
+  };
+
   return (
     <SectionCard title="Trainings">
       <Table>
@@ -68,6 +76,7 @@ const TrainingsSection: React.FC = () => {
             <TableHead>Link</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Skills</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -85,6 +94,7 @@ const TrainingsSection: React.FC = () => {
               </TableCell>
               <TableCell>{training.description || '---'}</TableCell>
               <TableCell>{training.status || '---'}</TableCell>
+              <TableCell>{getSkillsLabels(training.userSkills as UsersSkill[]) || '---'}</TableCell>
               <TableCell className="text-right">
                 <DialogTraining
                   defaultValues={{
@@ -94,6 +104,9 @@ const TrainingsSection: React.FC = () => {
                     description: training.description ?? '',
                     status: training.status ?? undefined,
                     name: training.name ?? '',
+                    userSkills: training.userSkills
+                      ? (training.userSkills as UsersSkill[]).map((i) => i.id)
+                      : [],
                   }}
                   onSubmit={(data) =>
                     handleUpdate({

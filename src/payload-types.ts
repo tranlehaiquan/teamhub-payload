@@ -425,6 +425,7 @@ export interface Training {
   startDate?: string | null;
   endDate?: string | null;
   certificate?: (number | null) | Certificate;
+  userSkills?: (number | UsersSkill)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -963,6 +964,7 @@ export interface TrainingsSelect<T extends boolean = true> {
   startDate?: T;
   endDate?: T;
   certificate?: T;
+  userSkills?: T;
   updatedAt?: T;
   createdAt?: T;
 }

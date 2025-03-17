@@ -31,16 +31,19 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TrainingStatusValues, trainingStatusOptions } from '@/collections/Trainings/constants';
+import ReactSelect from 'react-select';
+import { Skill } from '@/payload-types';
 
 // Define the schema for the form
 const trainingSchema = z
   .object({
     name: z.string().nonempty('Name is required'),
-    link: z.string().url().optional(),
+    link: z.string().url(),
     description: z.string().optional(),
     status: z.enum(TrainingStatusValues).optional(),
     startDate: z.date().optional(),
     endDate: z.date().optional(),
+    userSkills: z.array(z.number()).nullable(),
   })
   .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
     message: 'End date must be after start date',
@@ -70,8 +73,14 @@ const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
       status: undefined,
       startDate: undefined,
       endDate: undefined,
+      userSkills: [],
     },
   });
+  const [userSkills] = api.me.userSkill.useSuspenseQuery();
+  const userSkillOptions = userSkills.docs.map((i) => ({
+    label: (i.skill as Skill).name,
+    value: i.id,
+  }));
 
   const handleOnSubmit = form.handleSubmit(async (data) => {
     try {
@@ -81,6 +90,10 @@ const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
       console.error(error);
     }
   });
+
+  const selectedOptions = (ids: number[]) => {
+    return userSkillOptions.filter((i) => ids.includes(i.value));
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -204,6 +217,30 @@ const DialogTraining: React.FC<React.PropsWithChildren<Props>> = ({
                         selected={field.value}
                         onSelect={(date) => field.onChange(date)}
                         placeHolder="Select date (MM/DD/YYYY)"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </FormItem>
+
+            <FormItem>
+              <FormField
+                control={form.control}
+                name="userSkills"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Skills</FormLabel>
+                    <FormControl>
+                      <ReactSelect
+                        options={userSkillOptions}
+                        isMulti
+                        defaultValue={selectedOptions(field.value || [])}
+                        onChange={(v) => {
+                          const ids = v.map((i) => i.value);
+                          field.onChange(ids);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
