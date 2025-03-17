@@ -13,6 +13,7 @@ const ProfileSection: React.FC = () => {
   const [me] = api.me.getMe.useSuspenseQuery();
   const [{ docs: skills }] = api.me.userSkill.useSuspenseQuery();
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
+  const [{ docs: trainings }] = api.me.getTrainings.useSuspenseQuery();
 
   return (
     <div className="grid grid-cols-2 gap-2">
@@ -47,7 +48,7 @@ const ProfileSection: React.FC = () => {
           </div>
           <div className="flex flex-col items-center justify-center">
             <p className="mb-2 text-lg">Trainings</p>
-            <p className="text-xl font-bold">0</p>
+            <p className="text-xl font-bold">{trainings.length}</p>
           </div>
         </div>
       </SectionCard>

@@ -33,9 +33,18 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
   const selectedUserSkill = userSkills.find((s) => s.id === openUpdateDialog);
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
   const [globalLevels] = api.global.getLevels.useSuspenseQuery();
+  const [{ docs: trainings }] = api.me.getTrainings.useSuspenseQuery();
 
   const getLevelOption = (level?: number | null) => {
     return globalLevels.items.find((i) => i.level === level);
+  };
+
+  const getTrainingsByUserSkillId = (userSkillId: number) => {
+    return trainings.filter((training) => {
+      return (training.userSkills as UsersSkill[]).some(
+        (userSkill) => userSkill.id === userSkillId,
+      );
+    });
   };
 
   const certificatesByUserSkillId = certificates.reduce((acc, certificate) => {
@@ -83,7 +92,7 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
                 <p>{getLevelOption(userSkill?.desiredLevel)?.name || '---'}</p>
               </TableCell>
               <TableCell className="text-center">
-                <p>---</p>
+                <p>{getTrainingsByUserSkillId(userSkill.id).length}</p>
               </TableCell>
               <TableCell className="text-center">
                 <p>{certificatesByUserSkillId[userSkill.id]}</p>

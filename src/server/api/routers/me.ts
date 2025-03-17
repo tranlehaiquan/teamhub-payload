@@ -430,6 +430,7 @@ export const meRouter = createTRPCRouter({
           status: z.enum(TrainingStatusValues).optional(),
           startDate: z.date().optional(),
           endDate: z.date().optional(),
+          userSkills: z.array(z.number()).nullable(),
         })
         .refine((data) => !data.startDate || !data.endDate || data.startDate < data.endDate, {
           message: 'End date must be after start date',
@@ -440,7 +441,7 @@ export const meRouter = createTRPCRouter({
       const me = ctx.user.user;
       const userId = me.id;
       const payload = await getPayloadFromConfig();
-      const { id, name, link, description, status, startDate, endDate } = input;
+      const { id, name, link, description, status, startDate, endDate, userSkills } = input;
 
       try {
         await payload.update({
@@ -460,6 +461,7 @@ export const meRouter = createTRPCRouter({
             status,
             startDate: startDate ? new Date(startDate).toISOString() : null,
             endDate: endDate ? new Date(endDate).toISOString() : null,
+            userSkills,
           },
         });
 
