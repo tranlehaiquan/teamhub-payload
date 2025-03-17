@@ -393,7 +393,7 @@ export const meRouter = createTRPCRouter({
         status: z.enum(TrainingStatusValues).optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
-        userSkills: z.array(z.number()).nullable(),
+        userSkills: z.array(z.number()).default([]),
       }),
     )
     .mutation(async ({ input, ctx }) => {
