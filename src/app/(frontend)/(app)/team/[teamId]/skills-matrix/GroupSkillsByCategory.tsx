@@ -93,7 +93,9 @@ export const GroupSkillsByCategory = ({
       <GroupHeader name={category.title} />
       {teamSkills.map(({ skill }) => (
         <TableRow key={(skill as Skill).id} className="group">
-          <TableCell className="sticky left-0 bg-white">{(skill as Skill).name}</TableCell>
+          <TableCell className="sticky left-0 bg-white dark:bg-accent">
+            {(skill as Skill).name}
+          </TableCell>
           <TableCell>
             <div className="flex items-center justify-center">
               <RequirementIndicator
