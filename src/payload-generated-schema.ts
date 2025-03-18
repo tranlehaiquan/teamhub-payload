@@ -24,6 +24,12 @@ import {
 } from '@payloadcms/db-postgres/drizzle/pg-core';
 import { sql, relations } from '@payloadcms/db-postgres/drizzle';
 export const enum_users_roles = pgEnum('enum_users_roles', ['admin', 'editor']);
+export const enum_trainings_status = pgEnum('enum_trainings_status', [
+  'ongoing',
+  'not-started',
+  'completed',
+  'on-hold',
+]);
 export const enum_forms_confirmation_type = pgEnum('enum_forms_confirmation_type', [
   'message',
   'redirect',
@@ -194,6 +200,9 @@ export const users = pgTable(
     profile: integer('profile_id').references(() => profiles.id, {
       onDelete: 'set null',
     }),
+    reportTo: integer('report_to_id').references((): AnyPgColumn => users.id, {
+      onDelete: 'set null',
+    }),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
       .defaultNow()
       .notNull(),
@@ -216,6 +225,7 @@ export const users = pgTable(
   },
   (columns) => ({
     users_profile_idx: index('users_profile_idx').on(columns.profile),
+    users_report_to_idx: index('users_report_to_idx').on(columns.reportTo),
     users_updated_at_idx: index('users_updated_at_idx').on(columns.updatedAt),
     users_created_at_idx: index('users_created_at_idx').on(columns.createdAt),
     users_email_idx: uniqueIndex('users_email_idx').on(columns.email),
@@ -453,6 +463,68 @@ export const team_requirements = pgTable(
     team_requirements_created_at_idx: index('team_requirements_created_at_idx').on(
       columns.createdAt,
     ),
+  }),
+);
+
+export const trainings = pgTable(
+  'trainings',
+  {
+    id: serial('id').primaryKey(),
+    name: varchar('name').notNull(),
+    link: varchar('link'),
+    description: varchar('description'),
+    user: integer('user_id')
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'set null',
+      }),
+    status: enum_trainings_status('status').default('not-started'),
+    startDate: timestamp('start_date', { mode: 'string', withTimezone: true, precision: 3 }),
+    endDate: timestamp('end_date', { mode: 'string', withTimezone: true, precision: 3 }),
+    certificate: integer('certificate_id').references(() => certificates.id, {
+      onDelete: 'set null',
+    }),
+    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => ({
+    trainings_user_idx: index('trainings_user_idx').on(columns.user),
+    trainings_certificate_idx: index('trainings_certificate_idx').on(columns.certificate),
+    trainings_updated_at_idx: index('trainings_updated_at_idx').on(columns.updatedAt),
+    trainings_created_at_idx: index('trainings_created_at_idx').on(columns.createdAt),
+  }),
+);
+
+export const trainings_rels = pgTable(
+  'trainings_rels',
+  {
+    id: serial('id').primaryKey(),
+    order: integer('order'),
+    parent: integer('parent_id').notNull(),
+    path: varchar('path').notNull(),
+    users_skillsID: integer('users_skills_id'),
+  },
+  (columns) => ({
+    order: index('trainings_rels_order_idx').on(columns.order),
+    parentIdx: index('trainings_rels_parent_idx').on(columns.parent),
+    pathIdx: index('trainings_rels_path_idx').on(columns.path),
+    trainings_rels_users_skills_id_idx: index('trainings_rels_users_skills_id_idx').on(
+      columns.users_skillsID,
+    ),
+    parentFk: foreignKey({
+      columns: [columns['parent']],
+      foreignColumns: [trainings.id],
+      name: 'trainings_rels_parent_fk',
+    }).onDelete('cascade'),
+    users_skillsIdFk: foreignKey({
+      columns: [columns['users_skillsID']],
+      foreignColumns: [users_skills.id],
+      name: 'trainings_rels_users_skills_fk',
+    }).onDelete('cascade'),
   }),
 );
 
@@ -836,6 +908,7 @@ export const payload_locked_documents_rels = pgTable(
     teams_usersID: integer('teams_users_id'),
     team_skillsID: integer('team_skills_id'),
     team_requirementsID: integer('team_requirements_id'),
+    trainingsID: integer('trainings_id'),
     formsID: integer('forms_id'),
     'form-submissionsID': integer('form_submissions_id'),
   },
@@ -876,6 +949,9 @@ export const payload_locked_documents_rels = pgTable(
     payload_locked_documents_rels_team_requirements_id_idx: index(
       'payload_locked_documents_rels_team_requirements_id_idx',
     ).on(columns.team_requirementsID),
+    payload_locked_documents_rels_trainings_id_idx: index(
+      'payload_locked_documents_rels_trainings_id_idx',
+    ).on(columns.trainingsID),
     payload_locked_documents_rels_forms_id_idx: index(
       'payload_locked_documents_rels_forms_id_idx',
     ).on(columns.formsID),
@@ -941,6 +1017,11 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns['team_requirementsID']],
       foreignColumns: [team_requirements.id],
       name: 'payload_locked_documents_rels_team_requirements_fk',
+    }).onDelete('cascade'),
+    trainingsIdFk: foreignKey({
+      columns: [columns['trainingsID']],
+      foreignColumns: [trainings.id],
+      name: 'payload_locked_documents_rels_trainings_fk',
     }).onDelete('cascade'),
     formsIdFk: foreignKey({
       columns: [columns['formsID']],
@@ -1098,6 +1179,11 @@ export const relations_users = relations(users, ({ one, many }) => ({
     references: [profiles.id],
     relationName: 'profile',
   }),
+  reportTo: one(users, {
+    fields: [users.reportTo],
+    references: [users.id],
+    relationName: 'reportTo',
+  }),
 }));
 export const relations_profiles = relations(profiles, ({ one }) => ({
   avatar: one(media, {
@@ -1188,6 +1274,33 @@ export const relations_team_requirements = relations(team_requirements, ({ one }
     fields: [team_requirements.skill],
     references: [skills.id],
     relationName: 'skill',
+  }),
+}));
+export const relations_trainings_rels = relations(trainings_rels, ({ one }) => ({
+  parent: one(trainings, {
+    fields: [trainings_rels.parent],
+    references: [trainings.id],
+    relationName: '_rels',
+  }),
+  users_skillsID: one(users_skills, {
+    fields: [trainings_rels.users_skillsID],
+    references: [users_skills.id],
+    relationName: 'users_skills',
+  }),
+}));
+export const relations_trainings = relations(trainings, ({ one, many }) => ({
+  user: one(users, {
+    fields: [trainings.user],
+    references: [users.id],
+    relationName: 'user',
+  }),
+  certificate: one(certificates, {
+    fields: [trainings.certificate],
+    references: [certificates.id],
+    relationName: 'certificate',
+  }),
+  _rels: many(trainings_rels, {
+    relationName: '_rels',
   }),
 }));
 export const relations_forms_blocks_checkbox = relations(forms_blocks_checkbox, ({ one }) => ({
@@ -1388,6 +1501,11 @@ export const relations_payload_locked_documents_rels = relations(
       references: [team_requirements.id],
       relationName: 'team_requirements',
     }),
+    trainingsID: one(trainings, {
+      fields: [payload_locked_documents_rels.trainingsID],
+      references: [trainings.id],
+      relationName: 'trainings',
+    }),
     formsID: one(forms, {
       fields: [payload_locked_documents_rels.formsID],
       references: [forms.id],
@@ -1444,6 +1562,7 @@ export const relations_levels = relations(levels, ({ many }) => ({
 
 type DatabaseSchema = {
   enum_users_roles: typeof enum_users_roles;
+  enum_trainings_status: typeof enum_trainings_status;
   enum_forms_confirmation_type: typeof enum_forms_confirmation_type;
   media: typeof media;
   categories_breadcrumbs: typeof categories_breadcrumbs;
@@ -1459,6 +1578,8 @@ type DatabaseSchema = {
   teams_users: typeof teams_users;
   team_skills: typeof team_skills;
   team_requirements: typeof team_requirements;
+  trainings: typeof trainings;
+  trainings_rels: typeof trainings_rels;
   forms_blocks_checkbox: typeof forms_blocks_checkbox;
   forms_blocks_country: typeof forms_blocks_country;
   forms_blocks_email: typeof forms_blocks_email;
@@ -1494,6 +1615,8 @@ type DatabaseSchema = {
   relations_teams_users: typeof relations_teams_users;
   relations_team_skills: typeof relations_team_skills;
   relations_team_requirements: typeof relations_team_requirements;
+  relations_trainings_rels: typeof relations_trainings_rels;
+  relations_trainings: typeof relations_trainings;
   relations_forms_blocks_checkbox: typeof relations_forms_blocks_checkbox;
   relations_forms_blocks_country: typeof relations_forms_blocks_country;
   relations_forms_blocks_email: typeof relations_forms_blocks_email;
