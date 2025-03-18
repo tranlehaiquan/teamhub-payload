@@ -74,6 +74,15 @@ export const Users: CollectionConfig = {
       },
       relationTo: 'profiles',
     },
+    // report to user (meant boss)
+    {
+      name: 'reportTo',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: {
+        description: "Select the user's manager/supervisor",
+      },
+    },
   ],
   timestamps: true,
 };

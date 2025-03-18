@@ -27,14 +27,14 @@ export const userRouter = createTRPCRouter({
         };
       }
 
-      const skills = await payload.find({
+      const users = await payload.find({
         collection: 'users',
         where,
         limit,
         page,
       });
 
-      return skills;
+      return users;
     }),
 
   createUser: adminProcedure

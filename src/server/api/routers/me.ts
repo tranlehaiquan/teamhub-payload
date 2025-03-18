@@ -508,4 +508,30 @@ export const meRouter = createTRPCRouter({
       };
     }
   }),
+
+  updateReportTo: isAuthedProcedure
+    .input(
+      z.object({
+        reportTo: z.number().nullable(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const payload = await getPayloadFromConfig();
+      const me = ctx.user.user;
+
+      if (me.id === input.reportTo) {
+        throw new Error('You cannot report to yourself');
+      }
+
+      await payload.update({
+        collection: 'users',
+        id: me.id,
+        data: input,
+      });
+
+      return {
+        success: true,
+        message: 'Report to updated successfully',
+      };
+    }),
 });
