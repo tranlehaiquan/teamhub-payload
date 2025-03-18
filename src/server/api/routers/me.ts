@@ -515,6 +515,10 @@ export const meRouter = createTRPCRouter({
       const payload = await getPayloadFromConfig();
       const me = ctx.user.user;
 
+      if (me.id === input.reportTo) {
+        throw new Error('You cannot report to yourself');
+      }
+
       await payload.update({
         collection: 'users',
         id: me.id,
