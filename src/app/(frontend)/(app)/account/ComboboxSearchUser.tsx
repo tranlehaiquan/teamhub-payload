@@ -20,17 +20,21 @@ export function ComboboxSearchUser({
   value,
   disabled = false,
 }: ComboboxSearchUserProps) {
+  const [me] = api.me.getMe.useSuspenseQuery();
   const [search, setSearch] = React.useState('');
   const searchDebounced = useDebounce(search, 500);
   const searchResult = api.user.getUsers.useQuery({
     email: searchDebounced,
   });
+  const meId = me.user.id;
 
   const users =
-    searchResult.data?.docs.map((user) => ({
-      value: String(user.id),
-      label: user.email,
-    })) || [];
+    searchResult.data?.docs
+      .map((user) => ({
+        value: String(user.id),
+        label: user.email,
+      }))
+      .filter((user) => user.value !== String(meId)) || [];
 
   return (
     <ComboboxSearch
