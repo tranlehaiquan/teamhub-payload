@@ -16,14 +16,19 @@ import { ComboboxSearchUser } from './ComboboxSearchUser';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { User } from '@/payload-types';
 
+// Define the form schema with proper typing
 const formSchema = z.object({
   reportTo: z.number().nullable(),
 });
 
+// Create a type from the schema for better type safety
+type FormValues = z.infer<typeof formSchema>;
+
 const UpdateUserForm: React.FC = () => {
   const [me] = api.me.getMe.useSuspenseQuery();
   const reportTo = me.user.reportTo as User | null;
-  const form = useForm({
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       reportTo: reportTo?.id || null,
@@ -43,19 +48,21 @@ const UpdateUserForm: React.FC = () => {
       });
       toast.success('Report to updated');
     } catch (error) {
-      toast.error(error.message ? error.message : '');
+      // Improved error handling with type casting
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update report to';
+      toast.error(errorMessage);
     }
   });
 
   return (
     <SectionCard title="User settings">
       <Form {...form}>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="space-y-4">
           <FormField
             control={form.control}
             name="reportTo"
             render={({ field }) => (
-              <FormItem className="mb-4">
+              <FormItem>
                 <FormLabel>Report to</FormLabel>
                 <FormControl>
                   <ComboboxSearchUser
@@ -70,11 +77,7 @@ const UpdateUserForm: React.FC = () => {
             )}
           />
 
-          <Button
-            type="submit"
-            className="mt-4"
-            disabled={form.formState.isSubmitting || !form.formState.isDirty}
-          >
+          <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
             {form.formState.isSubmitting ? 'Updating...' : 'Update'}
           </Button>
         </form>
