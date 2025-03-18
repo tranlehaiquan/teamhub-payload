@@ -26,7 +26,6 @@ import { getMeUser } from '@/utilities/getMeUser';
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   try {
     const user = await getMeUser();
-
     return {
       user,
       ...opts,

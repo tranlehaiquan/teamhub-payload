@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import AccountForm from './AccountForm';
 import ChangePasswordForm from './ChangePasswordForm';
 import { api } from '@/trpc/react';
+import UpdateUserForm from './UpdateUserForm';
 
 const AccountPage: React.FC = () => {
   const [profile] = api.me.getProfile.useSuspenseQuery();
@@ -39,6 +40,7 @@ const AccountPage: React.FC = () => {
 
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <AccountForm profile={profile} />
+        <UpdateUserForm />
         <ChangePasswordForm />
       </div>
     </div>
