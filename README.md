@@ -66,3 +66,30 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 ## License
 
 This project is licensed under the MIT License.
+
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    Users ||--o{ Users : "reportTo"
+    Users ||--|| Profiles : "has"
+    Users ||--o{ Certificates : "has"
+    Users }o--o{ Skills : "has via"
+    Users_Skills }|--|| Users : "belongs to"
+    Users_Skills }|--|| Skills : "belongs to"
+
+    Teams }o--o{ Users : "has via"
+    Teams_Users }|--|| Teams : "belongs to"
+    Teams_Users }|--|| Users : "belongs to"
+
+    Teams }o--o{ Skills : "requires via"
+    Team_Skills }|--|| Teams : "belongs to"
+    Team_Skills }|--|| Skills : "belongs to"
+
+    Teams ||--o{ Team_Requirements : "has"
+
+    Trainings }o--o{ Skills : "develops"
+    Trainings }o--o{ Users : "attended by"
+
+    Media }o--o{ Categories : "categorized by"
+```
