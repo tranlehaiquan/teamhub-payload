@@ -36,14 +36,25 @@ const getEmailConfig = (): NodemailerAdapterArgs | undefined => {
     return;
   }
 
-  return {
+  const transportOptions: any = {
+    host: mailHost,
+    port: mailPort,
+  };
+
+  if (process.env.MAIL_USER && process.env.MAIL_PASSWORD) {
+    transportOptions.auth = {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASSWORD,
+    };
+  }
+
+  const config: NodemailerAdapterArgs = {
     defaultFromAddress,
     defaultFromName,
-    transportOptions: {
-      host: mailHost,
-      port: mailPort,
-    },
+    transportOptions,
   };
+
+  return config;
 };
 
 export default buildConfig({
