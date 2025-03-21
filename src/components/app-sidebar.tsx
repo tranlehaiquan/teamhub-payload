@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Map, Users, UserRoundPenIcon, BookUserIcon } from 'lucide-react';
+import { Map, Users, UserRoundPenIcon, BookUserIcon, Building2 } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavAdmin } from '@/components/nav-admin';
 import { NavUser } from '@/components/nav-user';
@@ -20,6 +20,11 @@ const data = {
       title: 'Account',
       url: '/account',
       icon: UserRoundPenIcon,
+    },
+    {
+      title: 'Org chart',
+      url: '/org-chart',
+      icon: Building2,
     },
   ],
   admins: [
