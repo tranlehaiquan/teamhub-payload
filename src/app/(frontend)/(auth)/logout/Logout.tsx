@@ -55,7 +55,7 @@ const LogoutPage = () => {
           Signing Out
         </h1>
         <p className="text-gray-600 mb-6" data-testid="logout-message">
-          We're securely logging you out<span aria-hidden="true">{dots}</span>
+          We&apos;re securely logging you out<span aria-hidden="true">{dots}</span>
         </p>
 
         <div className="flex justify-center mb-4">
@@ -68,7 +68,7 @@ const LogoutPage = () => {
         </div>
 
         <p className="text-sm text-gray-500" data-testid="redirect-message">
-          You'll be redirected to the login page shortly.
+          You&apos;ll be redirected to the login page shortly.
         </p>
       </div>
     </div>
