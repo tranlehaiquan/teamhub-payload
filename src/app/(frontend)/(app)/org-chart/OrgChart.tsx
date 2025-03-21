@@ -6,6 +6,7 @@ import SectionCard from '@/components/SectionCard/SectionCard';
 import { api } from '@/trpc/react';
 import { User, Profile } from '@/payload-types';
 import dagre from 'dagre';
+import OrgChartNode from '@/components/ui/ReactFlow/OrgChartNode';
 
 const edgeType = 'smoothstep';
 
@@ -19,7 +20,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
   // Add nodes to the graph with their dimensions
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 180, height: 50 });
+    dagreGraph.setNode(node.id, { width: 300, height: 50 });
   });
 
   // Add edges to the graph
@@ -46,6 +47,10 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   return { nodes: layoutedNodes, edges };
 };
 
+const nodeTypes = {
+  custom: OrgChartNode,
+};
+
 export default function OrgChart() {
   const [{ docs: users }] = api.user.getUsers.useSuspenseQuery({
     page: 1,
@@ -68,27 +73,29 @@ export default function OrgChart() {
 
   // Create basic nodes with placeholder positions
   const initialNodes = users.map((user) => {
-    const profile = user.profile as Profile | undefined;
-    const displayName = profile
-      ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
-      : user.email;
-
     return {
       id: String(user.id),
       position: { x: 0, y: 0 },
+      type: 'custom',
       data: {
-        label: displayName || user.email,
+        ...user,
       },
     };
   });
 
   // Apply the layout algorithm
   const { nodes, edges: layoutedEdges } = getLayoutedElements(initialNodes, edges);
-
+  console.log('nodes', nodes);
   return (
     <div className="h-screen p-4">
       <SectionCard className="h-full">
-        <ReactFlow nodes={nodes} edges={layoutedEdges} fitView attributionPosition="bottom-right" />
+        <ReactFlow
+          nodes={nodes}
+          edges={layoutedEdges}
+          fitView
+          attributionPosition="bottom-right"
+          nodeTypes={nodeTypes}
+        />
       </SectionCard>
     </div>
   );
