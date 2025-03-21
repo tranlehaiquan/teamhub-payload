@@ -35,7 +35,7 @@ jobs:
       - name: Check for outdated packages
         id: check
         run: |
-          if pnpm exec ncu | grep -q "All dependencies match the latest package versions"; then
+          if pnpm exec ncu --target minor | grep -q "All dependencies match the latest package versions"; then
             echo "outdated=false" >> $GITHUB_OUTPUT
           else
             echo "outdated=true" >> $GITHUB_OUTPUT
@@ -43,7 +43,7 @@ jobs:
 
       - name: Update package.json
         if: steps.check.outputs.outdated == 'true'
-        run: pnpm exec ncu -u
+        run: pnpm exec ncu --target minor -u
 
       - name: Install updated dependencies
         if: steps.check.outputs.outdated == 'true'
