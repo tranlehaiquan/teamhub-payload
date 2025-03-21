@@ -1,0 +1,61 @@
+name: Check and Update NPM Packages
+
+on:
+  schedule:
+    # Runs at 00:00 every Monday
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install npm-check-updates
+        run: pnpm add -g npm-check-updates
+
+      - name: Check for outdated packages
+        id: check
+        run: |
+          if pnpm exec ncu | grep -q "All dependencies match the latest package versions"; then
+            echo "outdated=false" >> $GITHUB_OUTPUT
+          else
+            echo "outdated=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update package.json
+        if: steps.check.outputs.outdated == 'true'
+        run: pnpm exec ncu -u
+
+      - name: Install updated dependencies
+        if: steps.check.outputs.outdated == 'true'
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Create Pull Request
+        if: steps.check.outputs.outdated == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update pnpm dependencies"
+          title: "Weekly Package Update"
+          body: |
+            This PR updates outdated packages to their latest versions.
+
+            Updates performed automatically by the Weekly Package Update workflow.
+          branch: package-updates-${{ github.run_id }}
+          delete-branch: true
+          labels: dependencies, automation
