@@ -7,6 +7,8 @@ import { api } from '@/trpc/react';
 import { User, Profile } from '@/payload-types';
 import dagre from 'dagre';
 
+const edgeType = 'smoothstep';
+
 // This helper function uses dagre to calculate node positions
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph();
@@ -56,9 +58,11 @@ export default function OrgChart() {
       const reportTo = user.reportTo as User;
 
       return {
-        id: `${user.id}-${reportTo.id}`,
-        source: String(user.id),
-        target: String(reportTo.id),
+        id: `e${user.id}-${reportTo.id}`,
+        source: String(reportTo.id),
+        target: String(user.id),
+        type: edgeType,
+        animated: true,
       };
     });
 
@@ -74,12 +78,6 @@ export default function OrgChart() {
       position: { x: 0, y: 0 },
       data: {
         label: displayName || user.email,
-      },
-      style: {
-        width: 180,
-        padding: 10,
-        borderRadius: 5,
-        border: '1px solid #ddd',
       },
     };
   });
