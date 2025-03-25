@@ -29,22 +29,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { api } from '@/trpc/react';
-import { useDebounce, useDebounceCallBack } from '@/utilities/useDebounce';
 import { columns } from './columns';
 
 const UsersTable: React.FC = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [searchInput, setSearchInput] = React.useState('');
   const [search, setSearch] = React.useState('');
-  const debouncedSearch = useDebounce(search, 500);
   const [{ docs: users = [], page, hasNextPage, totalPages }] = api.user.getUsers.useSuspenseQuery({
     page: currentPage,
-    email: debouncedSearch,
+    email: search,
   });
-
-  const handleSearch = useDebounceCallBack((input: string) => {
-    setSearch(input);
-    setCurrentPage(1);
-  }, 500);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -85,14 +79,36 @@ const UsersTable: React.FC = () => {
     }
   };
 
+  const handleSearch = () => {
+    setSearch(searchInput);
+    setCurrentPage(1);
+  };
+
+  const handleInputChange = (value: string) => {
+    setSearchInput(value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Search all columns..."
-          onChange={(e) => handleSearch(e.target.value)}
-          className="max-w-sm"
-        />
+        <div className="flex max-w-sm gap-2">
+          <Input
+            placeholder="Search all columns..."
+            value={searchInput}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="w-full"
+          />
+          <Button onClick={handleSearch} type="button">
+            Search
+          </Button>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

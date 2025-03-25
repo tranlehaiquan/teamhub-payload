@@ -1,8 +1,8 @@
 'use server';
-
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { headers } from 'next/headers';
 import { BasePayload, createLocalReq, PayloadRequest } from 'payload';
+import { faker } from '@faker-js/faker';
 
 export const runSeed = async () => {
   const payload = await getPayloadFromConfig();
@@ -23,6 +23,13 @@ export const runSeed = async () => {
     return { error: error.message };
   }
 };
+
+const randomUsers = Array.from({ length: 50 }, () => ({
+  email: faker.internet.email(),
+  password: '123qweasd',
+  roles: [],
+  _verified: true,
+}));
 
 const users = [
   {
@@ -199,4 +206,31 @@ const seed = async ({ payload, req }: { payload: BasePayload; req: PayloadReques
       });
     }),
   );
+};
+
+const seedRandomUsers = async ({ payload, req }: { payload: BasePayload; req: PayloadRequest }) => {
+  payload.logger.info('Seeding random users...');
+  console.log(randomUsers);
+  await Promise.all(
+    randomUsers.map((user) => payload.create({ collection: 'users', data: user, req })),
+  );
+};
+
+export const runSeedRandomUsers = async () => {
+  const payload = await getPayloadFromConfig();
+  const requestHeaders = await headers();
+  const { user } = await payload.auth({ headers: requestHeaders });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+  const payloadReq = await createLocalReq({ user }, payload);
+
+  try {
+    await seedRandomUsers({ payload, req: payloadReq });
+
+    return { success: true };
+  } catch (error) {
+    return { error: error.message };
+  }
 };

@@ -2,9 +2,7 @@
 
 import React, { Fragment, useCallback, useState } from 'react';
 import { toast } from '@payloadcms/ui';
-import { runSeed } from './seed-actions';
-
-import './index.scss';
+import { runSeed, runSeedRandomUsers } from './seed-actions';
 
 const SuccessMessage: React.FC = () => (
   <div>
@@ -72,17 +70,49 @@ export const SeedButton: React.FC = () => {
     [loading, seeded, error],
   );
 
+  const handleSeedRandomUsers = useCallback(
+    async (e) => {
+      e.preventDefault();
+      toast.promise(
+        new Promise((resolve, reject) => {
+          try {
+            runSeedRandomUsers()
+              .then(({ success }) => {
+                if (success) {
+                  resolve(true);
+                  setSeeded(true);
+                } else {
+                  reject('An error occurred while seeding.');
+                }
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          } catch (error) {
+            reject(error);
+          }
+        }),
+        {
+          loading: 'Seeding with data....',
+          success: <SuccessMessage />,
+          error: 'An error occurred while seeding.',
+        },
+      );
+    },
+    [loading, seeded, error],
+  );
+
   let message = '';
   if (loading) message = ' (seeding...)';
   if (seeded) message = ' (done!)';
   if (error) message = ` (error: ${error})`;
 
   return (
-    <Fragment>
-      <button className="seedButton" onClick={handleClick}>
+    <div>
+      <button onClick={handleClick} style={{ marginRight: '1rem' }}>
         Seed your database
       </button>
-      {message}
-    </Fragment>
+      <button onClick={handleSeedRandomUsers}>Seed random users</button>
+    </div>
   );
 };
