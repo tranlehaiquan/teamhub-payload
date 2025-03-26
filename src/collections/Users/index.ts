@@ -56,14 +56,27 @@ export const Users: CollectionConfig = {
       collection: 'certificates',
       on: 'user',
     },
+    // this related to Payload system roles
     {
       name: 'roles',
       type: 'select',
       hasMany: true,
+      label: 'Roles (System roles)',
       options: [
         { label: 'Admin', value: 'admin' },
         { label: 'Editor', value: 'editor' },
       ],
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'jobTitle',
+      type: 'text',
+      admin: {
+        description: "The user's job title or position in the company",
+        position: 'sidebar',
+      },
     },
     {
       name: 'profile',

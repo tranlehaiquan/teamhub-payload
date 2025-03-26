@@ -120,9 +120,11 @@ export interface Config {
   };
   globals: {
     levels: Level;
+    'job-titles': JobTitle;
   };
   globalsSelect: {
     levels: LevelsSelect<false> | LevelsSelect<true>;
+    'job-titles': JobTitlesSelect<false> | JobTitlesSelect<true>;
   };
   locale: null;
   user: User & {
@@ -315,6 +317,10 @@ export interface User {
     totalDocs?: number;
   };
   roles?: ('admin' | 'editor')[] | null;
+  /**
+   * The user's job title or position in the company
+   */
+  jobTitle?: string | null;
   profile?: (number | null) | Profile;
   /**
    * Select the user's manager/supervisor
@@ -648,6 +654,7 @@ export interface UsersSelect<T extends boolean = true> {
   relatedSkills?: T;
   certificates?: T;
   roles?: T;
+  jobTitle?: T;
   profile?: T;
   reportTo?: T;
   updatedAt?: T;
@@ -822,6 +829,20 @@ export interface Level {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-titles".
+ */
+export interface JobTitle {
+  id: number;
+  titles: {
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "levels_select".
  */
 export interface LevelsSelect<T extends boolean = true> {
@@ -832,6 +853,22 @@ export interface LevelsSelect<T extends boolean = true> {
         description?: T;
         level?: T;
         levelColor?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-titles_select".
+ */
+export interface JobTitlesSelect<T extends boolean = true> {
+  titles?:
+    | T
+    | {
+        title?: T;
+        description?: T;
         id?: T;
       };
   updatedAt?: T;
