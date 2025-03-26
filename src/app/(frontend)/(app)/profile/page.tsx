@@ -25,6 +25,7 @@ const Profile: React.FC = async () => {
   void api.me.userSkill.prefetch();
   void api.me.getProfile.prefetch();
   void api.me.getTrainings.prefetch();
+  void api.me.getCertificates.prefetch();
 
   return (
     <HydrateClient>
