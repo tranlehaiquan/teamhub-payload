@@ -24,7 +24,8 @@ interface ComboboxSearchProps {
   disabled?: boolean;
   isLoading?: boolean;
   items?: { value: string; label: string }[];
-  onSearch: (search: string) => void;
+  onSearch?: (search: string) => void;
+  shouldFilter?: boolean;
 }
 
 export function ComboboxSearch({
@@ -36,6 +37,7 @@ export function ComboboxSearch({
   isLoading = false,
   items = [],
   onSearch,
+  shouldFilter = false,
 }: ComboboxSearchProps) {
   const [open, setOpen] = useState(false);
 
@@ -54,11 +56,11 @@ export function ComboboxSearch({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <Command shouldFilter={false}>
+        <Command shouldFilter={shouldFilter}>
           <CommandInput
             placeholder={placeholder}
             onValueChange={(value) => {
-              onSearch(value);
+              onSearch?.(value);
             }}
           />
           <CommandList>
@@ -72,6 +74,7 @@ export function ComboboxSearch({
                     <CommandItem
                       key={item.value}
                       value={String(item.value)}
+                      keywords={[item.label]}
                       onSelect={(currentValue) => {
                         const newValue = currentValue === value ? '' : currentValue;
                         onSelect(newValue);

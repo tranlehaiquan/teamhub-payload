@@ -19,7 +19,6 @@ import {
   integer,
   type AnyPgColumn,
   boolean,
-  text,
   pgEnum,
 } from '@payloadcms/db-postgres/drizzle/pg-core';
 import { sql, relations } from '@payloadcms/db-postgres/drizzle';
@@ -29,10 +28,6 @@ export const enum_trainings_status = pgEnum('enum_trainings_status', [
   'not-started',
   'completed',
   'on-hold',
-]);
-export const enum_forms_confirmation_type = pgEnum('enum_forms_confirmation_type', [
-  'message',
-  'redirect',
 ]);
 
 export const media = pgTable(
@@ -197,6 +192,7 @@ export const users = pgTable(
   {
     id: serial('id').primaryKey(),
     name: varchar('name'),
+    jobTitle: varchar('job_title'),
     profile: integer('profile_id').references(() => profiles.id, {
       onDelete: 'set null',
     }),
@@ -528,343 +524,6 @@ export const trainings_rels = pgTable(
   }),
 );
 
-export const forms_blocks_checkbox = pgTable(
-  'forms_blocks_checkbox',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    required: boolean('required'),
-    defaultValue: boolean('default_value'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_checkbox_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_checkbox_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_checkbox_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_checkbox_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_country = pgTable(
-  'forms_blocks_country',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_country_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_country_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_country_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_country_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_email = pgTable(
-  'forms_blocks_email',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_email_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_email_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_email_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_email_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_message = pgTable(
-  'forms_blocks_message',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    message: jsonb('message'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_message_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_message_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_message_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_message_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_number = pgTable(
-  'forms_blocks_number',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    defaultValue: numeric('default_value'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_number_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_number_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_number_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_number_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_select_options = pgTable(
-  'forms_blocks_select_options',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: varchar('_parent_id').notNull(),
-    id: varchar('id').primaryKey(),
-    label: varchar('label').notNull(),
-    value: varchar('value').notNull(),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_select_options_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_select_options_parent_id_idx').on(columns._parentID),
-    _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms_blocks_select.id],
-      name: 'forms_blocks_select_options_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_select = pgTable(
-  'forms_blocks_select',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    defaultValue: varchar('default_value'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_select_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_select_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_select_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_select_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_state = pgTable(
-  'forms_blocks_state',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_state_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_state_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_state_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_state_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_text = pgTable(
-  'forms_blocks_text',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    defaultValue: varchar('default_value'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_text_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_text_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_text_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_text_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_blocks_textarea = pgTable(
-  'forms_blocks_textarea',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    _path: text('_path').notNull(),
-    id: varchar('id').primaryKey(),
-    name: varchar('name').notNull(),
-    label: varchar('label'),
-    width: numeric('width'),
-    defaultValue: varchar('default_value'),
-    required: boolean('required'),
-    blockName: varchar('block_name'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_blocks_textarea_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_blocks_textarea_parent_id_idx').on(columns._parentID),
-    _pathIdx: index('forms_blocks_textarea_path_idx').on(columns._path),
-    _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_blocks_textarea_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms_emails = pgTable(
-  'forms_emails',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    id: varchar('id').primaryKey(),
-    emailTo: varchar('email_to'),
-    cc: varchar('cc'),
-    bcc: varchar('bcc'),
-    replyTo: varchar('reply_to'),
-    emailFrom: varchar('email_from'),
-    subject: varchar('subject').notNull().default("You''ve received a new message."),
-    message: jsonb('message'),
-  },
-  (columns) => ({
-    _orderIdx: index('forms_emails_order_idx').on(columns._order),
-    _parentIDIdx: index('forms_emails_parent_id_idx').on(columns._parentID),
-    _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [forms.id],
-      name: 'forms_emails_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const forms = pgTable(
-  'forms',
-  {
-    id: serial('id').primaryKey(),
-    title: varchar('title').notNull(),
-    submitButtonLabel: varchar('submit_button_label'),
-    confirmationType: enum_forms_confirmation_type('confirmation_type').default('message'),
-    confirmationMessage: jsonb('confirmation_message'),
-    redirect_url: varchar('redirect_url'),
-    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => ({
-    forms_updated_at_idx: index('forms_updated_at_idx').on(columns.updatedAt),
-    forms_created_at_idx: index('forms_created_at_idx').on(columns.createdAt),
-  }),
-);
-
-export const form_submissions_submission_data = pgTable(
-  'form_submissions_submission_data',
-  {
-    _order: integer('_order').notNull(),
-    _parentID: integer('_parent_id').notNull(),
-    id: varchar('id').primaryKey(),
-    field: varchar('field').notNull(),
-    value: varchar('value').notNull(),
-  },
-  (columns) => ({
-    _orderIdx: index('form_submissions_submission_data_order_idx').on(columns._order),
-    _parentIDIdx: index('form_submissions_submission_data_parent_id_idx').on(columns._parentID),
-    _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
-      foreignColumns: [form_submissions.id],
-      name: 'form_submissions_submission_data_parent_id_fk',
-    }).onDelete('cascade'),
-  }),
-);
-
-export const form_submissions = pgTable(
-  'form_submissions',
-  {
-    id: serial('id').primaryKey(),
-    form: integer('form_id')
-      .notNull()
-      .references(() => forms.id, {
-        onDelete: 'set null',
-      }),
-    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => ({
-    form_submissions_form_idx: index('form_submissions_form_idx').on(columns.form),
-    form_submissions_updated_at_idx: index('form_submissions_updated_at_idx').on(columns.updatedAt),
-    form_submissions_created_at_idx: index('form_submissions_created_at_idx').on(columns.createdAt),
-  }),
-);
-
 export const payload_locked_documents = pgTable(
   'payload_locked_documents',
   {
@@ -909,8 +568,6 @@ export const payload_locked_documents_rels = pgTable(
     team_skillsID: integer('team_skills_id'),
     team_requirementsID: integer('team_requirements_id'),
     trainingsID: integer('trainings_id'),
-    formsID: integer('forms_id'),
-    'form-submissionsID': integer('form_submissions_id'),
   },
   (columns) => ({
     order: index('payload_locked_documents_rels_order_idx').on(columns.order),
@@ -952,12 +609,6 @@ export const payload_locked_documents_rels = pgTable(
     payload_locked_documents_rels_trainings_id_idx: index(
       'payload_locked_documents_rels_trainings_id_idx',
     ).on(columns.trainingsID),
-    payload_locked_documents_rels_forms_id_idx: index(
-      'payload_locked_documents_rels_forms_id_idx',
-    ).on(columns.formsID),
-    payload_locked_documents_rels_form_submissions_id_idx: index(
-      'payload_locked_documents_rels_form_submissions_id_idx',
-    ).on(columns['form-submissionsID']),
     parentFk: foreignKey({
       columns: [columns['parent']],
       foreignColumns: [payload_locked_documents.id],
@@ -1022,16 +673,6 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns['trainingsID']],
       foreignColumns: [trainings.id],
       name: 'payload_locked_documents_rels_trainings_fk',
-    }).onDelete('cascade'),
-    formsIdFk: foreignKey({
-      columns: [columns['formsID']],
-      foreignColumns: [forms.id],
-      name: 'payload_locked_documents_rels_forms_fk',
-    }).onDelete('cascade'),
-    'form-submissionsIdFk': foreignKey({
-      columns: [columns['form-submissionsID']],
-      foreignColumns: [form_submissions.id],
-      name: 'payload_locked_documents_rels_form_submissions_fk',
     }).onDelete('cascade'),
   }),
 );
@@ -1303,141 +944,6 @@ export const relations_trainings = relations(trainings, ({ one, many }) => ({
     relationName: '_rels',
   }),
 }));
-export const relations_forms_blocks_checkbox = relations(forms_blocks_checkbox, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_checkbox._parentID],
-    references: [forms.id],
-    relationName: '_blocks_checkbox',
-  }),
-}));
-export const relations_forms_blocks_country = relations(forms_blocks_country, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_country._parentID],
-    references: [forms.id],
-    relationName: '_blocks_country',
-  }),
-}));
-export const relations_forms_blocks_email = relations(forms_blocks_email, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_email._parentID],
-    references: [forms.id],
-    relationName: '_blocks_email',
-  }),
-}));
-export const relations_forms_blocks_message = relations(forms_blocks_message, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_message._parentID],
-    references: [forms.id],
-    relationName: '_blocks_message',
-  }),
-}));
-export const relations_forms_blocks_number = relations(forms_blocks_number, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_number._parentID],
-    references: [forms.id],
-    relationName: '_blocks_number',
-  }),
-}));
-export const relations_forms_blocks_select_options = relations(
-  forms_blocks_select_options,
-  ({ one }) => ({
-    _parentID: one(forms_blocks_select, {
-      fields: [forms_blocks_select_options._parentID],
-      references: [forms_blocks_select.id],
-      relationName: 'options',
-    }),
-  }),
-);
-export const relations_forms_blocks_select = relations(forms_blocks_select, ({ one, many }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_select._parentID],
-    references: [forms.id],
-    relationName: '_blocks_select',
-  }),
-  options: many(forms_blocks_select_options, {
-    relationName: 'options',
-  }),
-}));
-export const relations_forms_blocks_state = relations(forms_blocks_state, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_state._parentID],
-    references: [forms.id],
-    relationName: '_blocks_state',
-  }),
-}));
-export const relations_forms_blocks_text = relations(forms_blocks_text, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_text._parentID],
-    references: [forms.id],
-    relationName: '_blocks_text',
-  }),
-}));
-export const relations_forms_blocks_textarea = relations(forms_blocks_textarea, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_blocks_textarea._parentID],
-    references: [forms.id],
-    relationName: '_blocks_textarea',
-  }),
-}));
-export const relations_forms_emails = relations(forms_emails, ({ one }) => ({
-  _parentID: one(forms, {
-    fields: [forms_emails._parentID],
-    references: [forms.id],
-    relationName: 'emails',
-  }),
-}));
-export const relations_forms = relations(forms, ({ many }) => ({
-  _blocks_checkbox: many(forms_blocks_checkbox, {
-    relationName: '_blocks_checkbox',
-  }),
-  _blocks_country: many(forms_blocks_country, {
-    relationName: '_blocks_country',
-  }),
-  _blocks_email: many(forms_blocks_email, {
-    relationName: '_blocks_email',
-  }),
-  _blocks_message: many(forms_blocks_message, {
-    relationName: '_blocks_message',
-  }),
-  _blocks_number: many(forms_blocks_number, {
-    relationName: '_blocks_number',
-  }),
-  _blocks_select: many(forms_blocks_select, {
-    relationName: '_blocks_select',
-  }),
-  _blocks_state: many(forms_blocks_state, {
-    relationName: '_blocks_state',
-  }),
-  _blocks_text: many(forms_blocks_text, {
-    relationName: '_blocks_text',
-  }),
-  _blocks_textarea: many(forms_blocks_textarea, {
-    relationName: '_blocks_textarea',
-  }),
-  emails: many(forms_emails, {
-    relationName: 'emails',
-  }),
-}));
-export const relations_form_submissions_submission_data = relations(
-  form_submissions_submission_data,
-  ({ one }) => ({
-    _parentID: one(form_submissions, {
-      fields: [form_submissions_submission_data._parentID],
-      references: [form_submissions.id],
-      relationName: 'submissionData',
-    }),
-  }),
-);
-export const relations_form_submissions = relations(form_submissions, ({ one, many }) => ({
-  form: one(forms, {
-    fields: [form_submissions.form],
-    references: [forms.id],
-    relationName: 'form',
-  }),
-  submissionData: many(form_submissions_submission_data, {
-    relationName: 'submissionData',
-  }),
-}));
 export const relations_payload_locked_documents_rels = relations(
   payload_locked_documents_rels,
   ({ one }) => ({
@@ -1506,16 +1012,6 @@ export const relations_payload_locked_documents_rels = relations(
       references: [trainings.id],
       relationName: 'trainings',
     }),
-    formsID: one(forms, {
-      fields: [payload_locked_documents_rels.formsID],
-      references: [forms.id],
-      relationName: 'forms',
-    }),
-    'form-submissionsID': one(form_submissions, {
-      fields: [payload_locked_documents_rels['form-submissionsID']],
-      references: [form_submissions.id],
-      relationName: 'form-submissions',
-    }),
   }),
 );
 export const relations_payload_locked_documents = relations(
@@ -1563,7 +1059,6 @@ export const relations_levels = relations(levels, ({ many }) => ({
 type DatabaseSchema = {
   enum_users_roles: typeof enum_users_roles;
   enum_trainings_status: typeof enum_trainings_status;
-  enum_forms_confirmation_type: typeof enum_forms_confirmation_type;
   media: typeof media;
   categories_breadcrumbs: typeof categories_breadcrumbs;
   categories: typeof categories;
@@ -1580,20 +1075,6 @@ type DatabaseSchema = {
   team_requirements: typeof team_requirements;
   trainings: typeof trainings;
   trainings_rels: typeof trainings_rels;
-  forms_blocks_checkbox: typeof forms_blocks_checkbox;
-  forms_blocks_country: typeof forms_blocks_country;
-  forms_blocks_email: typeof forms_blocks_email;
-  forms_blocks_message: typeof forms_blocks_message;
-  forms_blocks_number: typeof forms_blocks_number;
-  forms_blocks_select_options: typeof forms_blocks_select_options;
-  forms_blocks_select: typeof forms_blocks_select;
-  forms_blocks_state: typeof forms_blocks_state;
-  forms_blocks_text: typeof forms_blocks_text;
-  forms_blocks_textarea: typeof forms_blocks_textarea;
-  forms_emails: typeof forms_emails;
-  forms: typeof forms;
-  form_submissions_submission_data: typeof form_submissions_submission_data;
-  form_submissions: typeof form_submissions;
   payload_locked_documents: typeof payload_locked_documents;
   payload_locked_documents_rels: typeof payload_locked_documents_rels;
   payload_preferences: typeof payload_preferences;
@@ -1617,20 +1098,6 @@ type DatabaseSchema = {
   relations_team_requirements: typeof relations_team_requirements;
   relations_trainings_rels: typeof relations_trainings_rels;
   relations_trainings: typeof relations_trainings;
-  relations_forms_blocks_checkbox: typeof relations_forms_blocks_checkbox;
-  relations_forms_blocks_country: typeof relations_forms_blocks_country;
-  relations_forms_blocks_email: typeof relations_forms_blocks_email;
-  relations_forms_blocks_message: typeof relations_forms_blocks_message;
-  relations_forms_blocks_number: typeof relations_forms_blocks_number;
-  relations_forms_blocks_select_options: typeof relations_forms_blocks_select_options;
-  relations_forms_blocks_select: typeof relations_forms_blocks_select;
-  relations_forms_blocks_state: typeof relations_forms_blocks_state;
-  relations_forms_blocks_text: typeof relations_forms_blocks_text;
-  relations_forms_blocks_textarea: typeof relations_forms_blocks_textarea;
-  relations_forms_emails: typeof relations_forms_emails;
-  relations_forms: typeof relations_forms;
-  relations_form_submissions_submission_data: typeof relations_form_submissions_submission_data;
-  relations_form_submissions: typeof relations_form_submissions;
   relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;
   relations_payload_locked_documents: typeof relations_payload_locked_documents;
   relations_payload_preferences_rels: typeof relations_payload_preferences_rels;

@@ -20,7 +20,7 @@ export const runSeed = async () => {
 
     return { success: true };
   } catch (error) {
-    return { error: error.message };
+    return { success: false, error: error.message };
   }
 };
 
@@ -231,6 +231,45 @@ export const runSeedRandomUsers = async () => {
 
     return { success: true };
   } catch (error) {
-    return { error: error.message };
+    return { success: false, error: error.message };
+  }
+};
+
+const seedRandomJobTitles = async ({
+  payload,
+  req,
+}: {
+  payload: BasePayload;
+  req: PayloadRequest;
+}) => {
+  payload.logger.info('Seeding random job titles...');
+  const mockJobTitles = Array.from({ length: 50 }, () => ({
+    name: faker.person.jobTitle(),
+    description: faker.lorem.sentence(),
+  }));
+
+  await payload.updateGlobal({
+    slug: 'job-titles',
+    data: {
+      titles: mockJobTitles,
+    },
+  });
+};
+
+export const runSeedRandomJobTitles = async () => {
+  const payload = await getPayloadFromConfig();
+  const requestHeaders = await headers();
+  const { user } = await payload.auth({ headers: requestHeaders });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+  const payloadReq = await createLocalReq({ user }, payload);
+
+  try {
+    await seedRandomJobTitles({ payload, req: payloadReq });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
 };

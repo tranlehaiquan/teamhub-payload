@@ -15,10 +15,12 @@ import { api } from '@/trpc/react';
 import { ComboboxSearchUser } from './ComboboxSearchUser';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { User } from '@/payload-types';
+import { ComboboxSearchJobTitles } from '@/components/ComboboxSearchJobTitle/CombboboxSearchJobTitle';
 
 // Define the form schema with proper typing
 const formSchema = z.object({
   reportTo: z.number().nullable(),
+  jobTitle: z.string().optional(),
 });
 
 // Create a type from the schema for better type safety
@@ -27,28 +29,29 @@ type FormValues = z.infer<typeof formSchema>;
 const UpdateUserForm: React.FC = () => {
   const [me] = api.me.getMe.useSuspenseQuery();
   const reportTo = me.user.reportTo as User | null;
+  const updateMe = api.me.updateMe.useMutation();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       reportTo: reportTo?.id || null,
+      jobTitle: me.user.jobTitle || '',
     },
   });
 
-  const updateReportTo = api.me.updateReportTo.useMutation();
-
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      await updateReportTo.mutateAsync({
+      await updateMe.mutateAsync({
         reportTo: data.reportTo,
+        jobTitle: data.jobTitle,
       });
 
       form.reset({
         reportTo: data.reportTo,
+        jobTitle: data.jobTitle,
       });
       toast.success('Report to updated');
     } catch (error) {
-      // Improved error handling with type casting
       const errorMessage = error instanceof Error ? error.message : 'Failed to update report to';
       toast.error(errorMessage);
     }
@@ -73,6 +76,23 @@ const UpdateUserForm: React.FC = () => {
                   />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="jobTitle"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Job title</FormLabel>
+                <ComboboxSearchJobTitles
+                  value={field.value}
+                  onSelect={(value) => {
+                    field.onChange(value);
+                  }}
+                  placeholder="Select job title"
+                />
               </FormItem>
             )}
           />

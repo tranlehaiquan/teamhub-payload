@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Map, Users, UserRoundPenIcon, BookUserIcon, Building2 } from 'lucide-react';
+import { Map, Users, UserRoundPenIcon, BookUserIcon, Building2, LucideIcon } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import { NavAdmin } from '@/components/nav-admin';
 import { NavUser } from '@/components/nav-user';
@@ -27,19 +27,20 @@ const data = {
       icon: Building2,
     },
   ],
-  admins: [
-    {
-      name: 'Users',
-      url: '/users',
-      icon: Users,
-    },
-    {
-      name: 'Teams',
-      url: '/teams',
-      icon: Map,
-    },
-  ],
 };
+
+const adminLinks = [
+  {
+    name: 'Users',
+    url: '/users',
+    icon: Users,
+  },
+  {
+    name: 'Teams',
+    url: '/teams',
+    icon: Map,
+  },
+];
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar>;
 
@@ -52,7 +53,7 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
       <SidebarContent>
         <NavMain items={data.main} />
         <NavTeamActions items={teams} />
-        {user.roles?.includes('admin') && <NavAdmin projects={data.admins} />}
+        {user.roles?.includes('admin') && <NavAdmin projects={adminLinks} />}
       </SidebarContent>
 
       <SidebarFooter>

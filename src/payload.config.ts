@@ -21,6 +21,7 @@ import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-node
 import { Team_Skills } from './collections/Team_Skills';
 import { Team_Requirements } from './collections/Team_Requirements';
 import { Levels } from './globalConfigs/Levels/levels';
+import { JobTitles } from './globalConfigs/JobTitles/jobTitles';
 import { Trainings } from './collections/Trainings';
 
 const filename = fileURLToPath(import.meta.url);
@@ -114,5 +115,5 @@ export default buildConfig({
     disable: true,
     disablePlaygroundInProduction: true,
   },
-  globals: [Levels],
+  globals: [Levels, JobTitles],
 });
