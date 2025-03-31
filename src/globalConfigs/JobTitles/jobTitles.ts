@@ -10,9 +10,14 @@ export const JobTitles: GlobalConfig = {
       name: 'titles',
       type: 'array',
       required: true,
+      admin: {
+        components: {
+          RowLabel: '@/globalConfigs/JobTitles/RowLabel#RowLabel',
+        },
+      },
       fields: [
         {
-          name: 'title',
+          name: 'name',
           type: 'text',
           required: true,
         },

@@ -834,7 +834,7 @@ export interface Level {
 export interface JobTitle {
   id: number;
   titles: {
-    title: string;
+    name: string;
     description?: string | null;
     id?: string | null;
   }[];
@@ -867,7 +867,7 @@ export interface JobTitlesSelect<T extends boolean = true> {
   titles?:
     | T
     | {
-        title?: T;
+        name?: T;
         description?: T;
         id?: T;
       };

@@ -11,4 +11,13 @@ export const globalConfigsRouter = createTRPCRouter({
 
     return results;
   }),
+  getJobTitles: isAuthedProcedure.query(async () => {
+    const payload = await getPayloadFromConfig();
+    const results = await payload.findGlobal({
+      slug: 'job-titles',
+      depth: 2,
+    });
+
+    return results;
+  }),
 });
