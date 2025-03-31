@@ -14,6 +14,7 @@ export const JobTitles: GlobalConfig = {
         components: {
           RowLabel: '@/globalConfigs/JobTitles/RowLabel#RowLabel',
         },
+        initCollapsed: true,
       },
       fields: [
         {

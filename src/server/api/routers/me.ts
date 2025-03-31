@@ -516,10 +516,11 @@ export const meRouter = createTRPCRouter({
     }
   }),
 
-  updateReportTo: isAuthedProcedure
+  updateMe: isAuthedProcedure
     .input(
       z.object({
         reportTo: z.number().nullable(),
+        jobTitle: z.string().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -538,7 +539,7 @@ export const meRouter = createTRPCRouter({
 
       return {
         success: true,
-        message: 'Report to updated successfully',
+        message: 'User updated successfully',
       };
     }),
 });

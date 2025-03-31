@@ -26,7 +26,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
-    typedRoutes: true,
   },
   output: 'standalone',
 };
