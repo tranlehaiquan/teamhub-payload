@@ -86,14 +86,21 @@ export const meRouter = createTRPCRouter({
     return userSkills;
   }),
 
-  getCertificates: isAuthedProcedure.query(async () => {
+  getCertificates: isAuthedProcedure.query(async ({ ctx }) => {
     const payload = await getPayloadFromConfig();
+    const me = ctx.user;
+    const userId = me.user.id;
 
     const userCertificates = await payload.find({
       collection: 'certificates',
       populate: {
         users_skills: {
           skill: true,
+        },
+      },
+      where: {
+        user: {
+          equals: userId,
         },
       },
     });
