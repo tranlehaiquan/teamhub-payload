@@ -781,6 +781,59 @@ export const levels = pgTable('levels', {
   createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 }),
 });
 
+export const job_titles_titles = pgTable(
+  'job_titles_titles',
+  {
+    _order: integer('_order').notNull(),
+    _parentID: integer('_parent_id').notNull(),
+    id: varchar('id').primaryKey(),
+    name: varchar('name').notNull(),
+    description: varchar('description'),
+  },
+  (columns) => ({
+    _orderIdx: index('job_titles_titles_order_idx').on(columns._order),
+    _parentIDIdx: index('job_titles_titles_parent_id_idx').on(columns._parentID),
+    _parentIDFk: foreignKey({
+      columns: [columns['_parentID']],
+      foreignColumns: [job_titles.id],
+      name: 'job_titles_titles_parent_id_fk',
+    }).onDelete('cascade'),
+  }),
+);
+
+export const job_titles = pgTable('job_titles', {
+  id: serial('id').primaryKey(),
+  updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 }),
+  createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 }),
+});
+
+export const job_titles_rels = pgTable(
+  'job_titles_rels',
+  {
+    id: serial('id').primaryKey(),
+    order: integer('order'),
+    parent: integer('parent_id').notNull(),
+    path: varchar('path').notNull(),
+    skillsID: integer('skills_id'),
+  },
+  (columns) => ({
+    order: index('job_titles_rels_order_idx').on(columns.order),
+    parentIdx: index('job_titles_rels_parent_idx').on(columns.parent),
+    pathIdx: index('job_titles_rels_path_idx').on(columns.path),
+    job_titles_rels_skills_id_idx: index('job_titles_rels_skills_id_idx').on(columns.skillsID),
+    parentFk: foreignKey({
+      columns: [columns['parent']],
+      foreignColumns: [job_titles.id],
+      name: 'job_titles_rels_parent_fk',
+    }).onDelete('cascade'),
+    skillsIdFk: foreignKey({
+      columns: [columns['skillsID']],
+      foreignColumns: [skills.id],
+      name: 'job_titles_rels_skills_fk',
+    }).onDelete('cascade'),
+  }),
+);
+
 export const relations_media = relations(media, () => ({}));
 export const relations_categories_breadcrumbs = relations(categories_breadcrumbs, ({ one }) => ({
   _parentID: one(categories, {
@@ -1055,6 +1108,33 @@ export const relations_levels = relations(levels, ({ many }) => ({
     relationName: 'items',
   }),
 }));
+export const relations_job_titles_titles = relations(job_titles_titles, ({ one }) => ({
+  _parentID: one(job_titles, {
+    fields: [job_titles_titles._parentID],
+    references: [job_titles.id],
+    relationName: 'titles',
+  }),
+}));
+export const relations_job_titles_rels = relations(job_titles_rels, ({ one }) => ({
+  parent: one(job_titles, {
+    fields: [job_titles_rels.parent],
+    references: [job_titles.id],
+    relationName: '_rels',
+  }),
+  skillsID: one(skills, {
+    fields: [job_titles_rels.skillsID],
+    references: [skills.id],
+    relationName: 'skills',
+  }),
+}));
+export const relations_job_titles = relations(job_titles, ({ many }) => ({
+  titles: many(job_titles_titles, {
+    relationName: 'titles',
+  }),
+  _rels: many(job_titles_rels, {
+    relationName: '_rels',
+  }),
+}));
 
 type DatabaseSchema = {
   enum_users_roles: typeof enum_users_roles;
@@ -1082,6 +1162,9 @@ type DatabaseSchema = {
   payload_migrations: typeof payload_migrations;
   levels_items: typeof levels_items;
   levels: typeof levels;
+  job_titles_titles: typeof job_titles_titles;
+  job_titles: typeof job_titles;
+  job_titles_rels: typeof job_titles_rels;
   relations_media: typeof relations_media;
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs;
   relations_categories: typeof relations_categories;
@@ -1105,9 +1188,12 @@ type DatabaseSchema = {
   relations_payload_migrations: typeof relations_payload_migrations;
   relations_levels_items: typeof relations_levels_items;
   relations_levels: typeof relations_levels;
+  relations_job_titles_titles: typeof relations_job_titles_titles;
+  relations_job_titles_rels: typeof relations_job_titles_rels;
+  relations_job_titles: typeof relations_job_titles;
 };
 
-declare module '@payloadcms/db-postgres/types' {
+declare module '@payloadcms/db-postgres' {
   export interface GeneratedDatabaseSchema {
     schema: DatabaseSchema;
   }
