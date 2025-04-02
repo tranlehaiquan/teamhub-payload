@@ -3,6 +3,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { getMeUser } from '@/utilities/getMeUser';
 import { Metadata } from 'next';
 import { api, HydrateClient } from '@/trpc/server';
+import RefreshToken from '@/components/RefreshToken/RefreshToken';
 
 export function generateMetadata(): Metadata {
   return {
@@ -28,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <AppSidebar />
         <SidebarInset>{children}</SidebarInset>
       </SidebarProvider>
+      <RefreshToken />
     </HydrateClient>
   );
 }
