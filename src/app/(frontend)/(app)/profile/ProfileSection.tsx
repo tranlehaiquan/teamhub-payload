@@ -7,6 +7,7 @@ import { Edit } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';
 import SectionCard from '@/components/SectionCard/SectionCard';
+import useJobTitleById from '@/hooks/useJobTitleById';
 
 const ProfileSection: React.FC = () => {
   const [userProfile] = api.me.getProfile.useSuspenseQuery();
@@ -14,6 +15,7 @@ const ProfileSection: React.FC = () => {
   const [{ docs: skills }] = api.me.userSkill.useSuspenseQuery();
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
   const [{ docs: trainings }] = api.me.getTrainings.useSuspenseQuery();
+  const jobTitle = useJobTitleById(me.user.jobTitle);
 
   return (
     <div className="grid grid-cols-2 gap-2">
@@ -26,14 +28,15 @@ const ProfileSection: React.FC = () => {
               {userProfile?.firstName} {userProfile?.lastName}
             </p>
             <p>{me.user.email}</p>
+            <p className="text-sm text-gray-500">{jobTitle?.name}</p>
           </div>
 
-          <Link href="/account">
-            <Button variant={'outline'}>
+          <Button variant={'outline'} asChild>
+            <Link href="/account" className="self-start">
               <Edit size={20} />
               Update Profile
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </SectionCard>
       <SectionCard>

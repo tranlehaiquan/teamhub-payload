@@ -30,6 +30,7 @@ const UpdateUserForm: React.FC = () => {
   const [me] = api.me.getMe.useSuspenseQuery();
   const reportTo = me.user.reportTo as User | null;
   const updateMe = api.me.updateMe.useMutation();
+  const utils = api.useUtils();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,7 +51,8 @@ const UpdateUserForm: React.FC = () => {
         reportTo: data.reportTo,
         jobTitle: data.jobTitle,
       });
-      toast.success('Report to updated');
+      utils.me.getMe.invalidate();
+      toast.success('User settings updated successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update report to';
       toast.error(errorMessage);

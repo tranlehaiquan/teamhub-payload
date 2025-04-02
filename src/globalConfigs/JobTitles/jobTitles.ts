@@ -26,6 +26,15 @@ export const JobTitles: GlobalConfig = {
           name: 'description',
           type: 'textarea',
         },
+        {
+          name: 'skills',
+          type: 'relationship',
+          relationTo: 'skills',
+          hasMany: true,
+          admin: {
+            description: 'Select the skills required for this job title',
+          },
+        },
       ],
     },
   ],

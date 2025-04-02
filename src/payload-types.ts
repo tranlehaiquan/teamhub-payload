@@ -836,6 +836,10 @@ export interface JobTitle {
   titles: {
     name: string;
     description?: string | null;
+    /**
+     * Select the skills required for this job title
+     */
+    skills?: (number | Skill)[] | null;
     id?: string | null;
   }[];
   updatedAt?: string | null;
@@ -869,6 +873,7 @@ export interface JobTitlesSelect<T extends boolean = true> {
     | {
         name?: T;
         description?: T;
+        skills?: T;
         id?: T;
       };
   updatedAt?: T;
