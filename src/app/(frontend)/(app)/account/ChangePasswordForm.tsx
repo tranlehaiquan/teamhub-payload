@@ -11,9 +11,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { api } from '@/trpc/react';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 const formSchema = z
   .object({
@@ -63,7 +63,7 @@ const ChangePasswordForm: React.FC = () => {
   };
 
   return (
-    <Card className="p-4">
+    <SectionCard className="p-4" title="Change Password">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
@@ -111,7 +111,7 @@ const ChangePasswordForm: React.FC = () => {
           </Button>
         </form>
       </Form>
-    </Card>
+    </SectionCard>
   );
 };
 

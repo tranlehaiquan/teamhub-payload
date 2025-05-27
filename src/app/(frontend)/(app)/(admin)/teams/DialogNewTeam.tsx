@@ -84,7 +84,11 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
                     <FormItem className="mb-4">
                       <FormLabel>Team name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Team name" {...field} />
+                        <Input
+                          placeholder="Team name"
+                          {...field}
+                          disabled={form.formState.isSubmitting}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -99,7 +103,11 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
                     <FormItem className="mb-4">
                       <FormLabel>Owner</FormLabel>
                       <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={form.formState.isSubmitting}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select owner" />
@@ -120,7 +128,12 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
                   )}
                 />
               </FormItem>
-              <Button type="submit">Create team</Button>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || !form.formState.isDirty}
+              >
+                Create team
+              </Button>
             </Form>
           </form>
         </DialogHeader>

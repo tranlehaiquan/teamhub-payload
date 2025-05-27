@@ -83,7 +83,7 @@ const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
                     <FormItem className="mb-4">
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={form.formState.isSubmitting} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -98,7 +98,7 @@ const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
                     <FormItem className="mb-4">
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={form.formState.isSubmitting} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -113,14 +113,21 @@ const DialogNewUser: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
                     <FormItem className="mb-4">
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} disabled={form.formState.isSubmitting} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </FormItem>
-              <Button type="submit">Create User</Button>
+              <Button
+                type="submit"
+                disabled={
+                  createUser.isPending || !form.formState.isDirty || form.formState.isSubmitting
+                }
+              >
+                Create User
+              </Button>
             </Form>
           </form>
         </DialogHeader>

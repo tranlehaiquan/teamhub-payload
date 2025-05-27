@@ -3,13 +3,15 @@ import { isAdminRole } from '@/access/isAdminRole';
 import { authenticated } from '../../access/authenticated';
 import { forgotPasswordTemplate, verifyEmailTemplate } from '../../email-templates/templates';
 import { getClientSideURL } from '@/utilities/getURL';
+import { checkRole } from './checkRole';
+import { protectRoles } from './hooks/protectRoles';
 
 const clientURL = getClientSideURL();
 
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
-    admin: authenticated,
+    admin: ({ req: { user } }) => checkRole(['admin'], user),
     create: isAdminRole,
     delete: authenticated,
     read: authenticated,
@@ -61,6 +63,7 @@ export const Users: CollectionConfig = {
       name: 'roles',
       type: 'select',
       hasMany: true,
+      saveToJWT: true,
       label: 'Roles (System roles)',
       options: [
         { label: 'Admin', value: 'admin' },
@@ -68,6 +71,9 @@ export const Users: CollectionConfig = {
       ],
       admin: {
         position: 'sidebar',
+      },
+      hooks: {
+        beforeChange: [protectRoles],
       },
     },
     {

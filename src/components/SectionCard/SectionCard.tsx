@@ -3,7 +3,7 @@ import { cn } from '@/utilities/cn';
 
 interface SectionCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const SectionCard: React.FC<SectionCardProps> = ({ title, children, className, ...props }) => {

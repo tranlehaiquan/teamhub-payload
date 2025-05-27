@@ -14,12 +14,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { UserAvatar } from '@/components/UserProfile';
 import { getAvatarFallback } from '@/utilities/getAvatarFallback';
 import { api } from '@/trpc/react';
 import { uploadAvatar } from '@/services/server/uploadAvatar';
+import SectionCard from '@/components/SectionCard/SectionCard';
 
 interface Props {
   className?: string;
@@ -99,7 +99,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
   };
 
   return (
-    <Card>
+    <SectionCard title="Account">
       <Form {...form}>
         <form onSubmit={onSubmit} className="p-4">
           <div className="mb-4">
@@ -142,7 +142,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
           <Button disabled={form.formState.isSubmitting || !form.formState.isDirty}>Submit</Button>
         </form>
       </Form>
-    </Card>
+    </SectionCard>
   );
 };
 

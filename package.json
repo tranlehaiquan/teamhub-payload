@@ -85,6 +85,7 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "7.56.4",
     "react-select": "^5.10.1",
+    "recharts": "^2.15.3",
     "server-only": "^0.0.1",
     "sharp": "0.34.2",
     "sonner": "^1.7.4",
@@ -134,5 +135,8 @@
       "@vercel/speed-insights",
       "esbuild"
     ]
+  },
+  "overrides": {
+    "react-is": "^19.0.0-rc-69d4b800-20241021"
   }
 }

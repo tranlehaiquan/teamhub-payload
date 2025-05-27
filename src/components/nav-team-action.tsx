@@ -18,6 +18,10 @@ import { cn } from '@/utilities/cn';
 
 const TEAM_LINKS = [
   {
+    title: 'Metrics',
+    url: '/',
+  },
+  {
     title: 'Skills Matrix',
     url: '/skills-matrix',
   },
