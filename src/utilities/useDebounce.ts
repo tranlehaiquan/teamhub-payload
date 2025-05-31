@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import debounce from 'lodash/debounce';
 
 export function useDebounce<T>(value: T, delay = 200): T {
@@ -17,14 +17,28 @@ export function useDebounce<T>(value: T, delay = 200): T {
   return debouncedValue;
 }
 
-export const useDebounceCallBack = <T>(callback: (value: T) => void, delay) => {
-  const debouncedFn = debounce(callback, delay);
+export const useDebounceCallBack = <T>(callback: (value: T) => void, delay: number) => {
+  const callbackRef = useRef(callback);
+  const debouncedFnRef = useRef<ReturnType<typeof debounce>>(undefined);
+
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  // Create debounced function only when delay changes
+  if (!debouncedFnRef.current || debouncedFnRef.current.flush !== debounce(() => {}, delay).flush) {
+    debouncedFnRef.current?.cancel();
+    debouncedFnRef.current = debounce((value: T) => {
+      callbackRef.current(value);
+    }, delay);
+  }
 
   useEffect(() => {
     return () => {
-      debouncedFn.cancel();
+      debouncedFnRef.current?.cancel();
     };
-  }, [debouncedFn]);
+  }, []);
 
-  return debouncedFn;
+  return debouncedFnRef.current;
 };

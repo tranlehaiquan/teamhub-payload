@@ -12,8 +12,8 @@ const GeneralPage = async ({ params }: { params: Promise<{ teamId: string }> }) 
 
       <SectionCard title={`Metrics`}>
         <div className="grid grid-cols-2 gap-4">
-          <TeamSkillsChart teamId={teamId} />
-          <SkillsToBeDevelop teamId={teamId} />
+          <TeamSkillsChart teamId={Number(teamId)} />
+          <SkillsToBeDevelop teamId={Number(teamId)} />
         </div>
       </SectionCard>
     </div>

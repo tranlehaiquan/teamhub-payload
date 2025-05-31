@@ -51,7 +51,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function SkillsToBeDevelop({ teamId }: { teamId: string }) {
+export default function SkillsToBeDevelop({ teamId }: { teamId: number }) {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
