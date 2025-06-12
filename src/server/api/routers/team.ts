@@ -2,7 +2,13 @@ import { z } from 'zod';
 
 import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { teams_users, users, users_skills } from '@/payload-generated-schema';
+import {
+  teams_users,
+  users,
+  users_skills,
+  team_requirements,
+  skills,
+} from '@/payload-generated-schema';
 import { eq } from '@payloadcms/db-postgres/drizzle';
 import { User } from '@/payload-types';
 import { inArray } from '@payloadcms/db-postgres/drizzle';
@@ -186,7 +192,6 @@ export const teamRouter = createTRPCRouter({
     }
 
     const transactionID = (await payload.db.beginTransaction()) as string;
-    console.log('transactionID', transactionID);
 
     // TODO: soft delete?
     const deleteTeamSkills = payload.delete({
@@ -330,22 +335,76 @@ export const teamRouter = createTRPCRouter({
   getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
     const teamId = input;
     const payload = await getPayloadFromConfig();
-    const teamRequirements = await payload.find({
-      collection: 'team_requirements',
-      where: {
-        team: {
-          equals: teamId,
-        },
-      },
-      populate: {
-        teams: {}, // this make team only return { id }
-        skills: {
-          name: true,
-        },
-      },
+
+    const teamUsersResults = await payload.db.drizzle
+      .select({
+        id: teams_users.id,
+        team: teams_users.team,
+        user: teams_users.user,
+      })
+      .from(teams_users)
+      .leftJoin(users, eq(teams_users.user, users.id))
+      .where(eq(teams_users.team, teamId));
+    const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
+    const userSkills = await payload.db.drizzle
+      .select({
+        id: users_skills.id,
+        user: users_skills.user,
+        skill: users_skills.skill,
+        currentLevel: users_skills.currentLevel,
+        desiredLevel: users_skills.desiredLevel,
+      })
+      .from(users_skills)
+      .where(inArray(users_skills.user, teamMemberIds));
+
+    const teamRequirements = await payload.db.drizzle
+      .select({
+        id: team_requirements.id,
+        team: team_requirements.team,
+        skill: team_requirements.skill,
+        desiredLevel: team_requirements.desiredLevel,
+        desiredMembers: team_requirements.desiredMembers,
+        skillName: skills.name,
+      })
+      .from(team_requirements)
+      .leftJoin(skills, eq(team_requirements.skill, skills.id))
+      .where(eq(team_requirements.team, teamId));
+
+    // Create a lookup map for efficient counting: skill_id -> currentLevel -> count
+    const userSkillsLookup = new Map<number, Map<number, number>>();
+    userSkills.forEach((userSkill) => {
+      const skillId = userSkill.skill as number;
+      const currentLevel = userSkill.currentLevel ? Number(userSkill.currentLevel) : null;
+
+      if (currentLevel !== null) {
+        if (!userSkillsLookup.has(skillId)) {
+          userSkillsLookup.set(skillId, new Map());
+        }
+        const skillMap = userSkillsLookup.get(skillId)!;
+        skillMap.set(currentLevel, (skillMap.get(currentLevel) || 0) + 1);
+      }
     });
 
-    return teamRequirements;
+    const teamRequirementsProcessed = teamRequirements.map((requirement) => {
+      const skill = requirement.skill;
+      const desiredLevel = requirement.desiredLevel ? Number(requirement.desiredLevel) : null;
+      const desiredMembers = requirement.desiredMembers ? Number(requirement.desiredMembers) : null;
+
+      // Efficient lookup instead of filtering
+      const numberOfUserSkillsWithSameSkillAndDesiredLevel =
+        skill && desiredLevel !== null && userSkillsLookup.has(skill)
+          ? userSkillsLookup.get(skill)!.get(desiredLevel) || 0
+          : 0;
+
+      return {
+        skill,
+        desiredLevel,
+        desiredMembers,
+        numberOfUserSkillsWithSameSkillAndDesiredLevel,
+      };
+    });
+
+    return teamRequirementsProcessed;
   }),
 
   updateUserSkills: isAuthedProcedure

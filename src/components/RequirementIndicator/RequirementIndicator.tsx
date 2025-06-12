@@ -15,7 +15,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Skill, TeamRequirement } from '@/payload-types';
+import { Skill } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { Edit } from 'lucide-react';
 import LevelSkillSelection from '../LevelSkillSelection/LevelSkillSelection';
@@ -26,7 +26,12 @@ import { RequirementDisplay } from './RequirementDisplay';
 
 type Props = {
   skill: Skill;
-  teamRequirements?: TeamRequirement[];
+  teamRequirements?: {
+    skill: number;
+    desiredLevel: number;
+    desiredMembers: number;
+    numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
+  }[];
   teamId: number;
 };
 
@@ -35,7 +40,6 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const utils = api.useUtils();
   const { formMethods, fields } = useRequirementForm(levels, teamRequirements || []);
-  const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
 
   const updateRequirements = api.team.updateTeamRequirements.useMutation({
     onSuccess: () => {
@@ -61,11 +65,7 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
       <DialogTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer p-1 rounded">
           {teamRequirements && (
-            <RequirementDisplay
-              requirements={teamRequirements}
-              levels={levels}
-              userSkills={teamUserSkills}
-            />
+            <RequirementDisplay requirements={teamRequirements} levels={levels} />
           )}
           <Edit className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
         </div>

@@ -57,11 +57,19 @@ export const GroupSkillsByCategory = ({
   };
 
   const getTeamRequirementsBySkillId = (skillId: number) => {
-    const teamRequirementsForSkill = teamRequirements.docs.filter(
-      (teamRequirement) => (teamRequirement.skill as Skill).id === skillId,
+    const teamRequirementsForSkill = teamRequirements.filter(
+      (teamRequirement) => teamRequirement.skill === skillId,
     );
 
-    return teamRequirementsForSkill;
+    return teamRequirementsForSkill.map((teamRequirement) => ({
+      ...teamRequirement,
+      desiredLevel: teamRequirement.desiredLevel ? Number(teamRequirement.desiredLevel) : null,
+      desiredMembers: teamRequirement.desiredMembers
+        ? Number(teamRequirement.desiredMembers)
+        : null,
+      numberOfUserSkillsWithSameSkillAndDesiredLevel:
+        teamRequirement.numberOfUserSkillsWithSameSkillAndDesiredLevel,
+    }));
   };
 
   const handleUpdateTeamUserSkills = async ({
@@ -100,7 +108,14 @@ export const GroupSkillsByCategory = ({
             <div className="flex items-center justify-center">
               <RequirementIndicator
                 skill={skill as Skill}
-                teamRequirements={getTeamRequirementsBySkillId((skill as Skill).id)}
+                teamRequirements={
+                  getTeamRequirementsBySkillId((skill as Skill).id)?.map((req) => ({
+                    ...req,
+                    skill: req.skill as number,
+                    desiredLevel: req.desiredLevel || 0,
+                    desiredMembers: req.desiredMembers || 0,
+                  })) || []
+                }
                 teamId={teamId}
               />
             </div>

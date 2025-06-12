@@ -26,7 +26,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
-    reactCompiler: true,
+    // reactCompiler: true,
   },
   output: 'standalone',
 };

@@ -14,7 +14,13 @@ export const requirementsListSchema = z.object({
 
 export type RequirementFormData = z.infer<typeof requirementsListSchema>;
 
-export const useRequirementForm = (levels: Level, teamRequirements: TeamRequirement[]) => {
+export const useRequirementForm = (
+  levels: Level,
+  teamRequirements: {
+    desiredLevel: number;
+    desiredMembers: number;
+  }[],
+) => {
   const requirementPlaceholder = levels.items.map((level) => {
     const teamRequirement = teamRequirements.find((req) => req.desiredLevel === level.level);
 
