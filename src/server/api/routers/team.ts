@@ -6,9 +6,11 @@ import {
   users_skills,
   team_requirements,
   skills,
+  teams,
+  team_skills,
+  categories,
 } from '@/payload-generated-schema';
-import { eq } from '@payloadcms/db-postgres/drizzle';
-import { User } from '@/payload-types';
+import { eq, like } from '@payloadcms/db-postgres/drizzle';
 import { inArray } from '@payloadcms/db-postgres/drizzle';
 
 export const teamRouter = createTRPCRouter({
@@ -22,28 +24,31 @@ export const teamRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { page, limit } = input;
-      const teams = await ctx.payload.find({
-        collection: 'teams',
-        limit,
-        page,
-        where: {
-          name: {
-            contains: input.name,
-          },
-        },
-      });
 
-      return teams;
+      const teamRecords = await ctx.payload.db.drizzle
+        .select()
+        .from(teams)
+        .where(input.name ? like(teams.name, `%${input.name}%`) : undefined)
+        .limit(limit)
+        .offset((page - 1) * limit);
+
+      return {
+        docs: teamRecords,
+        totalDocs: teamRecords.length,
+        limit,
+        totalPages: Math.ceil(teamRecords.length / limit),
+        page,
+        pagingCounter: (page - 1) * limit + 1,
+        hasPrevPage: page > 1,
+        hasNextPage: false,
+        prevPage: page > 1 ? page - 1 : null,
+        nextPage: null,
+      };
     }),
 
   getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
-    const team = await ctx.payload.findByID({
-      collection: 'teams',
-      id: input,
-      depth: 0,
-    });
-
-    return team;
+    const team = await ctx.payload.db.drizzle.select().from(teams).where(eq(teams.id, input));
+    return team[0];
   }),
 
   updateTeamById: isAuthedProcedure
@@ -171,13 +176,9 @@ export const teamRouter = createTRPCRouter({
 
     const teamId = input;
     const userId = me.user.id;
+    const team = await ctx.payload.db.drizzle.select().from(teams).where(eq(teams.id, teamId));
 
-    const team = await ctx.payload.findByID({
-      collection: 'teams',
-      id: teamId,
-    });
-
-    if (!team || (team.owner as User).id !== userId) {
+    if (!team || team[0].owner !== userId) {
       throw new Error('Team not found');
     }
 
@@ -268,24 +269,37 @@ export const teamRouter = createTRPCRouter({
 
   getTeamSkills: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
-    const teamSkills = await ctx.payload.find({
-      collection: 'team_skills',
-      where: {
-        team: {
-          equals: teamId,
+    const teamSkills = await ctx.payload.db.drizzle
+      .select({
+        id: team_skills.id,
+        team: team_skills.team,
+        skill: {
+          id: skills.id,
+          name: skills.name,
         },
-      },
-      limit: 100,
-      populate: {
-        teams: {}, // this make team only return { id }
-        skills: {
-          name: true,
-          category: true,
+        skillCategory: {
+          id: categories.id,
+          title: categories.title,
         },
-      },
-    });
+      })
+      .from(team_skills)
+      .leftJoin(skills, eq(team_skills.skill, skills.id))
+      .leftJoin(categories, eq(skills.category, categories.id))
+      .where(eq(team_skills.team, teamId))
+      .limit(100);
 
-    return teamSkills;
+    return {
+      docs: teamSkills,
+      totalDocs: teamSkills.length,
+      limit: 100,
+      totalPages: 1,
+      page: 1,
+      pagingCounter: 1,
+      hasPrevPage: false,
+      hasNextPage: false,
+      prevPage: null,
+      nextPage: null,
+    };
   }),
 
   updateTeamSkills: isAuthedProcedure
@@ -455,22 +469,24 @@ export const teamRouter = createTRPCRouter({
       const currentUserId = me.user.id;
 
       // Verify current user is the team owner
-      const team = await ctx.payload.findByID({
-        collection: 'teams',
-        id: teamId,
-      });
+      const teamResults = await ctx.payload.db.drizzle
+        .select()
+        .from(teams)
+        .where(eq(teams.id, teamId));
 
-      if (!team || (team.owner as User).id !== currentUserId) {
+      const team = teamResults[0];
+
+      if (!team || team.owner !== currentUserId) {
         throw new Error('Unauthorized: Only team owner can transfer ownership');
       }
 
       // Verify new owner exists
-      const newOwner = await ctx.payload.findByID({
-        collection: 'users',
-        id: newOwnerId,
-      });
+      const newOwner = await ctx.payload.db.drizzle
+        .select()
+        .from(users)
+        .where(eq(users.id, newOwnerId));
 
-      if (!newOwner) {
+      if (!newOwner || newOwner.length === 0) {
         throw new Error('New owner not found');
       }
 

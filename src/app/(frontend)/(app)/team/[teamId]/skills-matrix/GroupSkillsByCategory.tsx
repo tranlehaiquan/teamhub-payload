@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Category, Skill, TeamSkill } from '@/payload-types';
+import { Skill } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { groupBy } from 'lodash';
@@ -30,8 +30,17 @@ export const GroupSkillsByCategory = ({
   teamId,
   userSkills,
 }: {
-  teamSkills: TeamSkill[];
-  category: Category;
+  teamSkills: {
+    id: number;
+    skill: {
+      id: number;
+      name: string;
+    };
+  }[];
+  category: {
+    id: number;
+    title: string;
+  };
   teamId: number;
   userSkills: UserSkill[];
 }) => {

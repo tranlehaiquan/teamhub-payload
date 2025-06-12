@@ -24,13 +24,12 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
   const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
   const [levels] = api.global.getLevels.useSuspenseQuery();
 
-  const categories = uniqBy(
-    teamSkills.docs.map((teamSkill) => (teamSkill.skill as Skill).category as Category),
-    'id',
+  const categories = uniqBy(teamSkills.docs, (teamSkill) => teamSkill.skillCategory?.id).map(
+    (i) => i.skillCategory,
   );
   const groupSkillsByCategory = groupBy(
     teamSkills.docs,
-    (teamSkill) => ((teamSkill.skill as Skill)?.category as Category)?.id,
+    (teamSkill) => teamSkill.skillCategory?.id,
   );
   const users = teamMembers.map((teamMember) => teamMember.user as User);
 
@@ -65,9 +64,9 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
             <TableBody>
               {categories.map((category) => (
                 <GroupSkillsByCategory
-                  key={category.id}
-                  category={category}
-                  teamSkills={groupSkillsByCategory[category.id]}
+                  key={category?.id}
+                  category={category as any}
+                  teamSkills={groupSkillsByCategory[category?.id ?? ''] as any}
                   teamId={teamId}
                   userSkills={teamUserSkills as any}
                 />

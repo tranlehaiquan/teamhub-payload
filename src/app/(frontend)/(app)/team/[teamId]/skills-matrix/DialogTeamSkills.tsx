@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import Select from 'react-select';
-import { Skill } from '@/payload-types';
 import { useForm } from 'react-hook-form';
 import zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,10 +38,12 @@ const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, ch
   const updateTeamSkillsMutation = api.team.updateTeamSkills.useMutation();
   const utils = api.useUtils();
 
-  const selectedOptions = teamSkills.docs.map((skill) => ({
-    label: (skill.skill as Skill).name,
-    value: (skill.skill as Skill).id,
-  }));
+  const selectedOptions = teamSkills.docs
+    .filter((skill) => skill.skill && skill.skill.name)
+    .map((skill) => ({
+      label: skill.skill!.name,
+      value: skill.skill!.id,
+    }));
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
@@ -59,10 +60,10 @@ const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, ch
   const handleSubmit = formMethods.handleSubmit(async (data) => {
     const skills = data.skills.map((skill) => skill.value);
     const removeSkills = teamSkills.docs
-      .filter((teamSkill) => !skills.includes((teamSkill.skill as Skill).id))
+      .filter((teamSkill) => teamSkill.skill && !skills.includes(teamSkill.skill.id))
       .map((teamSkill) => teamSkill.id);
     const addSkills = skills.filter(
-      (skill) => !teamSkills.docs.some((teamSkill) => (teamSkill.skill as Skill).id === skill),
+      (skill) => !teamSkills.docs.some((teamSkill) => teamSkill.skill?.id === skill),
     );
 
     try {

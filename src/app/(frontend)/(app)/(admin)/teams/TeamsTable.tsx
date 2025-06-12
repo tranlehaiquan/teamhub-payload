@@ -45,7 +45,8 @@ const TeamsTable: React.FC = () => {
 
   const table = useReactTable({
     data: teams,
-    columns,
+    // TODO: fix this
+    columns: columns as any,
     state: {
       sorting,
       columnVisibility,
