@@ -10,6 +10,7 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 import { getMeUser } from '@/utilities/getMeUser';
+import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 
 /**
  * 1. CONTEXT
@@ -26,8 +27,10 @@ import { getMeUser } from '@/utilities/getMeUser';
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   try {
     const user = await getMeUser();
+    const payload = await getPayloadFromConfig();
     return {
       user,
+      payload,
       ...opts,
     };
   } catch {
@@ -139,6 +142,7 @@ export const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
     ctx: {
       ...ctx,
       user: user,
+      payload: ctx.payload,
     },
   });
 });

@@ -1,7 +1,5 @@
 import { z } from 'zod';
-
 import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
-import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import {
   teams_users,
   users,
@@ -22,10 +20,9 @@ export const teamRouter = createTRPCRouter({
         name: z.string().optional(),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { page, limit } = input;
-      const payload = await getPayloadFromConfig();
-      const teams = await payload.find({
+      const teams = await ctx.payload.find({
         collection: 'teams',
         limit,
         page,
@@ -39,9 +36,8 @@ export const teamRouter = createTRPCRouter({
       return teams;
     }),
 
-  getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
-    const payload = await getPayloadFromConfig();
-    const team = await payload.findByID({
+  getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
+    const team = await ctx.payload.findByID({
       collection: 'teams',
       id: input,
       depth: 0,
@@ -54,14 +50,13 @@ export const teamRouter = createTRPCRouter({
     .input(
       z.object({ id: z.number(), name: z.string().optional(), description: z.string().optional() }),
     )
-    .mutation(async ({ input }) => {
-      const payload = await getPayloadFromConfig();
+    .mutation(async ({ input, ctx }) => {
       const newData = {
         name: input.name,
         description: input.description,
       };
 
-      const team = await payload.update({
+      const team = await ctx.payload.update({
         collection: 'teams',
         id: input.id,
         data: newData,
@@ -70,10 +65,9 @@ export const teamRouter = createTRPCRouter({
       return team;
     }),
 
-  getTeamMembers: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+  getTeamMembers: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
-    const payload = await getPayloadFromConfig();
-    const teamUsersResults = await payload.db.drizzle
+    const teamUsersResults = await ctx.payload.db.drizzle
       .select({
         id: teams_users.id,
         team: teams_users.team,
@@ -100,11 +94,10 @@ export const teamRouter = createTRPCRouter({
     }[];
   }),
 
-  getUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
-    const payload = await getPayloadFromConfig();
+  getUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
 
-    const teamUsersResults = await payload.db.drizzle
+    const teamUsersResults = await ctx.payload.db.drizzle
       .select({
         id: teams_users.id,
         team: teams_users.team,
@@ -115,7 +108,7 @@ export const teamRouter = createTRPCRouter({
       .where(eq(teams_users.team, teamId));
 
     const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
-    const userSkills = await payload.db.drizzle
+    const userSkills = await ctx.payload.db.drizzle
       .select({
         id: users_skills.id,
         user: users_skills.user,
@@ -146,11 +139,10 @@ export const teamRouter = createTRPCRouter({
 
   removeTeamMember: isAuthedProcedure
     .input(z.object({ teams_usersId: z.number() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { teams_usersId } = input;
-      const payload = await getPayloadFromConfig();
 
-      return await payload.delete({
+      return await ctx.payload.delete({
         collection: 'teams_users',
         id: teams_usersId,
       });
@@ -158,11 +150,10 @@ export const teamRouter = createTRPCRouter({
 
   addTeamMember: isAuthedProcedure
     .input(z.object({ teamId: z.number(), userId: z.number() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { teamId, userId } = input;
-      const payload = await getPayloadFromConfig();
 
-      return await payload.create({
+      return await ctx.payload.create({
         collection: 'teams_users',
         data: {
           team: teamId,
@@ -172,7 +163,6 @@ export const teamRouter = createTRPCRouter({
     }),
 
   deleteTeam: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
-    const payload = await getPayloadFromConfig();
     const me = ctx.user;
 
     if (!me) {
@@ -182,7 +172,7 @@ export const teamRouter = createTRPCRouter({
     const teamId = input;
     const userId = me.user.id;
 
-    const team = await payload.findByID({
+    const team = await ctx.payload.findByID({
       collection: 'teams',
       id: teamId,
     });
@@ -191,10 +181,10 @@ export const teamRouter = createTRPCRouter({
       throw new Error('Team not found');
     }
 
-    const transactionID = (await payload.db.beginTransaction()) as string;
+    const transactionID = (await ctx.payload.db.beginTransaction()) as string;
 
     // TODO: soft delete?
-    const deleteTeamSkills = payload.delete({
+    const deleteTeamSkills = ctx.payload.delete({
       collection: 'team_skills',
       where: {
         team: {
@@ -206,7 +196,7 @@ export const teamRouter = createTRPCRouter({
       },
     });
 
-    const deleteTeamRequirements = payload.delete({
+    const deleteTeamRequirements = ctx.payload.delete({
       collection: 'team_requirements',
       where: {
         team: {
@@ -219,7 +209,7 @@ export const teamRouter = createTRPCRouter({
     });
 
     // teams_users
-    const deleteTeamUsers = payload.delete({
+    const deleteTeamUsers = ctx.payload.delete({
       collection: 'teams_users',
       where: {
         team: {
@@ -231,7 +221,7 @@ export const teamRouter = createTRPCRouter({
       },
     });
 
-    const deleteTeam = payload.delete({
+    const deleteTeam = ctx.payload.delete({
       collection: 'teams',
       id: teamId,
       req: {
@@ -246,7 +236,7 @@ export const teamRouter = createTRPCRouter({
       deleteTeam,
     ]);
 
-    await payload.db.commitTransaction(transactionID);
+    await ctx.payload.db.commitTransaction(transactionID);
 
     return result;
   }),
@@ -259,7 +249,6 @@ export const teamRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const payload = await getPayloadFromConfig();
       const me = ctx.user;
 
       if (!me) {
@@ -268,7 +257,7 @@ export const teamRouter = createTRPCRouter({
 
       const userId = me.user.id;
 
-      return await payload.create({
+      return await ctx.payload.create({
         collection: 'teams',
         data: {
           name: input.name,
@@ -277,10 +266,9 @@ export const teamRouter = createTRPCRouter({
       });
     }),
 
-  getTeamSkills: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+  getTeamSkills: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
-    const payload = await getPayloadFromConfig();
-    const teamSkills = await payload.find({
+    const teamSkills = await ctx.payload.find({
       collection: 'team_skills',
       where: {
         team: {
@@ -308,19 +296,18 @@ export const teamRouter = createTRPCRouter({
         add: z.array(z.number()).optional(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { teamId, remove, add } = input;
-      const payload = await getPayloadFromConfig();
 
       const removeSkills = (remove || []).map(async (teamSkill) => {
-        return await payload.delete({
+        return await ctx.payload.delete({
           collection: 'team_skills',
           id: teamSkill,
         });
       });
 
       const addSkills = (add || []).map(async (skillId) => {
-        return await payload.create({
+        return await ctx.payload.create({
           collection: 'team_skills',
           data: {
             team: teamId,
@@ -332,11 +319,10 @@ export const teamRouter = createTRPCRouter({
       return await Promise.all([...removeSkills, ...addSkills]);
     }),
 
-  getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input }) => {
+  getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
-    const payload = await getPayloadFromConfig();
 
-    const teamUsersResults = await payload.db.drizzle
+    const teamUsersResults = await ctx.payload.db.drizzle
       .select({
         id: teams_users.id,
         team: teams_users.team,
@@ -346,7 +332,7 @@ export const teamRouter = createTRPCRouter({
       .leftJoin(users, eq(teams_users.user, users.id))
       .where(eq(teams_users.team, teamId));
     const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
-    const userSkills = await payload.db.drizzle
+    const userSkills = await ctx.payload.db.drizzle
       .select({
         id: users_skills.id,
         user: users_skills.user,
@@ -357,7 +343,7 @@ export const teamRouter = createTRPCRouter({
       .from(users_skills)
       .where(inArray(users_skills.user, teamMemberIds));
 
-    const teamRequirements = await payload.db.drizzle
+    const teamRequirements = await ctx.payload.db.drizzle
       .select({
         id: team_requirements.id,
         team: team_requirements.team,
@@ -419,8 +405,7 @@ export const teamRouter = createTRPCRouter({
         }),
       ),
     )
-    .mutation(async ({ input }) => {
-      const payload = await getPayloadFromConfig();
+    .mutation(async ({ input, ctx }) => {
       const newUserSkills = input.filter((userSkill) => !userSkill.id);
       const userSkillsUpdate = input.filter((userSkill) => userSkill.id) as {
         id: number;
@@ -430,7 +415,7 @@ export const teamRouter = createTRPCRouter({
       }[];
 
       const newUserSkillsRs = newUserSkills.map(async (userSkill) => {
-        await payload.create({
+        await ctx.payload.create({
           collection: 'users_skills',
           data: {
             user: userSkill.user,
@@ -442,7 +427,7 @@ export const teamRouter = createTRPCRouter({
       });
 
       const updateUserSkillsRs = userSkillsUpdate.map(async (userSkillUpdate) => {
-        return await payload.update({
+        return await ctx.payload.update({
           collection: 'users_skills',
           id: userSkillUpdate.id,
           data: userSkillUpdate,
@@ -460,7 +445,6 @@ export const teamRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const payload = await getPayloadFromConfig();
       const me = ctx.user;
 
       if (!me) {
@@ -471,7 +455,7 @@ export const teamRouter = createTRPCRouter({
       const currentUserId = me.user.id;
 
       // Verify current user is the team owner
-      const team = await payload.findByID({
+      const team = await ctx.payload.findByID({
         collection: 'teams',
         id: teamId,
       });
@@ -481,7 +465,7 @@ export const teamRouter = createTRPCRouter({
       }
 
       // Verify new owner exists
-      const newOwner = await payload.findByID({
+      const newOwner = await ctx.payload.findByID({
         collection: 'users',
         id: newOwnerId,
       });
@@ -491,7 +475,7 @@ export const teamRouter = createTRPCRouter({
       }
 
       // Transfer ownership
-      return await payload.update({
+      return await ctx.payload.update({
         collection: 'teams',
         id: teamId,
         data: {
@@ -513,12 +497,11 @@ export const teamRouter = createTRPCRouter({
         ),
       }),
     )
-    .mutation(async ({ input }) => {
-      const payload = await getPayloadFromConfig();
+    .mutation(async ({ input, ctx }) => {
       const { teamId, skillId, requirements } = input;
 
       // Delete existing requirements for this team and skill
-      await payload.delete({
+      await ctx.payload.delete({
         collection: 'team_requirements',
         where: {
           AND: [
@@ -543,7 +526,7 @@ export const teamRouter = createTRPCRouter({
             req.desiredLevel !== null && req.desiredMembers !== null && req.desiredMembers > 0,
         )
         .map(async (requirement) => {
-          return await payload.create({
+          return await ctx.payload.create({
             collection: 'team_requirements',
             data: {
               team: teamId,
