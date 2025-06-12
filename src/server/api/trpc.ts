@@ -129,7 +129,7 @@ export const isAuthedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   });
 });
 
-export const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
+export const adminProcedure = isAuthedProcedure.use(async ({ ctx, next }) => {
   const user = ctx.user;
   const roles = user?.user.roles || [];
   const isAdmin = roles.includes('admin');
@@ -142,7 +142,6 @@ export const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
     ctx: {
       ...ctx,
       user: user,
-      payload: ctx.payload,
     },
   });
 });
