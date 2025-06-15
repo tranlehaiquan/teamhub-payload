@@ -36,5 +36,8 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     }
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
   }
 }

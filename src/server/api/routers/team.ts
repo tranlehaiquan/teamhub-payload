@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  adminProcedure,
-  createTRPCRouter,
-  isAuthedProcedure,
-  publicProcedure,
-} from '@/server/api/trpc';
+import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import {
   teams_users,
   users,
@@ -17,6 +12,7 @@ import {
 } from '@/payload-generated-schema';
 import { eq, like, count } from '@payloadcms/db-postgres/drizzle';
 import { inArray } from '@payloadcms/db-postgres/drizzle';
+import { TRPCError } from '@trpc/server';
 
 export const teamRouter = createTRPCRouter({
   getTeams: isAuthedProcedure
@@ -61,19 +57,25 @@ export const teamRouter = createTRPCRouter({
         .limit(limit)
         .offset((page - 1) * limit);
 
-      console.log(JSON.stringify(teamRecords));
+      const totalCountResult = await ctx.drizzle
+        .select({ count: count() })
+        .from(teams)
+        .where(name ? like(teams.name, `%${name}%`) : undefined);
+
+      const totalDocs = Number(totalCountResult[0]?.count || 0);
+      const totalPages = Math.ceil(totalDocs / limit);
 
       return {
         docs: teamRecords,
-        totalDocs: teamRecords.length,
+        totalDocs,
         limit,
-        totalPages: Math.ceil(teamRecords.length / limit),
+        totalPages,
         page,
         pagingCounter: (page - 1) * limit + 1,
         hasPrevPage: page > 1,
-        hasNextPage: false,
+        hasNextPage: page < totalPages,
         prevPage: page > 1 ? page - 1 : null,
-        nextPage: null,
+        nextPage: page < totalPages ? page + 1 : null,
       };
     }),
 
@@ -84,7 +86,11 @@ export const teamRouter = createTRPCRouter({
 
   updateTeamById: isAuthedProcedure
     .input(
-      z.object({ id: z.number(), name: z.string().optional(), description: z.string().optional() }),
+      z.object({
+        id: z.number().positive(),
+        name: z.string().min(1).max(255).optional(),
+        description: z.string().optional(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const newData = {
@@ -133,44 +139,36 @@ export const teamRouter = createTRPCRouter({
   getUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
 
-    const teamUsersResults = await ctx.drizzle
+    // Single query with JOINs - much more efficient!
+    const teamUsersWithSkills = await ctx.drizzle
       .select({
-        id: teams_users.id,
-        team: teams_users.team,
-        user: teams_users.user,
-      })
-      .from(teams_users)
-      .leftJoin(users, eq(teams_users.user, users.id))
-      .where(eq(teams_users.team, teamId));
+        // Team user info
+        teamUserId: teams_users.id,
+        teamId: teams_users.team,
+        userId: teams_users.user,
 
-    const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
-    const userSkills = await ctx.drizzle
-      .select({
-        id: users_skills.id,
-        user: users_skills.user,
-        skill: users_skills.skill,
+        // User skill info (can be null if user has no skills)
+        userSkillId: users_skills.id,
+        skillId: users_skills.skill,
         currentLevel: users_skills.currentLevel,
         desiredLevel: users_skills.desiredLevel,
       })
-      .from(users_skills)
-      .where(inArray(users_skills.user, teamMemberIds));
+      .from(teams_users)
+      .leftJoin(users_skills, eq(teams_users.user, users_skills.user))
+      .where(eq(teams_users.team, teamId));
 
-    const teamUsersResultsWithSkills = teamUsersResults
-      .map((teamUser) => {
-        const user = teamUser.user;
-        const userSkill = userSkills
-          .filter((userSkill) => userSkill.user === user)
-          .map((userSkill) => ({
-            ...userSkill,
-            currentLevel: userSkill.currentLevel ? Number(userSkill.currentLevel) : undefined,
-            desiredLevel: userSkill.desiredLevel ? Number(userSkill.desiredLevel) : undefined,
-          }));
+    // Simple mapping - no filtering needed!
+    const userSkillsProcessed = teamUsersWithSkills
+      .filter((row) => row.userSkillId !== null) // Only include rows with skills
+      .map((row) => ({
+        id: row.userSkillId!,
+        user: row.userId,
+        skill: row.skillId!,
+        currentLevel: row.currentLevel ? Number(row.currentLevel) : undefined,
+        desiredLevel: row.desiredLevel ? Number(row.desiredLevel) : undefined,
+      }));
 
-        return userSkill;
-      })
-      .flat();
-
-    return teamUsersResultsWithSkills;
+    return userSkillsProcessed;
   }),
 
   removeTeamMember: isAuthedProcedure
@@ -185,7 +183,7 @@ export const teamRouter = createTRPCRouter({
     }),
 
   addTeamMember: isAuthedProcedure
-    .input(z.object({ teamId: z.number(), userId: z.number() }))
+    .input(z.object({ teamId: z.number().positive(), userId: z.number().positive() }))
     .mutation(async ({ input, ctx }) => {
       const { teamId, userId } = input;
 
@@ -206,7 +204,10 @@ export const teamRouter = createTRPCRouter({
     const team = await ctx.drizzle.select().from(teams).where(eq(teams.id, teamId));
 
     if (!team || team[0].owner !== userId) {
-      throw new Error('Team not found');
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Team not found',
+      });
     }
 
     const transactionID = (await ctx.payload.db.beginTransaction()) as string;
@@ -272,8 +273,8 @@ export const teamRouter = createTRPCRouter({
   createTeam: adminProcedure
     .input(
       z.object({
-        name: z.string(),
-        owner: z.number(),
+        name: z.string().min(1).max(255),
+        owner: z.number().positive(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -327,9 +328,9 @@ export const teamRouter = createTRPCRouter({
   updateTeamSkills: isAuthedProcedure
     .input(
       z.object({
-        teamId: z.number(),
-        remove: z.array(z.number()).optional(),
-        add: z.array(z.number()).optional(),
+        teamId: z.number().positive(),
+        remove: z.array(z.number().positive()).optional(),
+        add: z.array(z.number().positive()).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -434,8 +435,8 @@ export const teamRouter = createTRPCRouter({
       z.array(
         z.object({
           id: z.number().optional(),
-          user: z.number(),
-          skill: z.number(),
+          user: z.number().positive(),
+          skill: z.number().positive(),
           currentLevel: z.number().nullable(),
           desiredLevel: z.number().nullable(),
         }),
@@ -451,7 +452,7 @@ export const teamRouter = createTRPCRouter({
       }[];
 
       const newUserSkillsRs = newUserSkills.map(async (userSkill) => {
-        await ctx.payload.create({
+        return await ctx.payload.create({
           collection: 'users_skills',
           data: {
             user: userSkill.user,
@@ -476,8 +477,8 @@ export const teamRouter = createTRPCRouter({
   transferTeamOwnership: isAuthedProcedure
     .input(
       z.object({
-        teamId: z.number(),
-        newOwnerId: z.number(),
+        teamId: z.number().positive(),
+        newOwnerId: z.number().positive(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -513,8 +514,8 @@ export const teamRouter = createTRPCRouter({
   updateTeamRequirements: isAuthedProcedure
     .input(
       z.object({
-        teamId: z.number(),
-        skillId: z.number(),
+        teamId: z.number().positive(),
+        skillId: z.number().positive(),
         requirements: z.array(
           z.object({
             desiredLevel: z.number().nullable(),
