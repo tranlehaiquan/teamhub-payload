@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  adminProcedure,
-  createTRPCRouter,
-  isAuthedProcedure,
-  publicProcedure,
-} from '@/server/api/trpc';
+import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import {
   teams_users,
   users,
@@ -15,53 +10,27 @@ import {
   team_skills,
   categories,
 } from '@/payload-generated-schema';
-import { eq, like, count } from '@payloadcms/db-postgres/drizzle';
+import { eq, like } from '@payloadcms/db-postgres/drizzle';
 import { inArray } from '@payloadcms/db-postgres/drizzle';
 
 export const teamRouter = createTRPCRouter({
-  getTeams: isAuthedProcedure
+  findTeams: isAuthedProcedure
     .input(
-      z
-        .object({
-          page: z.number().optional().default(1),
-          limit: z.number().optional().default(10),
-          name: z.string().optional(),
-        })
-        .optional(),
+      z.object({
+        page: z.number().optional().default(1),
+        limit: z.number().optional().default(10),
+        name: z.string().optional(),
+      }),
     )
     .query(async ({ input, ctx }) => {
-      const { page = 1, limit = 10, name } = input || {};
+      const { page, limit } = input;
 
       const teamRecords = await ctx.drizzle
-        .select({
-          id: teams.id,
-          name: teams.name,
-          owner: {
-            id: users.id,
-            name: users.name,
-            email: users.email,
-          },
-          members: count(teams_users.id),
-          createdAt: teams.createdAt,
-          updatedAt: teams.updatedAt,
-        })
+        .select()
         .from(teams)
-        .leftJoin(users, eq(teams.owner, users.id))
-        .leftJoin(teams_users, eq(teams.id, teams_users.team))
-        .where(name ? like(teams.name, `%${name}%`) : undefined)
-        .groupBy(
-          teams.id,
-          teams.name,
-          users.id,
-          users.name,
-          users.email,
-          teams.createdAt,
-          teams.updatedAt,
-        )
+        .where(input.name ? like(teams.name, `%${input.name}%`) : undefined)
         .limit(limit)
         .offset((page - 1) * limit);
-
-      console.log(JSON.stringify(teamRecords));
 
       return {
         docs: teamRecords,
@@ -78,7 +47,7 @@ export const teamRouter = createTRPCRouter({
     }),
 
   getTeamById: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
-    const team = await ctx.payload.db.drizzle.select().from(teams).where(eq(teams.id, input));
+    const team = await ctx.drizzle.select().from(teams).where(eq(teams.id, input));
     return team[0];
   }),
 
@@ -103,7 +72,7 @@ export const teamRouter = createTRPCRouter({
 
   getTeamMembers: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
-    const teamUsersResults = await ctx.payload.db.drizzle
+    const teamUsersResults = await ctx.drizzle
       .select({
         id: teams_users.id,
         team: teams_users.team,
@@ -133,7 +102,7 @@ export const teamRouter = createTRPCRouter({
   getUserSkills: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
 
-    const teamUsersResults = await ctx.payload.db.drizzle
+    const teamUsersResults = await ctx.drizzle
       .select({
         id: teams_users.id,
         team: teams_users.team,
@@ -144,7 +113,7 @@ export const teamRouter = createTRPCRouter({
       .where(eq(teams_users.team, teamId));
 
     const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
-    const userSkills = await ctx.payload.db.drizzle
+    const userSkills = await ctx.drizzle
       .select({
         id: users_skills.id,
         user: users_skills.user,
@@ -201,13 +170,9 @@ export const teamRouter = createTRPCRouter({
   deleteTeam: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
     const me = ctx.user;
 
-    if (!me) {
-      throw new Error('Unauthorized');
-    }
-
     const teamId = input;
     const userId = me.user.id;
-    const team = await ctx.payload.db.drizzle.select().from(teams).where(eq(teams.id, teamId));
+    const team = await ctx.drizzle.select().from(teams).where(eq(teams.id, teamId));
 
     if (!team || team[0].owner !== userId) {
       throw new Error('Team not found');
@@ -282,11 +247,6 @@ export const teamRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user;
-
-      if (!me) {
-        throw new Error('Unauthorized');
-      }
-
       const userId = me.user.id;
 
       return await ctx.payload.create({
@@ -300,7 +260,7 @@ export const teamRouter = createTRPCRouter({
 
   getTeamSkills: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
-    const teamSkills = await ctx.payload.db.drizzle
+    const teamSkills = await ctx.drizzle
       .select({
         id: team_skills.id,
         team: team_skills.team,
@@ -367,7 +327,7 @@ export const teamRouter = createTRPCRouter({
   getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
     const teamId = input;
 
-    const teamUsersResults = await ctx.payload.db.drizzle
+    const teamUsersResults = await ctx.drizzle
       .select({
         id: teams_users.id,
         team: teams_users.team,
@@ -377,7 +337,7 @@ export const teamRouter = createTRPCRouter({
       .leftJoin(users, eq(teams_users.user, users.id))
       .where(eq(teams_users.team, teamId));
     const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
-    const userSkills = await ctx.payload.db.drizzle
+    const userSkills = await ctx.drizzle
       .select({
         id: users_skills.id,
         user: users_skills.user,
@@ -388,7 +348,7 @@ export const teamRouter = createTRPCRouter({
       .from(users_skills)
       .where(inArray(users_skills.user, teamMemberIds));
 
-    const teamRequirements = await ctx.payload.db.drizzle
+    const teamRequirements = await ctx.drizzle
       .select({
         id: team_requirements.id,
         team: team_requirements.team,
@@ -491,31 +451,19 @@ export const teamRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user;
-
-      if (!me) {
-        throw new Error('Unauthorized');
-      }
-
       const { teamId, newOwnerId } = input;
       const currentUserId = me.user.id;
 
       // Verify current user is the team owner
-      const teamResults = await ctx.payload.db.drizzle
-        .select()
-        .from(teams)
-        .where(eq(teams.id, teamId));
-
-      const team = teamResults[0];
+      const teamRecords = await ctx.drizzle.select().from(teams).where(eq(teams.id, teamId));
+      const team = teamRecords[0];
 
       if (!team || team.owner !== currentUserId) {
         throw new Error('Unauthorized: Only team owner can transfer ownership');
       }
 
       // Verify new owner exists
-      const newOwner = await ctx.payload.db.drizzle
-        .select()
-        .from(users)
-        .where(eq(users.id, newOwnerId));
+      const newOwner = await ctx.drizzle.select().from(users).where(eq(users.id, newOwnerId));
 
       if (!newOwner || newOwner.length === 0) {
         throw new Error('New owner not found');
