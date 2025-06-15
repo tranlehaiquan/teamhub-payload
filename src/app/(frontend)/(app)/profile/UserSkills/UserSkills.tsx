@@ -12,7 +12,7 @@ import SectionCard from '@/components/SectionCard/SectionCard';
 
 const UserSkills: React.FC = () => {
   const removeCurrentUserSkillMutation = api.me.removeUserSkill.useMutation();
-  const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery({});
+  const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery();
   const [{ docs: skills }] = api.skill.getSkills.useSuspenseQuery({
     page: 1,
     limit: 50,

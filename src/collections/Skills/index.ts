@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
 
-import { authenticated } from '../../access/authenticated';
+import { authenticated, publicAccess } from '../../access/authenticated';
 
 export const Skills: CollectionConfig = {
   slug: 'skills',
@@ -8,7 +8,7 @@ export const Skills: CollectionConfig = {
     admin: authenticated,
     create: authenticated,
     delete: authenticated,
-    read: authenticated,
+    read: publicAccess,
     update: authenticated,
   },
   admin: {

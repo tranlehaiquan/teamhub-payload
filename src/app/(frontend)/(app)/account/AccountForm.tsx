@@ -101,7 +101,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
   return (
     <SectionCard title="Account">
       <Form {...form}>
-        <form onSubmit={onSubmit} className="p-4">
+        <form onSubmit={onSubmit}>
           <div className="mb-4">
             <UserAvatar
               avatar={profile.avatar as Media}

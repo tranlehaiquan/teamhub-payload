@@ -21,7 +21,7 @@ const Profile: React.FC = async () => {
     limit: 50,
   });
 
-  void api.category.getCategories.prefetch({});
+  void api.category.getCategories.prefetch();
   void api.me.userSkill.prefetch();
   void api.me.getProfile.prefetch();
   void api.me.getTrainings.prefetch();

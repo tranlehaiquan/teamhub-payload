@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
+import {
+  adminProcedure,
+  createTRPCRouter,
+  isAuthedProcedure,
+  publicProcedure,
+} from '@/server/api/trpc';
 import {
   teams_users,
   users,
@@ -10,27 +15,53 @@ import {
   team_skills,
   categories,
 } from '@/payload-generated-schema';
-import { eq, like } from '@payloadcms/db-postgres/drizzle';
+import { eq, like, count } from '@payloadcms/db-postgres/drizzle';
 import { inArray } from '@payloadcms/db-postgres/drizzle';
 
 export const teamRouter = createTRPCRouter({
-  findTeams: isAuthedProcedure
+  getTeams: isAuthedProcedure
     .input(
-      z.object({
-        page: z.number().optional().default(1),
-        limit: z.number().optional().default(10),
-        name: z.string().optional(),
-      }),
+      z
+        .object({
+          page: z.number().optional().default(1),
+          limit: z.number().optional().default(10),
+          name: z.string().optional(),
+        })
+        .optional(),
     )
     .query(async ({ input, ctx }) => {
-      const { page, limit } = input;
+      const { page = 1, limit = 10, name } = input || {};
 
-      const teamRecords = await ctx.payload.db.drizzle
-        .select()
+      const teamRecords = await ctx.drizzle
+        .select({
+          id: teams.id,
+          name: teams.name,
+          owner: {
+            id: users.id,
+            name: users.name,
+            email: users.email,
+          },
+          members: count(teams_users.id),
+          createdAt: teams.createdAt,
+          updatedAt: teams.updatedAt,
+        })
         .from(teams)
-        .where(input.name ? like(teams.name, `%${input.name}%`) : undefined)
+        .leftJoin(users, eq(teams.owner, users.id))
+        .leftJoin(teams_users, eq(teams.id, teams_users.team))
+        .where(name ? like(teams.name, `%${name}%`) : undefined)
+        .groupBy(
+          teams.id,
+          teams.name,
+          users.id,
+          users.name,
+          users.email,
+          teams.createdAt,
+          teams.updatedAt,
+        )
         .limit(limit)
         .offset((page - 1) * limit);
+
+      console.log(JSON.stringify(teamRecords));
 
       return {
         docs: teamRecords,

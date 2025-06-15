@@ -28,7 +28,7 @@ import { useDebounceCallBack } from '@/utilities/useDebounce';
 const TeamsTable: React.FC = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [search, setSearch] = React.useState('');
-  const [{ docs: teams = [], hasNextPage, totalPages }] = api.team.findTeams.useSuspenseQuery({
+  const [{ docs: teams = [], hasNextPage, totalPages }] = api.team.getTeams.useSuspenseQuery({
     page: currentPage,
     name: search,
   });

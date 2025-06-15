@@ -21,11 +21,11 @@ const data = {
       url: '/account',
       icon: UserRoundPenIcon,
     },
-    {
-      title: 'Org chart',
-      url: '/org-chart',
-      icon: Building2,
-    },
+    // {
+    //   title: 'Org chart',
+    //   url: '/org-chart',
+    //   icon: Building2,
+    // },
   ],
 };
 

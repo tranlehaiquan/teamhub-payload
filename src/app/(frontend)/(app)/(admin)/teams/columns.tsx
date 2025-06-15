@@ -1,5 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { User, Team } from '@/payload-types';
+import { type RouterOutputs } from '@/trpc/react';
+
+type Team = RouterOutputs['team']['getTeams']['docs'][0];
 
 export const columns: ColumnDef<Team>[] = [
   {
@@ -12,13 +14,13 @@ export const columns: ColumnDef<Team>[] = [
   },
   {
     accessorKey: 'owner',
-    header: 'Owner Name',
-    accessorFn: (row) => (row.owner as User).email,
+    header: 'Owner Email',
+    accessorFn: (row) => row.owner?.email,
   },
   {
     accessorKey: 'members',
     header: 'Members',
-    accessorFn: (row) => row.members?.docs?.length || 0,
+    accessorFn: (row) => row.members,
   },
   {
     accessorKey: 'createdAt',
