@@ -13,9 +13,10 @@ import { Button } from '@/components/ui/button';
 import DialogNewTeam from './DialogNewTeam';
 import TeamsTable from './TeamsTable';
 import { api, HydrateClient } from '@/trpc/server';
+import { PlusIcon } from 'lucide-react';
 
 const PageTeams = async () => {
-  void api.team.findTeams.prefetch({});
+  void api.team.getTeams.prefetch();
 
   return (
     <HydrateClient>
@@ -39,13 +40,17 @@ const PageTeams = async () => {
         </header>
 
         <div className="p-4">
-          <h1 className="text-2xl font-bold">Teams</h1>
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold mr-2">Teams</h1>
+            <DialogNewTeam>
+              <Button variant={'outline'} size={'sm'}>
+                <PlusIcon />
+                Create Team
+              </Button>
+            </DialogNewTeam>
+          </div>
 
           <div className="my-4">
-            <DialogNewTeam>
-              <Button>Create Team</Button>
-            </DialogNewTeam>
-
             <TeamsTable />
           </div>
         </div>

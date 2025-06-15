@@ -14,6 +14,7 @@ import UsersTable from './UsersTable';
 import DialogNewUser from './DialogNewUser';
 import { api, HydrateClient } from '@/trpc/server';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PlusIcon } from 'lucide-react';
 
 const PageUsers = async () => {
   void api.user.getUsers.prefetch({});
@@ -39,11 +40,13 @@ const PageUsers = async () => {
       </header>
 
       <div className="p-4">
-        <h1 className="text-2xl font-bold">Users</h1>
-
-        <div className="my-4">
+        <div className="flex items-center">
+          <h1 className="text-2xl font-bold mr-2">Users</h1>
           <DialogNewUser>
-            <Button>Create User</Button>
+            <Button variant={'outline'} size={'sm'}>
+              <PlusIcon />
+              Create User
+            </Button>
           </DialogNewUser>
         </div>
 

@@ -64,7 +64,7 @@ const DialogNewTeam: React.FC<React.PropsWithChildren<Props>> = ({ children }) =
 
     setOpen(false);
 
-    utils.team.findTeams.invalidate();
+    utils.team.getTeams.invalidate();
     utils.me.getTeams.invalidate();
   });
 

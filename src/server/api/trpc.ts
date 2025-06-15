@@ -25,17 +25,23 @@ import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const payload = await getPayloadFromConfig();
+  const drizzle = payload.db.drizzle;
+
   try {
     const user = await getMeUser();
-    const payload = await getPayloadFromConfig();
+
     return {
       user,
       payload,
+      drizzle,
       ...opts,
     };
   } catch {
     return {
       user: null,
+      payload,
+      drizzle,
       ...opts,
     };
   }

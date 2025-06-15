@@ -27,7 +27,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
   const addCurrentUserSkillsMutation = api.me.addUserSkill.useMutation();
   const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
-  const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery({});
+  const [{ docs: categories }] = api.category.getCategories.useSuspenseQuery();
   const utils = api.useUtils();
   const handleOnCheck = (id: number) => {
     if (selectedSkills.includes(id)) {
@@ -58,7 +58,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
             <h3 className="text-lg">{category.title}</h3>
 
             <div className="flex gap-2 flex-wrap">
-              {(category.skills?.docs as Skill[]).map((skill) => (
+              {/* {(category.skills?.docs as Skill[]).map((skill) => (
                 <CheckboxWithLabel
                   key={skill.id}
                   id={String(skill.id)}
@@ -69,7 +69,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
                   checked={checkedSkillIds.includes(skill.id) || selectedSkills.includes(skill.id)}
                   onCheckedChange={() => handleOnCheck(skill.id)}
                 />
-              ))}
+              ))} */}
             </div>
           </div>
         ))}
