@@ -12,13 +12,12 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
-    "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
-    "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
+    "lint": "biome lint ./src",
+    "lint:fix": "biome lint --write ./src",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "format": "biome format --write ./src/**/*.{ts,tsx,js,jsx,json,css,md}",
-    "biome:lint": "biome lint --write ./src",
     "test": "vitest"
   },
   "dependencies": {
@@ -98,10 +97,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.7",
     "@tailwindcss/typography": "^0.5.16",
-    "@tanstack/eslint-plugin-query": "^5.78.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -113,8 +110,6 @@
     "@vitejs/plugin-react": "^4.5.0",
     "@vitest/ui": "^3.1.4",
     "copyfiles": "^2.4.1",
-    "eslint": "^9.27.0",
-    "eslint-config-next": "15.3.2",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",
@@ -128,16 +123,8 @@
   },
   "packageManager": "pnpm@10.12.1",
   "pnpm": {
-    "ignoredBuiltDependencies": [
-      "@vercel/speed-insights",
-      "sharp"
-    ],
-    "onlyBuiltDependencies": [
-      "@tailwindcss/oxide",
-      "@vercel/speed-insights",
-      "esbuild",
-      "sharp"
-    ]
+    "ignoredBuiltDependencies": ["@vercel/speed-insights", "sharp"],
+    "onlyBuiltDependencies": ["@tailwindcss/oxide", "@vercel/speed-insights", "esbuild", "sharp"]
   },
   "overrides": {
     "react-is": "^19.0.0-rc-69d4b800-20241021"
