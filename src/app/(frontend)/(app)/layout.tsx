@@ -1,7 +1,7 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { getMeUser } from '@/utilities/getMeUser';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { api, HydrateClient } from '@/trpc/server';
 import RefreshToken from '@/components/RefreshToken/RefreshToken';
 

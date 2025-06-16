@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
-import { ReactFlow, Edge, Node } from '@xyflow/react';
+import { ReactFlow, type Edge, type Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { api } from '@/trpc/react';
-import { User, Profile } from '@/payload-types';
+import { type User, Profile } from '@/payload-types';
 import dagre from 'dagre';
 import OrgChartNode from '@/components/ui/ReactFlow/OrgChartNode';
 

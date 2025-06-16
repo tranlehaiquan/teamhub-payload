@@ -1,5 +1,6 @@
 'use client';
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Edit } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
-import { Level } from '@/payload-types';
+import type { Level } from '@/payload-types';
 import { Button } from '@/components/ui/button';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';

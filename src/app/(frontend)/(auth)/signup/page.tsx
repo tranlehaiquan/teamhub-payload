@@ -1,6 +1,6 @@
 import React from 'react';
 import SignupForm from './SignupForm';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return {

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import type React from 'react';
 import ConfirmDialog from '@/components/ConfirmDialog/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/react';

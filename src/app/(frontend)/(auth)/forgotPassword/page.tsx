@@ -1,6 +1,6 @@
 import React from 'react';
 import ForgotPasswordForm from './ForgotPasswordForm';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return {

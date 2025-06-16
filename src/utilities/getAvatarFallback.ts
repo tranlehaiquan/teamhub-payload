@@ -1,4 +1,4 @@
-import { Profile } from '@/payload-types';
+import type { Profile } from '@/payload-types';
 
 export const getAvatarFallback = (profile: Profile): string => {
   const { firstName, lastName } = profile;

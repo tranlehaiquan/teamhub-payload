@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { Profile, Team } from '@/payload-types';
+import type { Profile, Team } from '@/payload-types';
 import { unionBy } from 'lodash';
 import { categories, skills, users_skills } from '@/payload-generated-schema';
 import { TrainingStatusValues } from '@/collections/Trainings/constants';

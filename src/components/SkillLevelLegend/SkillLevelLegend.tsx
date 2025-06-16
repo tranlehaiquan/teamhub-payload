@@ -1,5 +1,5 @@
-import { Level } from '@/payload-types';
-import React from 'react';
+import type { Level } from '@/payload-types';
+import type React from 'react';
 
 interface Props {
   className?: string;

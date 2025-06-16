@@ -1,8 +1,8 @@
 'use client';
-import React from 'react';
+import type React from 'react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { UserAvatarOnlyByUserId } from '@/components/UserProfile/UserAvatar';
-import { Category, Skill, User } from '@/payload-types';
+import { Category, Skill, type User } from '@/payload-types';
 import { api } from '@/trpc/react';
 import uniqBy from 'lodash/uniqBy';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';

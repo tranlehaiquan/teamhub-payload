@@ -1,9 +1,9 @@
-import { z } from 'zod';
-import { createTRPCRouter, isAuthedProcedure, adminProcedure } from '@/server/api/trpc';
-import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { createUserTemplate } from '@/email-templates/templates';
-import { Where } from 'payload';
+import { adminProcedure, createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
+import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { getClientSideURL } from '@/utilities/getURL';
+import type { Where } from 'payload';
+import { z } from 'zod';
 
 const clientURL = getClientSideURL();
 
@@ -22,7 +22,7 @@ export const userRouter = createTRPCRouter({
       const where: Where = {};
 
       if (email) {
-        where['email'] = {
+        where.email = {
           contains: email,
         };
       }

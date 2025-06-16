@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { Media, Profile, User } from '@/payload-types';
+import type { Media, Profile, User } from '@/payload-types';
 import { UserAvatar } from '@/components/UserProfile';
 
 function OrgChartNode({ data }: { data: User }) {

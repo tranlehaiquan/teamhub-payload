@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { api } from '@/trpc/react';
 import { ComboboxSearchUser } from './ComboboxSearchUser';
 import SectionCard from '@/components/SectionCard/SectionCard';
-import { User } from '@/payload-types';
+import type { User } from '@/payload-types';
 import { ComboboxSearchJobTitles } from '@/components/ComboboxSearchJobTitle/CombboboxSearchJobTitle';
 
 // Define the form schema with proper typing

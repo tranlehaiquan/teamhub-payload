@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Level, TeamRequirement } from '@/payload-types';
+import { type Level, TeamRequirement } from '@/payload-types';
 
 const requirementSchema = z.object({
   desiredLevel: z.number().min(1).nullable(),

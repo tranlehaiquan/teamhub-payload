@@ -2,13 +2,13 @@
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { api } from '@/trpc/react';
-import { Skill } from '@/payload-types';
+import type { Skill } from '@/payload-types';
 
 const generateColor = (index: number, total: number) => {
   const hue = (index * 360) / total;

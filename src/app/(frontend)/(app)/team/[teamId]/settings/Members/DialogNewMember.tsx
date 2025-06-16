@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { api } from '@/trpc/react';
 import { Button } from '@/components/ui/button';
-import { User } from '@/payload-types';
+import type { User } from '@/payload-types';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/utilities/cn';

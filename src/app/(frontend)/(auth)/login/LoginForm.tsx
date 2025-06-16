@@ -1,6 +1,6 @@
 'use client';
 import { Input } from '@/components/ui/input';
-import React from 'react';
+import type React from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/utilities/cn';

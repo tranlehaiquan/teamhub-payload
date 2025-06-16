@@ -1,6 +1,6 @@
-import { Level } from '@/payload-types';
+import type { Level } from '@/payload-types';
 import { cn } from '@/utilities/cn';
-import React from 'react';
+import type React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const levelVariants = cva('rounded-full flex items-center justify-center text-black bg-gray-200', {

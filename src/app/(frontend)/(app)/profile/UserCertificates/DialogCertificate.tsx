@@ -1,8 +1,8 @@
-import React from 'react';
+import type React from 'react';
 import { Dialog, DialogHeader, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { DialogTrigger } from '@radix-ui/react-dialog';
 import { api } from '@/trpc/react';
-import { CertificateFormValues } from './certificateSchema';
+import type { CertificateFormValues } from './certificateSchema';
 import { useCertificateForm } from './useCertificateForm';
 import { CertificateForm } from './CertificateForm';
 

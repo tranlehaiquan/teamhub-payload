@@ -1,4 +1,4 @@
-import { Level } from '@/payload-types';
+import type { Level } from '@/payload-types';
 import LevelSlot from '@/components/LevelSlot';
 
 type Props = {

@@ -1,7 +1,7 @@
 import React from 'react';
 import LoginForm from './LoginForm';
 import { getMeUser } from '@/utilities/getMeUser';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return {

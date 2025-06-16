@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { Media, Profile, User } from '@/payload-types';
+import { api } from '@/trpc/react';
 import { cn } from '@/utilities/cn';
 import { Edit } from 'lucide-react';
-import { api } from '@/trpc/react';
-import { Profile, Media, User } from '@/payload-types';
-import { Skeleton } from '@/components/ui/skeleton';
+import type React from 'react';
+import { useRef } from 'react';
 
 interface Props {
   className?: string;
@@ -41,14 +42,13 @@ const UserAvatar: React.FC<Props> = ({ className, avatar, onChange, fallback }) 
 
       {/* a layer */}
       {onChange && (
-        <div
-          className="absolute inset-0 hover:bg-black opacity-0 hover:opacity-30 rounded-full flex items-center justify-center cursor-pointer"
+        <button
+          className="absolute inset-0 hover:bg-black opacity-0 hover:opacity-30 rounded-full flex items-center justify-center cursor-pointer border-0 bg-transparent p-0"
           onClick={handleOnClick}
+          type="button"
         >
-          <div className="text-white">
-            <Edit size={20} />
-          </div>
-        </div>
+          <Edit size={20} />
+        </button>
       )}
 
       <input
@@ -101,8 +101,8 @@ export const UserAvatarByUserId: React.FC<{ userId: number }> = ({ userId }) => 
     <div className="flex gap-2">
       <UserAvatar avatar={avatar} />
       <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-semibold">{user!.name}</span>
-        <span className="truncate text-xs">{user!.email}</span>
+        <span className="truncate font-semibold">{user.name}</span>
+        <span className="truncate text-xs">{user.email}</span>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { type RouterOutputs } from '@/trpc/react';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { RouterOutputs } from '@/trpc/react';
 
 type Team = RouterOutputs['team']['getTeams']['docs'][0];
 

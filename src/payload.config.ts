@@ -17,7 +17,7 @@ import { Skills } from './collections/Skills';
 import { Users_Skills } from './collections/Users_Skills';
 import Teams from './collections/Teams';
 import { Teams_Users } from './collections/Teams_Users';
-import { nodemailerAdapter, NodemailerAdapterArgs } from '@payloadcms/email-nodemailer';
+import { nodemailerAdapter, type NodemailerAdapterArgs } from '@payloadcms/email-nodemailer';
 import { Team_Skills } from './collections/Team_Skills';
 import { Team_Requirements } from './collections/Team_Requirements';
 import { Levels } from './globalConfigs/Levels/levels';

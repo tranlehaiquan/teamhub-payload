@@ -4,7 +4,7 @@ import { logout } from '@/services/users';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import LogoutPage from '../Logout';
-import { Mock } from 'vitest';
+import type { Mock } from 'vitest';
 
 // src/app/(frontend)/(auth)/logout/Logout.test.tsx
 

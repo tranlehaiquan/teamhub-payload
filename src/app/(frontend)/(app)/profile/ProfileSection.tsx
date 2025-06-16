@@ -1,8 +1,8 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserProfile';
-import { Media } from '@/payload-types';
-import React from 'react';
+import type { Media } from '@/payload-types';
+import type React from 'react';
 import { Edit } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';

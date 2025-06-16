@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import type React from 'react';
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/utilities/cn';
-import { Level } from '@/payload-types';
+import type { Level } from '@/payload-types';
 import { api } from '@/trpc/react';
 
 interface Props {

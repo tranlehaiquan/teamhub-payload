@@ -1,7 +1,7 @@
 'use server';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { headers } from 'next/headers';
-import { BasePayload, createLocalReq, PayloadRequest } from 'payload';
+import { type BasePayload, createLocalReq, type PayloadRequest } from 'payload';
 import { faker } from '@faker-js/faker';
 
 export const runSeed = async () => {

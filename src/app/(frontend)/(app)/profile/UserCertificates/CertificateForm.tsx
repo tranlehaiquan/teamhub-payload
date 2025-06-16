@@ -1,5 +1,5 @@
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import type React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -18,8 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skill } from '@/payload-types';
-import { CertificateFormValues } from './certificateSchema';
+import type { Skill } from '@/payload-types';
+import type { CertificateFormValues } from './certificateSchema';
 
 interface CertificateFormProps {
   form: UseFormReturn<CertificateFormValues>;

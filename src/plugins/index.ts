@@ -1,6 +1,6 @@
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud';
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs';
-import { Plugin } from 'payload';
+import type { Plugin } from 'payload';
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
 
 const usingVercelBlobStorage = !!process.env.BLOB_READ_WRITE_TOKEN;

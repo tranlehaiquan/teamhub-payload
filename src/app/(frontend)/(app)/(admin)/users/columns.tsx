@@ -1,7 +1,7 @@
 'use client';
 
-import { ColumnDef } from '@tanstack/react-table';
-import { Profile, User } from '@/payload-types';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { Profile, User } from '@/payload-types';
 
 export const columns: ColumnDef<User>[] = [
   {

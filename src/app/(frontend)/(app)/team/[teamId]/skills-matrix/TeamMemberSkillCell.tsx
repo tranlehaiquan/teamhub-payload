@@ -1,4 +1,4 @@
-import { Level } from '@/payload-types';
+import type { Level } from '@/payload-types';
 import { TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import SkillProgressIndicator from '@/components/SkillProgressIndicator/SkillProgressIndicator';

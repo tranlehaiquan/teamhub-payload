@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/react';
 import { Plus } from 'lucide-react';
-import React from 'react';
+import type React from 'react';
 import {
   Table,
   TableBody,

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import type React from 'react';
 import {
   Table,
   TableBody,
@@ -11,10 +11,10 @@ import {
 import { format } from 'date-fns/format';
 import { Button } from '@/components/ui/button';
 import { Pen, Plus, XIcon } from 'lucide-react';
-import { Skill, UsersSkill } from '@/payload-types';
+import type { Skill, UsersSkill } from '@/payload-types';
 import { toast } from 'sonner';
 import DialogCertificate from './DialogCertificate';
-import { CertificateFormValues } from './certificateSchema';
+import type { CertificateFormValues } from './certificateSchema';
 import { api } from '@/trpc/react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import { SeedButton } from './SeedButton';
 import './index.scss';

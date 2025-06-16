@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import type React from 'react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { api } from '@/trpc/react';
 import {
@@ -10,11 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import DialogTraining, { FormValues } from './DialogTraining';
+import DialogTraining, { type FormValues } from './DialogTraining';
 import { Button } from '@/components/ui/button';
 import { Pen, Plus, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { Skill, UsersSkill } from '@/payload-types';
+import type { Skill, UsersSkill } from '@/payload-types';
 
 const TrainingsSection: React.FC = () => {
   const [data] = api.me.getTrainings.useSuspenseQuery();

@@ -1,6 +1,6 @@
-import { Skill } from '@/payload-types';
+import type { Skill } from '@/payload-types';
 import { cn } from '@/utilities/cn';
-import React from 'react';
+import type React from 'react';
 import { Button } from '../ui/button';
 import { XIcon, Pen } from 'lucide-react';
 

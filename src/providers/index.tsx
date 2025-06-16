@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import { TRPCReactProvider } from '@/trpc/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';

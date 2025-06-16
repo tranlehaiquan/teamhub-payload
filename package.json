@@ -17,7 +17,8 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "format": "prettier --write ./src/*.**",
+    "format": "biome format --write ./src/**/*.{ts,tsx,js,jsx,json,css,md}",
+    "biome:lint": "biome lint --write ./src",
     "test": "vitest"
   },
   "dependencies": {
@@ -96,6 +97,7 @@
     "zod": "^3.25.63"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.7",
     "@tailwindcss/typography": "^0.5.16",
@@ -115,7 +117,6 @@
     "eslint-config-next": "15.3.2",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.3",
-    "prettier": "^3.5.3",
     "tailwindcss": "^4.1.7",
     "turbo": "^2.5.3",
     "typescript": "5.8.3",

@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { certificateSchema, CertificateFormValues } from './certificateSchema';
+import { certificateSchema, type CertificateFormValues } from './certificateSchema';
 import { useState } from 'react';
 
 export const useCertificateForm = (

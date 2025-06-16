@@ -12,7 +12,7 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { Team } from '@/payload-types';
+import type { Team } from '@/payload-types';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/utilities/cn';
 

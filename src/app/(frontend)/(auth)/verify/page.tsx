@@ -1,5 +1,5 @@
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export function generateMetadata(): Metadata {

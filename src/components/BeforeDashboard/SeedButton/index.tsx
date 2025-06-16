@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import type React from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from '@payloadcms/ui';
 import { runSeed, runSeedRandomUsers, runSeedRandomJobTitles } from './seed-actions';
 
 const SuccessMessage: React.FC = () => (
   <div>
     Database seeded! You can now{' '}
-    <a target="_blank" href="/">
+    <a target="_blank" href="/" rel="noreferrer">
       visit your website
     </a>
   </div>

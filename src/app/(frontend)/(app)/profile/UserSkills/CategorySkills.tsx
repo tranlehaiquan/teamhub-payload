@@ -1,6 +1,7 @@
 'use client';
-import React, { useState } from 'react';
-import { Category, Skill, UsersSkill } from '@/payload-types';
+import type React from 'react';
+import { useState } from 'react';
+import type { Category, Skill, UsersSkill } from '@/payload-types';
 import {
   Table,
   TableBody,

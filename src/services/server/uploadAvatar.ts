@@ -1,6 +1,6 @@
 'use server';
 import { getMeUser } from '@/utilities/getMeUser';
-import { Media, Profile, User } from '@/payload-types';
+import type { Media, Profile, User } from '@/payload-types';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 const getAvatarFileName = (user: User) => {
   return `${user.id}-avatar.jpg`;

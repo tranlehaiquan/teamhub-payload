@@ -1,4 +1,4 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-postgres';
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
@@ -25,10 +25,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "trainings_rels_order_idx" ON "trainings_rels" USING btree ("order");
   CREATE INDEX IF NOT EXISTS "trainings_rels_parent_idx" ON "trainings_rels" USING btree ("parent_id");
   CREATE INDEX IF NOT EXISTS "trainings_rels_path_idx" ON "trainings_rels" USING btree ("path");
-  CREATE INDEX IF NOT EXISTS "trainings_rels_users_skills_id_idx" ON "trainings_rels" USING btree ("users_skills_id");`)
+  CREATE INDEX IF NOT EXISTS "trainings_rels_users_skills_id_idx" ON "trainings_rels" USING btree ("users_skills_id");`);
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   DROP TABLE "trainings_rels" CASCADE;`)
+   DROP TABLE "trainings_rels" CASCADE;`);
 }
