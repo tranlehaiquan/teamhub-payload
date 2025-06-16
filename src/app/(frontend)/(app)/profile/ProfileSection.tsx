@@ -12,7 +12,7 @@ import useJobTitleById from '@/hooks/useJobTitleById';
 const ProfileSection: React.FC = () => {
   const [userProfile] = api.me.getProfile.useSuspenseQuery();
   const [me] = api.me.getMe.useSuspenseQuery();
-  const [{ docs: skills }] = api.me.userSkill.useSuspenseQuery();
+  const [skills] = api.me.userSkills.useSuspenseQuery();
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
   const [{ docs: trainings }] = api.me.getTrainings.useSuspenseQuery();
   const jobTitle = useJobTitleById(me.user.jobTitle);

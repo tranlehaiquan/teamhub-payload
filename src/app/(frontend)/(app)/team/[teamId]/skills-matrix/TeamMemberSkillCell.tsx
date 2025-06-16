@@ -1,20 +1,21 @@
-import { Level, Skill } from '@/payload-types';
+import { Level } from '@/payload-types';
 import { TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import SkillProgressIndicator from '@/components/SkillProgressIndicator/SkillProgressIndicator';
 
 type TeamMemberSkillCellProps = {
-  teamMember: any; // Type this properly based on your team member type
-  skill: Skill;
-  userSkill:
-    | {
-        id: number | string;
-        skill: number;
-        current: number | null;
-        desired: number | null;
-      }
-    | undefined;
-  levels: Level; // Type this properly based on your levels type
+  user: any;
+  skill: {
+    id: number;
+    name: string;
+  };
+  userSkill?: {
+    id: number | string;
+    skill: number;
+    current: number | null;
+    desired: number | null;
+  };
+  levels: Level;
   onUpdateSkill: (params: {
     id?: number;
     skill: number;
@@ -25,7 +26,7 @@ type TeamMemberSkillCellProps = {
 };
 
 export const TeamMemberSkillCell = ({
-  teamMember,
+  user,
   skill,
   userSkill,
   levels,
@@ -44,7 +45,7 @@ export const TeamMemberSkillCell = ({
                   await onUpdateSkill({
                     id: userSkill?.id as number | undefined,
                     skill: skill.id,
-                    user: teamMember.user.id,
+                    user: user.id,
                     current,
                     desired,
                   });

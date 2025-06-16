@@ -21,7 +21,7 @@ const DialogCertificate: React.FC<React.PropsWithChildren<Props>> = ({
     onSubmit,
     defaultValues,
   );
-  const [{ docs: userSkills }] = api.me.userSkill.useSuspenseQuery();
+  const [userSkills] = api.me.userSkills.useSuspenseQuery();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

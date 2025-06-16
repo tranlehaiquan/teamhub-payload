@@ -34,7 +34,11 @@ const DialogUpdateUserSkill = ({
   userSkill,
   onClose,
 }: {
-  userSkill?: UsersSkill;
+  userSkill?: {
+    id: number;
+    currentLevel: number;
+    desiredLevel: number;
+  };
   onClose: () => void;
 }) => {
   const updateCurrentUserSkillMutation = api.me.updateUserSkill.useMutation();
@@ -64,7 +68,7 @@ const DialogUpdateUserSkill = ({
     });
 
     if (result.success) {
-      utils.me.userSkill.invalidate();
+      utils.me.userSkills.invalidate();
       toast.success(`Skill updated successfully`);
       form.reset();
       onClose();

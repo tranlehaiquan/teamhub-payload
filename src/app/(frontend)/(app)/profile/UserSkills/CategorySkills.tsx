@@ -16,7 +16,16 @@ import DialogUpdateUserSkill from './DialogUpdateUserSkill';
 
 interface CategorySkillsProps {
   categoryId: string;
-  userSkills: UsersSkill[];
+  userSkills: {
+    id: number;
+    skill: {
+      id: number;
+      name: string;
+      category: number;
+    };
+    currentLevel: number;
+    desiredLevel: number;
+  }[];
   skills: Skill[];
   categories: Category[];
   handleRemoveSkill: (skillId: number) => Promise<void>;
@@ -28,7 +37,7 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
   categories,
   handleRemoveSkill,
 }) => {
-  const [openUpdateDialog, setOpenUpdateDialog] = useState<number>();
+  const [openUpdateDialog, setOpenUpdateDialog] = useState<number | undefined>();
   const category = categories.find((s) => s.id === Number(categoryId));
   const selectedUserSkill = userSkills.find((s) => s.id === openUpdateDialog);
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();

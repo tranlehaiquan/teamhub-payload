@@ -39,7 +39,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
 
   const handleSubmit = async () => {
     await addCurrentUserSkillsMutation.mutateAsync(selectedSkills);
-    utils.me.userSkill.invalidate();
+    utils.me.userSkills.invalidate();
     utils.me.getCertificates.invalidate();
     setSelectedSkills([]);
     setOpen(false);
@@ -58,7 +58,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
             <h3 className="text-lg">{category.title}</h3>
 
             <div className="flex gap-2 flex-wrap">
-              {/* {(category.skills?.docs as Skill[]).map((skill) => (
+              {category.skills.map((skill) => (
                 <CheckboxWithLabel
                   key={skill.id}
                   id={String(skill.id)}
@@ -69,7 +69,7 @@ const DialogAddSkills: React.FC<React.PropsWithChildren<Props>> = ({
                   checked={checkedSkillIds.includes(skill.id) || selectedSkills.includes(skill.id)}
                   onCheckedChange={() => handleOnCheck(skill.id)}
                 />
-              ))} */}
+              ))}
             </div>
           </div>
         ))}

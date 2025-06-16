@@ -25,7 +25,10 @@ import { useRequirementForm } from './useRequirementForm';
 import { RequirementDisplay } from './RequirementDisplay';
 
 type Props = {
-  skill: Skill;
+  skill: {
+    id: number;
+    name: string;
+  };
   teamRequirements?: {
     skill: number;
     desiredLevel: number;

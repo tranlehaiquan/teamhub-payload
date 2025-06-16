@@ -109,16 +109,14 @@ export const GroupSkillsByCategory = ({
     <>
       <GroupHeader name={category.title} />
       {teamSkills.map(({ skill }) => (
-        <TableRow key={(skill as Skill).id} className="group">
-          <TableCell className="sticky left-0 bg-white dark:bg-accent">
-            {(skill as Skill).name}
-          </TableCell>
+        <TableRow key={skill.id} className="group">
+          <TableCell className="sticky left-0 bg-white dark:bg-accent">{skill.name}</TableCell>
           <TableCell>
             <div className="flex items-center justify-center">
               <RequirementIndicator
-                skill={skill as Skill}
+                skill={skill}
                 teamRequirements={
-                  getTeamRequirementsBySkillId((skill as Skill).id)?.map((req) => ({
+                  getTeamRequirementsBySkillId(skill.id)?.map((req) => ({
                     ...req,
                     skill: req.skill as number,
                     desiredLevel: req.desiredLevel || 0,
@@ -133,9 +131,9 @@ export const GroupSkillsByCategory = ({
           {teamMembers.map((teamMember) => (
             <TeamMemberSkillCell
               key={teamMember.id}
-              teamMember={teamMember}
-              skill={skill as Skill}
-              userSkill={getUserSkill(teamMember.user.id, (skill as Skill).id)}
+              user={teamMember.user}
+              skill={skill}
+              userSkill={getUserSkill(teamMember.user.id, skill.id)}
               levels={levels}
               onUpdateSkill={handleUpdateTeamUserSkills}
             />

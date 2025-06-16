@@ -3,8 +3,9 @@ import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import { Profile, Team } from '@/payload-types';
 import { unionBy } from 'lodash';
-import { users_skills } from '@/payload-generated-schema';
+import { categories, skills, users_skills } from '@/payload-generated-schema';
 import { TrainingStatusValues } from '@/collections/Trainings/constants';
+import { eq, inArray } from '@payloadcms/db-postgres/drizzle';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -62,29 +63,47 @@ export const meRouter = createTRPCRouter({
     return me.user.profile as Profile;
   }),
 
-  userSkill: isAuthedProcedure.query(async ({ ctx }) => {
-    const me = ctx.user;
-    const userId = me.user.id;
-    const payload = await getPayloadFromConfig();
-
-    const userSkills = await payload.find({
-      collection: 'users_skills',
-      where: {
-        user: {
-          equals: userId,
-        },
+  userSkills: isAuthedProcedure.query(
+    async ({
+      ctx: {
+        user: { user },
+        drizzle,
       },
-      populate: {
-        skills: {
-          name: true,
-          category: true,
-        },
-      },
-      depth: 1,
-    });
+    }) => {
+      const userId = user.id;
+      const userSkills = await drizzle
+        .select({
+          id: users_skills.id,
+          skill: users_skills.skill,
+          currentLevel: users_skills.currentLevel,
+          desiredLevel: users_skills.desiredLevel,
+        })
+        .from(users_skills)
+        .where(eq(users_skills.user, userId));
+      const skillsRecords = await drizzle
+        .select({
+          id: skills.id,
+          name: skills.name,
+          category: skills.category,
+        })
+        .from(skills)
+        .leftJoin(categories, eq(skills.category, categories.id))
+        .where(
+          inArray(
+            skills.id,
+            userSkills.map((userSkill) => userSkill.skill as number),
+          ),
+        );
+      const skillsRecordsMap = new Map(skillsRecords.map((skill) => [skill.id, skill]));
 
-    return userSkills;
-  }),
+      const userSkillsWithSkills = userSkills.map((userSkill) => ({
+        ...userSkill,
+        skill: skillsRecordsMap.get(userSkill.skill as number),
+      }));
+
+      return userSkillsWithSkills;
+    },
+  ),
 
   getCertificates: isAuthedProcedure.query(async ({ ctx }) => {
     const payload = await getPayloadFromConfig();
