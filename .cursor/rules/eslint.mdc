@@ -1,0 +1,10 @@
+---
+globs: *.js,*.jsx,*.ts,*.tsx
+---
+# ESLint and Prettier Setup
+
+This project uses ESLint with the Next.js recommended configuration (`next/core-web-vitals`) and integrates Prettier for code formatting. The ESLint config extends both `next/core-web-vitals` and `prettier` to avoid conflicts between linting and formatting rules. Prettier settings are defined in [.prettierrc](mdc:.prettierrc).
+
+- Use `pnpm lint` to run ESLint.
+- Use `pnpm format` to format code with Prettier.
+- Prettier ignores files and folders listed in [.prettierignore](mdc:.prettierignore).

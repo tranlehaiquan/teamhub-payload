@@ -1,0 +1,20 @@
+---
+globs: src/components/**/*
+---
+# UI Components
+
+## Component Structure
+- Reusable UI components are in [src/components/ui](mdc:src/components/ui)
+- These are based on Shadcn/UI components configured in [components.json](mdc:components.json)
+- Custom app-specific components are in [src/components](mdc:src/components)
+
+## Styling
+- Uses Tailwind CSS with config in [tailwind.config.mjs](mdc:tailwind.config.mjs)
+- Global styles are in [src/app/(frontend)/globals.css](mdc:src/app/(frontend)/globals.css)
+- CSS variables are defined in [src/cssVariables.js](mdc:src/cssVariables.js)
+
+## Key Component Categories
+- Navigation: [app-sidebar.tsx](mdc:src/components/app-sidebar.tsx), [nav-*.tsx](mdc:src/components/nav-main.tsx)
+- User-related: [UserProfile](mdc:src/components/UserProfile), [UserSkill](mdc:src/components/UserSkill)
+- Dialogs and forms: Various Dialog* components throughout the app
+- Data display: Tables, charts, and skill matrices

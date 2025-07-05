@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+# Project Structure Guide
+
+- Main source code is in the [src](mdc:src) directory.
+- Next.js app routes and pages are under [src/app](mdc:src/app).
+- Key configuration files:
+  - [next.config.js](mdc:next.config.js)
+  - [package.json](mdc:package.json)
+  - [tsconfig.json](mdc:tsconfig.json)
+  - [postcss.config.js](mdc:postcss.config.js)
+  - [tailwind.config.mjs](mdc:tailwind.config.mjs)
+- Public assets are in the [public](mdc:public) directory.

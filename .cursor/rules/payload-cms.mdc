@@ -1,0 +1,23 @@
+---
+description: Payload CMS structure and conventions
+---
+# Payload CMS Structure
+
+This project uses Payload CMS with the following structure:
+
+## Collections
+- Collections are defined in [src/collections](mdc:src/collections)
+- Each collection has its own file (e.g., [Users](mdc:src/collections/Users/index.ts), [Teams](mdc:src/collections/Teams.ts))
+- User collection includes role-based access control with `checkRole` function
+
+## Configuration
+- Main Payload config is in [src/payload.config.ts](mdc:src/payload.config.ts)
+- Global configurations are in [src/globalConfigs](mdc:src/globalConfigs)
+
+## Admin Interface
+- Custom admin components are in [src/components/BeforeDashboard](mdc:src/components/BeforeDashboard)
+- Admin routes are under [src/app/(payload)/admin](mdc:src/app/(payload)/admin)
+
+## API Routes
+- REST API endpoints are handled by [src/app/(payload)/api/[...slug]/route.ts](mdc:src/app/(payload)/api/[...slug]/route.ts)
+- GraphQL endpoint is at [src/app/(payload)/api/graphql/route.ts](mdc:src/app/(payload)/api/graphql/route.ts)
