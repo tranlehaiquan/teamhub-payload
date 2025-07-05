@@ -7,33 +7,39 @@ A modern team management platform built with **Next.js**, **Payload CMS**, **tRP
 ## 🚀 Quick Start
 
 1. **Clone the repository**
+
    ```sh
    git clone https://github.com/your-org/teamhub-payload.git
    cd teamhub-payload
    ```
 
 2. **Install dependencies**
+
    ```sh
    pnpm install
    ```
 
 3. **Set up environment variables**
+
    ```sh
    cp .env.example .env.local
    # Edit .env.local as needed
    ```
 
 4. **Run database migrations**
+
    ```sh
    pnpm migrate
    ```
 
 5. **(Optional) Seed the database**
+
    ```sh
    pnpm seed
    ```
 
 6. **Start the development server**
+
    ```sh
    pnpm dev
    ```
@@ -59,16 +65,16 @@ See [Cursor Rules](.cursor/rules/) for detailed conventions.
 
 ## 🛠️ Scripts
 
-| Command           | Description                                 |
-|-------------------|---------------------------------------------|
-| `pnpm dev`        | Start development server                    |
-| `pnpm build`      | Build for production                        |
-| `pnpm start`      | Start production server                     |
-| `pnpm lint`       | Run ESLint                                  |
-| `pnpm format`     | Format code with Prettier                   |
-| `pnpm test`       | Run tests with Vitest                       |
-| `pnpm migrate`    | Run database migrations                     |
-| `pnpm generate:types` | Generate Payload TypeScript types       |
+| Command               | Description                       |
+| --------------------- | --------------------------------- |
+| `pnpm dev`            | Start development server          |
+| `pnpm build`          | Build for production              |
+| `pnpm start`          | Start production server           |
+| `pnpm lint`           | Run ESLint                        |
+| `pnpm format`         | Format code with Prettier         |
+| `pnpm test`           | Run tests with Vitest             |
+| `pnpm migrate`        | Run database migrations           |
+| `pnpm generate:types` | Generate Payload TypeScript types |
 
 ---
 
