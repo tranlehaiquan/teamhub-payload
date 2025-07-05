@@ -3,3 +3,5 @@ build
 .next
 out
 public
+package-lock.json
+pnpm-lock.yaml
