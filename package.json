@@ -136,7 +136,11 @@
       "@vercel/speed-insights",
       "esbuild",
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "esbuild@<=0.24.2": ">=0.25.0",
+      "brace-expansion@>=1.0.0 <=1.1.11": ">=1.1.12"
+    }
   },
   "overrides": {
     "react-is": "^19.0.0-rc-69d4b800-20241021"
