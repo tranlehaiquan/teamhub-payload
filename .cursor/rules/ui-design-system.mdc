@@ -1,0 +1,48 @@
+---
+globs: src/components/**/*,src/app/**/*.tsx,tailwind.config.mjs,components.json
+---
+# UI Design System & Components
+
+## Design System Setup
+This project uses **Shadcn/UI** with Tailwind CSS and custom design tokens:
+
+- **Configuration**: [components.json](mdc:components.json) - Shadcn/UI configuration
+- **Tailwind config**: [tailwind.config.mjs](mdc:tailwind.config.mjs) - Custom theme with CSS variables
+- **Global styles**: [src/app/(frontend)/globals.css](mdc:src/app/(frontend)/globals.css) - CSS variables and base styles
+
+## Component Architecture
+
+### UI Components ([src/components/ui/](mdc:src/components/ui/))
+- **Base components**: Built with Shadcn/UI (button, card, dialog, etc.)
+- **Styling**: Uses CSS variables for theming (`var(--primary)`, `var(--background)`, etc.)
+- **Dark mode**: Supported via `data-theme="dark"` attribute
+
+### Custom Components
+- **App components**: [src/components/app-sidebar.tsx](mdc:src/components/app-sidebar.tsx), navigation components
+- **Business logic**: User profiles, skills, teams components
+- **Media handling**: [src/components/Media/](mdc:src/components/Media/) - Image and video components
+
+## Styling Conventions
+
+### Tailwind Usage
+- **CSS Variables**: Use design tokens like `bg-primary`, `text-foreground`
+- **Dark mode**: Automatic via CSS variables, no class toggle needed
+- **Container**: Pre-configured responsive container with proper padding
+- **Typography**: Uses `@tailwindcss/typography` plugin
+
+### Component Patterns
+1. **Import utilities**: `import { cn } from '@/utilities/cn'` for conditional classes
+2. **Consistent spacing**: Use design system spacing scale
+3. **Accessible colors**: Use semantic color tokens (primary, secondary, destructive)
+
+## Adding New Components
+1. Use `pnpx shadcn@latest add [component-name]` for base components
+2. Place custom components in appropriate subdirectories
+3. Follow the established pattern for props and styling
+4. Use TypeScript interfaces for component props
+
+## Best Practices
+- **Accessibility**: Components include proper ARIA attributes
+- **Responsive design**: Mobile-first approach with responsive utilities
+- **Performance**: Use `cn()` utility for conditional styling
+- **Consistency**: Follow established design tokens and spacing

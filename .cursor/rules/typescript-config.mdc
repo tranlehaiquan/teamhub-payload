@@ -1,0 +1,33 @@
+---
+globs: *.ts,*.tsx,tsconfig*.json
+---
+# TypeScript Configuration
+
+## Configuration Files
+- **Main config**: [tsconfig.json](mdc:tsconfig.json) - Main TypeScript configuration
+- **Type definitions**: [next-env.d.ts](mdc:next-env.d.ts) - Next.js type definitions
+- **Generated types**: [src/payload-types.ts](mdc:src/payload-types.ts) - Payload CMS types
+
+## Key Settings
+Based on Next.js best practices, ensure these settings in `tsconfig.json`:
+
+### Required for Next.js
+- `"jsx": "preserve"` - Let Next.js handle JSX compilation
+- `"allowJs": true` - Allow JavaScript files
+- `"forceConsistentCasingInFileNames": true` - Enforce case sensitivity
+- `"incremental": true` - Enable incremental compilation
+- `"plugins": [{ "name": "next" }]` - Next.js TypeScript plugin
+
+### Module Resolution
+- `"moduleResolution": "bundler"` - Use bundler resolution
+- `"esModuleInterop": true` - Enable ES module interop
+- `"resolveJsonModule": true` - Allow JSON imports
+
+### Type Generation
+- Use `pnpm generate:types` to regenerate Payload CMS types
+- Types are auto-generated in [src/payload-generated-schema.ts](mdc:src/payload-generated-schema.ts)
+
+## Best Practices
+- Import types with `import type { }` for type-only imports
+- Use strict TypeScript settings for better type safety
+- Leverage Payload's generated types for type-safe CMS operations

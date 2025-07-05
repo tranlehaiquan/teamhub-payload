@@ -1,0 +1,36 @@
+---
+globs: src/app/**/*
+---
+# Next.js App Router Structure
+
+## Route Organization
+This project uses Next.js 13+ App Router with route groups:
+
+### Frontend Routes (`src/app/(frontend)/`)
+- **Public routes**: [src/app/(frontend)/(auth)/](mdc:src/app/(frontend)/(auth)/) - login, signup, reset password
+- **Protected routes**: [src/app/(frontend)/(app)/](mdc:src/app/(frontend)/(app)/) - dashboard, profile, teams
+- **Layout**: [src/app/(frontend)/layout.tsx](mdc:src/app/(frontend)/layout.tsx) - shared layout for frontend
+- **Global styles**: [src/app/(frontend)/globals.css](mdc:src/app/(frontend)/globals.css)
+
+### Payload CMS Routes (`src/app/(payload)/`)
+- **Admin panel**: [src/app/(payload)/admin/](mdc:src/app/(payload)/admin/) - CMS interface
+- **API routes**: [src/app/(payload)/api/](mdc:src/app/(payload)/api/) - REST and GraphQL endpoints
+- **tRPC**: [src/app/(payload)/api/trpc/[trpc]/route.ts](mdc:src/app/(payload)/api/trpc/[trpc]/route.ts)
+
+## File Conventions
+- `page.tsx` - Page components
+- `layout.tsx` - Shared layouts
+- `loading.tsx` - Loading UI
+- `not-found.tsx` - 404 pages
+- `route.ts` - API endpoints
+
+## Route Groups
+- `(frontend)` - Public-facing application
+- `(auth)` - Authentication pages
+- `(app)` - Protected application pages
+- `(payload)` - CMS and API routes
+
+## Dynamic Routes
+- `[teamId]/` - Dynamic team pages
+- `[...slug]/` - Catch-all API routes
+- `[[...segments]]/` - Optional catch-all for admin

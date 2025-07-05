@@ -1,0 +1,45 @@
+---
+description: Payload CMS structure and development conventions
+---
+# Payload CMS Development Conventions
+
+## Configuration
+- **Main config**: [src/payload.config.ts](mdc:src/payload.config.ts) - Central Payload configuration
+- **Admin customization**: [src/components/BeforeDashboard/](mdc:src/components/BeforeDashboard/) - Custom admin UI
+- **Access control**: [src/access/](mdc:src/access/) - Permission functions
+
+## Collections Structure
+Located in [src/collections/](mdc:src/collections/):
+
+### User Management
+- **Users**: [src/collections/Users/index.ts](mdc:src/collections/Users/index.ts) - User collection with roles
+- **Teams**: [src/collections/Teams.ts](mdc:src/collections/Teams.ts) - Team management
+- **Teams_Users**: [src/collections/Teams_Users.ts](mdc:src/collections/Teams_Users.ts) - Team membership
+
+### Skills & Learning
+- **Skills**: [src/collections/Skills/index.ts](mdc:src/collections/Skills/index.ts) - Skill definitions
+- **Categories**: [src/collections/Categories.ts](mdc:src/collections/Categories.ts) - Skill categories
+- **Users_Skills**: [src/collections/Users_Skills.ts](mdc:src/collections/Users_Skills.ts) - User skill levels
+- **Certificates**: [src/collections/Certificates/index.ts](mdc:src/collections/Certificates/index.ts) - User certificates
+- **Trainings**: [src/collections/Trainings/index.ts](mdc:src/collections/Trainings/index.ts) - Training programs
+
+## Global Configurations
+Located in [src/globalConfigs/](mdc:src/globalConfigs/):
+- **Job Titles**: [src/globalConfigs/JobTitles/](mdc:src/globalConfigs/JobTitles/) - Centralized job title management
+- **Levels**: [src/globalConfigs/Levels/](mdc:src/globalConfigs/Levels/) - Skill level definitions
+
+## API Patterns
+- **REST**: All collections automatically get CRUD endpoints
+- **GraphQL**: Available at `/api/graphql` with playground at `/api/graphql-playground`
+- **tRPC**: Custom business logic in [src/server/api/routers/](mdc:src/server/api/routers/)
+
+## Type Safety
+- Auto-generated types in [src/payload-types.ts](mdc:src/payload-types.ts)
+- Use `pnpm generate:types` after schema changes
+- Import types: `import type { User, Team } from '@/payload-types'`
+
+## Development Patterns
+1. Define collections with proper TypeScript interfaces
+2. Use access control functions for security
+3. Leverage hooks for data validation and transformation
+4. Test API endpoints using the GraphQL playground

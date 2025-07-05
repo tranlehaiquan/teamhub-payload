@@ -1,0 +1,47 @@
+---
+description: Development workflow and available commands
+---
+# Development Workflow
+
+## Available Scripts
+From [package.json](mdc:package.json):
+
+### Development
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+
+### Code Quality
+- `pnpm lint` - Run ESLint (includes Next.js rules)
+- `pnpm format` - Format code with Prettier
+- `pnpm test` - Run tests with Vitest
+
+### Payload CMS
+- `pnpm payload` - Access Payload CLI
+- `pnpm generate:types` - Generate TypeScript types from Payload schema
+
+### Database
+- `pnpm migrate` - Run database migrations
+- Check [src/migrations/](mdc:src/migrations/) for migration files
+
+### Docker Development
+- `docker-compose up` - Start development environment with database
+- [Dockerfile](mdc:Dockerfile) - Production container configuration
+- [docker-compose.yml](mdc:docker-compose.yml) - Development services
+
+## Development Best Practices
+1. **Linting**: ESLint runs automatically on build, but run `pnpm lint` during development
+2. **Formatting**: Use `pnpm format` before committing changes
+3. **Types**: Regenerate types after changing Payload collections
+4. **Testing**: Run tests with `pnpm test` before pushing changes
+5. **Docker**: Use Docker for consistent development environment
+
+## Environment Setup
+- Environment variables should be defined according to Next.js conventions
+- Use `.env.local` for local development secrets
+- Check [src/environment.d.ts](mdc:src/environment.d.ts) for type definitions
+
+## Build Process
+- ESLint errors will fail the build
+- ESLint warnings will not fail the build
+- Use `next build` for production builds

@@ -1,0 +1,84 @@
+---
+globs: src/migrations/**/*,src/collections/**/*,src/payload.config.ts
+---
+# Database & Migration Patterns
+
+## Migration System
+
+### Migration Files ([src/migrations/](mdc:src/migrations/))
+Payload CMS manages database schema changes through migrations:
+- **Auto-generated**: Migrations created when collection schemas change
+- **File format**: Both `.json` (schema) and `.ts` (executable) files
+- **Index**: [src/migrations/index.ts](mdc:src/migrations/index.ts) - Migration registry
+
+### Migration Commands
+- **Run migrations**: `pnpm migrate` - Execute pending migrations
+- **Generate migrations**: Automatic when collection schemas change
+- **Status check**: Payload tracks migration state in the database
+
+## Data Management
+
+### Collection-Based Architecture
+- **Users**: [src/collections/Users/index.ts](mdc:src/collections/Users/index.ts) - User management with roles
+- **Teams**: [src/collections/Teams.ts](mdc:src/collections/Teams.ts) - Team organization
+- **Skills system**: Skills, Categories, Users_Skills for skill tracking
+- **Learning**: Certificates, Trainings for professional development
+
+### Relationship Patterns
+- **Many-to-many**: `Teams_Users`, `Users_Skills` for relationships
+- **Reference fields**: Use `relationTo` for typed relationships
+- **Nested data**: Store related data with proper depth controls
+
+## Database Operations
+
+### CRUD Operations
+```typescript
+// Using Payload directly
+const users = await payload.find({
+  collection: 'users',
+  where: {
+    role: {
+      equals: 'admin'
+    }
+  },
+});
+
+// Using tRPC with Payload
+const user = await ctx.payload.findByID({
+  collection: 'users',
+  id: input.userId,
+});
+```
+
+### Query Patterns
+- **Filtering**: Use `where` clauses for complex queries
+- **Population**: Control relationship depth with `depth` parameter
+- **Pagination**: Built-in pagination with `limit` and `page`
+- **Search**: Text search capabilities across fields
+
+## Schema Management
+
+### Collection Configuration
+- **Fields**: Define typed field schemas with validation
+- **Hooks**: Use lifecycle hooks for data transformation
+- **Access control**: Define read/write permissions per collection
+- **Indexes**: Configure database indexes for performance
+
+### Best Practices
+1. **Relationships**: Use typed relationships instead of string references
+2. **Validation**: Define validation at the schema level
+3. **Hooks**: Use hooks for computed fields and data transformation
+4. **Migration safety**: Test migrations in development before production
+5. **Backup strategy**: Always backup before running migrations
+
+## Environment Considerations
+
+### Development
+- **Local database**: Use local database for development
+- **Seed data**: Use seed scripts for consistent test data
+- **Schema changes**: Migrations auto-generate in development
+
+### Production
+- **Migration verification**: Always review migrations before deployment
+- **Rollback plan**: Have rollback strategy for failed migrations
+- **Data integrity**: Validate data after migration completion

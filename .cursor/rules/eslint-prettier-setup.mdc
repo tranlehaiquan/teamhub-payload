@@ -1,0 +1,36 @@
+---
+globs: *.js,*.jsx,*.ts,*.tsx,*.json,.eslintrc*,.prettierrc*
+---
+# ESLint and Prettier Configuration
+
+## Current Setup
+This project uses ESLint with Next.js's strict configuration (`next/core-web-vitals`) and Prettier for code formatting. The configuration is in [.eslintrc.json](mdc:.eslintrc.json).
+
+## ESLint Configuration
+- **Config**: `next/core-web-vitals` (strict mode with Core Web Vitals rules)
+- **Prettier Integration**: `prettier` config included to avoid conflicts
+- **Commands**:
+  - `pnpm lint` - Run ESLint on all files
+  - `pnpm lint --fix` - Auto-fix issues where possible
+
+## Prettier Configuration
+- **Config file**: [.prettierrc](mdc:.prettierrc)
+- **Ignore file**: [.prettierignore](mdc:.prettierignore)
+- **Command**: `pnpm format` - Format all files
+
+## Best Practices
+- ESLint runs automatically during `next build` (errors fail build, warnings don't)
+- The `next/core-web-vitals` config includes React, React Hooks, and accessibility rules
+- Prettier config is extended last to override formatting conflicts
+- Use `// eslint-disable-next-line rule-name` for specific rule exceptions
+
+## Adding Rules
+To customize rules, add them to `.eslintrc.json`:
+```json
+{
+  "extends": ["next/core-web-vitals", "prettier"],
+  "rules": {
+    "your-rule": "error"
+  }
+}
+```

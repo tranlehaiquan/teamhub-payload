@@ -3,12 +3,25 @@ alwaysApply: true
 ---
 # Project Structure Guide
 
-- Main source code is in the [src](mdc:src) directory.
-- Next.js app routes and pages are under [src/app](mdc:src/app).
-- Key configuration files:
-  - [next.config.js](mdc:next.config.js)
-  - [package.json](mdc:package.json)
-  - [tsconfig.json](mdc:tsconfig.json)
-  - [postcss.config.js](mdc:postcss.config.js)
-  - [tailwind.config.mjs](mdc:tailwind.config.mjs)
-- Public assets are in the [public](mdc:public) directory.
+## Main Directories
+- **Source code**: [src](mdc:src) - All application source code
+- **App routes**: [src/app](mdc:src/app) - Next.js App Router pages and layouts
+- **Components**: [src/components](mdc:src/components) - Reusable UI components
+- **Collections**: [src/collections](mdc:src/collections) - Payload CMS collections
+- **API layer**: [src/server](mdc:src/server) - tRPC routers and server logic
+- **Public assets**: [public](mdc:public) - Static files and images
+
+## Key Configuration Files
+- **Next.js**: [next.config.js](mdc:next.config.js) - Next.js configuration
+- **Package management**: [package.json](mdc:package.json) - Dependencies and scripts
+- **TypeScript**: [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration
+- **Styling**: [tailwind.config.mjs](mdc:tailwind.config.mjs), [postcss.config.js](mdc:postcss.config.js)
+- **UI components**: [components.json](mdc:components.json) - Shadcn/UI configuration
+- **Payload CMS**: [src/payload.config.ts](mdc:src/payload.config.ts) - CMS configuration
+
+## Specialized Directories
+- **Access control**: [src/access](mdc:src/access) - Permission functions
+- **Migrations**: [src/migrations](mdc:src/migrations) - Database schema changes
+- **Global configs**: [src/globalConfigs](mdc:src/globalConfigs) - Payload global configurations
+- **Providers**: [src/providers](mdc:src/providers) - React context providers
+- **Utilities**: [src/utilities](mdc:src/utilities) - Helper functions and utilities

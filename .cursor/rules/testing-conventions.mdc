@@ -1,0 +1,86 @@
+---
+globs: **/*.test.ts,**/*.test.tsx,**/__tests__/**/*,vitest.config.mts,src/test/**/*
+---
+# Testing Conventions
+
+## Testing Setup
+
+### Configuration
+- **Test runner**: Vitest with React Testing Library
+- **Config file**: [vitest.config.mts](mdc:vitest.config.mts) - Vitest configuration
+- **Setup file**: [src/test/setup.ts](mdc:src/test/setup.ts) - Global test setup
+- **Environment**: JSDoc environment for React component testing
+
+### Commands
+- **Run tests**: `pnpm test` - Execute all tests
+- **Watch mode**: `pnpm test --watch` - Run tests in watch mode
+- **Coverage**: `pnpm test --coverage` - Run tests with coverage report
+
+## Test Organization
+
+### File Structure
+- **Co-located tests**: Place `*.test.tsx` files next to components when testing specific functionality
+- **Test directories**: Use `__tests__/` directories for complex test suites
+- **Example**: [src/app/(frontend)/(app)/profile/UserCertificates/__tests__/](mdc:src/app/(frontend)/(app)/profile/UserCertificates/__tests__/) - Component test organization
+
+### Naming Conventions
+- **Test files**: `ComponentName.test.tsx` or `functionName.test.ts`
+- **Test descriptions**: Descriptive names that explain what is being tested
+- **Test groups**: Use `describe()` blocks to group related tests
+
+## Testing Patterns
+
+### Component Testing
+```typescript
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ComponentName } from './ComponentName';
+
+describe('ComponentName', () => {
+  it('should render correctly', () => {
+    render(<ComponentName />);
+    expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+
+  it('should handle user interactions', async () => {
+    const user = userEvent.setup();
+    render(<ComponentName />);
+
+    await user.click(screen.getByRole('button'));
+    expect(screen.getByText('Expected text')).toBeInTheDocument();
+  });
+});
+```
+
+### API/Hook Testing
+- **tRPC testing**: Mock tRPC procedures for component tests
+- **Custom hooks**: Use `@testing-library/react-hooks` for hook testing
+- **Payload CMS**: Mock Payload operations in tests
+
+## Testing Strategy
+
+### What to Test
+1. **Component behavior**: User interactions and state changes
+2. **Business logic**: Pure functions and custom hooks
+3. **Integration**: API calls and data flow
+4. **Accessibility**: Screen reader compatibility and keyboard navigation
+
+### What Not to Test
+1. **Implementation details**: Internal component state or methods
+2. **Third-party libraries**: Well-tested external dependencies
+3. **Simple props passing**: Basic prop forwarding without logic
+
+## Mock Patterns
+
+### Common Mocks
+- **Next.js router**: Mock `useRouter` for navigation testing
+- **tRPC**: Mock API calls with expected responses
+- **Payload CMS**: Mock collection operations
+- **File uploads**: Mock file input and upload functionality
+
+## Best Practices
+1. **User-centric testing**: Test what users see and do, not implementation
+2. **Accessibility testing**: Include screen reader and keyboard tests
+3. **Async handling**: Properly handle async operations with `waitFor`
+4. **Test isolation**: Each test should be independent and clean up after itself
+5. **Meaningful assertions**: Use specific, descriptive expectations

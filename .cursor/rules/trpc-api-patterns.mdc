@@ -1,0 +1,73 @@
+---
+globs: src/server/api/**/*,src/trpc/**/*,src/app/**/api/trpc/**/*
+---
+# tRPC API Patterns
+
+## API Structure
+
+### Main Router ([src/server/api/root.ts](mdc:src/server/api/root.ts))
+Central tRPC router that combines all feature routers:
+- **Router organization**: Feature-based routers (auth, user, team, skill, etc.)
+- **Type exports**: `AppRouter` type for client-side usage
+- **Server caller**: `createCaller` for server-side API calls
+
+### Individual Routers ([src/server/api/routers/](mdc:src/server/api/routers/))
+- **Feature-based**: Each router handles a specific domain (user.ts, team.ts, skill.ts)
+- **Payload integration**: Often uses Payload CMS for data operations
+- **Validation**: Uses Zod schemas for input validation
+
+## Client-Side Usage
+
+### React Integration ([src/trpc/react.tsx](mdc:src/trpc/react.tsx))
+- **Provider setup**: tRPC React Query provider configuration
+- **Hook usage**: `api.router.procedure.useQuery()` and `api.router.procedure.useMutation()`
+- **Type safety**: Full TypeScript inference from server definitions
+
+### Query Client ([src/trpc/query-client.ts](mdc:src/trpc/query-client.ts))
+- **React Query**: Configured with proper defaults
+- **Server-side**: [src/trpc/server.ts](mdc:src/trpc/server.ts) for server-side API calls
+
+## API Route Integration ([src/app/(payload)/api/trpc/[trpc]/route.ts](mdc:src/app/(payload)/api/trpc/[trpc]/route.ts))
+- **Next.js handler**: Connects tRPC to Next.js App Router
+- **HTTP methods**: Handles GET and POST requests
+- **Context**: Includes request, user authentication, and Payload instance
+
+## Common Patterns
+
+### Router Definition
+```typescript
+export const exampleRouter = createTRPCRouter({
+  getById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      // Implementation
+    }),
+
+  create: protectedProcedure
+    .input(createSchema)
+    .mutation(async ({ input, ctx }) => {
+      // Implementation
+    }),
+});
+```
+
+### Client Usage
+```typescript
+// Query
+const { data, isLoading } = api.example.getById.useQuery({ id: "123" });
+
+// Mutation
+const createMutation = api.example.create.useMutation({
+  onSuccess: () => {
+    // Invalidate and refetch
+    utils.example.getById.invalidate();
+  },
+});
+```
+
+## Best Practices
+1. **Input validation**: Always use Zod schemas for procedure inputs
+2. **Error handling**: Use tRPC error types (`TRPCError`)
+3. **Authentication**: Use appropriate procedures (`publicProcedure` vs `protectedProcedure`)
+4. **Data invalidation**: Properly invalidate related queries after mutations
+5. **Type safety**: Leverage TypeScript inference throughout
