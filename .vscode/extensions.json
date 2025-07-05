@@ -1,3 +1,14 @@
 {
-  "recommendations": ["dbaeumer.vscode-eslint"]
+  // Recommended VSCode extensions for TeamHub Payload
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    "ms-azuretools.vscode-docker",
+    "bierner.markdown-mermaid",
+    "unifiedjs.vscode-mdx",
+    "GitHub.copilot",
+    "eamodio.gitlens"
+  ]
 }

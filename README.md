@@ -1,98 +1,139 @@
 # TeamHub Payload
 
-## Overview
+A modern team management platform built with **Next.js**, **Payload CMS**, **tRPC**, and **Shadcn/UI**.
 
-TeamHub Payload is a website template built using Payload CMS, designed to provide a robust and flexible foundation for web development projects. It leverages modern technologies such as Next.js, Tailwind CSS, and a variety of plugins to enhance functionality and user experience.
+---
 
-## Features
+## 🚀 Quick Start
 
-- **Payload CMS**: A headless CMS for managing content.
-- **Next.js**: A React framework for server-side rendering and static site generation.
-- **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
-- **Docker Support**: Easily deployable with Docker and Docker Compose.
-- **PostgreSQL**: Integrated database support with PostgreSQL.
-- **Mailpit**: Email testing with Mailpit.
-
-## Prerequisites
-
-- Node.js (version 18.20.2 or later)
-- Docker and Docker Compose
-- PNPM (version 10.6.1)
-
-## Installation
-
-1. **Clone the repository**:
-
-   ```bash
-   git clone <repository-url>
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/your-org/teamhub-payload.git
    cd teamhub-payload
    ```
 
-2. **Install dependencies**:
-
-   ```bash
+2. **Install dependencies**
+   ```sh
    pnpm install
    ```
 
-3. **Set up environment variables**:
-   - Copy `.env.example` to `.env` and fill in the necessary values.
+3. **Set up environment variables**
+   ```sh
+   cp .env.example .env.local
+   # Edit .env.local as needed
+   ```
 
-4. **Run the development server**:
-   ```bash
+4. **Run database migrations**
+   ```sh
+   pnpm migrate
+   ```
+
+5. **(Optional) Seed the database**
+   ```sh
+   pnpm seed
+   ```
+
+6. **Start the development server**
+   ```sh
    pnpm dev
    ```
 
-## Docker Setup
+7. **Open the app**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Payload Admin: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-1. **Build and run the Docker containers**:
+---
 
-   ```bash
-   docker-compose up --build
-   ```
+## 🗂️ Project Structure
 
-2. **Access the application**:
-   - The application will be available at `http://localhost:3000`.
-   - Mailpit can be accessed at `http://localhost:8025`.
+- **[src/app](src/app)**: Next.js App Router pages and layouts
+- **[src/components](src/components)**: Reusable UI components (Shadcn/UI)
+- **[src/collections](src/collections)**: Payload CMS collections
+- **[src/server](src/server)**: tRPC routers and server logic
+- **[src/migrations](src/migrations)**: Database schema changes
+- **[public](public)**: Static files and images
 
-## Scripts
+See [Cursor Rules](.cursor/rules/) for detailed conventions.
 
-- `pnpm build`: Builds the application for production.
-- `pnpm dev`: Starts the development server.
-- `pnpm start`: Starts the application in production mode.
-- `pnpm lint`: Lints the codebase.
-- `pnpm test`: Runs the test suite using Vitest.
+---
 
-## Contributing
+## 🛠️ Scripts
 
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+| Command           | Description                                 |
+|-------------------|---------------------------------------------|
+| `pnpm dev`        | Start development server                    |
+| `pnpm build`      | Build for production                        |
+| `pnpm start`      | Start production server                     |
+| `pnpm lint`       | Run ESLint                                  |
+| `pnpm format`     | Format code with Prettier                   |
+| `pnpm test`       | Run tests with Vitest                       |
+| `pnpm migrate`    | Run database migrations                     |
+| `pnpm generate:types` | Generate Payload TypeScript types       |
 
-## License
+---
 
-This project is licensed under the MIT License.
-
-## Entity Relationship Diagram
+## 🏗️ Architecture
 
 ```mermaid
-erDiagram
-    Users ||--o{ Users : "reportTo"
-    Users ||--|| Profiles : "has"
-    Users ||--o{ Certificates : "has"
-    Users }o--o{ Skills : "has via"
-    Users_Skills }|--|| Users : "belongs to"
-    Users_Skills }|--|| Skills : "belongs to"
-
-    Teams }o--o{ Users : "has via"
-    Teams_Users }|--|| Teams : "belongs to"
-    Teams_Users }|--|| Users : "belongs to"
-
-    Teams }o--o{ Skills : "requires via"
-    Team_Skills }|--|| Teams : "belongs to"
-    Team_Skills }|--|| Skills : "belongs to"
-
-    Teams ||--o{ Team_Requirements : "has"
-
-    Trainings }o--o{ Skills : "develops"
-    Trainings }o--o{ Users : "attended by"
-
-    Media }o--o{ Categories : "categorized by"
+graph TD
+  A[Next.js App Router] -->|API| B[tRPC Routers]
+  B -->|DB Access| C[Payload CMS]
+  C --> D[Database]
+  A -->|UI| E[Shadcn/UI Components]
 ```
+
+- **Next.js**: Frontend and API routes
+- **tRPC**: Type-safe API layer
+- **Payload CMS**: Headless CMS and database
+- **Shadcn/UI**: Design system and UI components
+
+---
+
+## 🧑‍💻 Onboarding Checklist
+
+- [ ] Clone the repo
+- [ ] Install dependencies
+- [ ] Set up `.env.local`
+- [ ] Run migrations/seed data
+- [ ] Start the dev server
+- [ ] Run tests (`pnpm test`)
+- [ ] Read [Cursor Rules](.cursor/rules/) for conventions
+
+---
+
+## 📝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our guidelines.
+
+- Use feature branches and open PRs for review.
+- Run `pnpm lint` and `pnpm test` before pushing.
+- Follow our [Cursor Rules](.cursor/rules/) for code conventions.
+
+---
+
+## 🧩 Useful Links
+
+- [Payload CMS Docs](https://payloadcms.com/docs)
+- [Next.js Docs](https://nextjs.org/docs)
+- [tRPC Docs](https://trpc.io/docs)
+- [Shadcn/UI Docs](https://ui.shadcn.com/docs)
+- [Cursor Rules](.cursor/rules/)
+
+---
+
+## 🛡️ Environment Variables
+
+See `.env.example` for all required environment variables and their descriptions.
+
+---
+
+## 💡 Editor & Tooling
+
+- Recommended: VSCode with extensions for ESLint, Prettier, Tailwind CSS, and MDX.
+- See `.vscode/extensions.json` for suggestions.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
