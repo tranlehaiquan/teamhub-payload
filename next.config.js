@@ -1,4 +1,5 @@
 import { withPayload } from '@payloadcms/next/withPayload';
+import bundleAnalyzer from '@next/bundle-analyzer';
 
 import redirects from './redirects.js';
 
@@ -31,4 +32,9 @@ const nextConfig = {
   output: 'standalone',
 };
 
-export default withPayload(nextConfig);
+// Add bundle analyzer configuration
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default withPayload(withBundleAnalyzer(nextConfig));
