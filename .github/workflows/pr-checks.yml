@@ -13,23 +13,48 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
-      # pnpm
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
 
       - name: Cache pnpm store
         uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Type checking
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm exec prettier --check .
+
+      - name: Generate Payload types
+        run: pnpm generate:types
 
       - name: Build
         run: pnpm build
 
       - name: Test
         run: pnpm test
+
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
