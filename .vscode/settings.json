@@ -1,44 +1,38 @@
 {
   "npm.packageManager": "pnpm",
-  "editor.defaultFormatter": "biomejs.biome",
   "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports.biome": "explicit",
-      "source.fixAll.biome": "explicit"
+      "source.organizeImports.eslint": "explicit",
+      "source.fixAll.eslint": "explicit"
     }
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports.biome": "explicit",
-      "source.fixAll.biome": "explicit"
+      "source.organizeImports.eslint": "explicit",
+      "source.fixAll.eslint": "explicit"
     }
   },
   "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports.biome": "explicit",
-      "source.fixAll.biome": "explicit"
+      "source.organizeImports.eslint": "explicit",
+      "source.fixAll.eslint": "explicit"
     }
   },
   "[json]": {
-    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true
   },
   "editor.formatOnSaveMode": "file",
   "typescript.tsdk": "node_modules/typescript/lib",
   "[javascript][typescript][typescriptreact]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports.biome": "explicit",
-      "source.fixAll.biome": "explicit"
+      "source.organizeImports.eslint": "explicit",
+      "source.fixAll.eslint": "explicit"
     }
   },
   "[sql]": {

@@ -54,8 +54,8 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update pnpm dependencies"
-          title: "Weekly Package Update"
+          commit-message: 'chore: update pnpm dependencies'
+          title: 'Weekly Package Update'
           body: |
             This PR updates outdated packages to their latest versions.
 

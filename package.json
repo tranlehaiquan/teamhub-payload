@@ -12,12 +12,11 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
-    "lint": "biome lint ./src",
-    "lint:fix": "biome lint --write ./src",
+    "lint": "next lint",
+    "format": "prettier --write .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "format": "biome format --write ./src/**/*.{ts,tsx,js,jsx,json,css,md}",
     "test": "vitest"
   },
   "dependencies": {
@@ -96,7 +95,6 @@
     "zod": "^3.25.74"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/dom": "^10.4.0",
@@ -110,9 +108,12 @@
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/ui": "^3.2.4",
     "copyfiles": "^2.4.1",
+    "eslint": "^9.30.1",
+    "eslint-config-next": "^15.3.5",
     "eslint-config-prettier": "^10.1.5",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4.1.11",
     "turbo": "^2.5.4",
     "typescript": "5.8.3",

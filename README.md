@@ -22,12 +22,14 @@ TeamHub Payload is a website template built using Payload CMS, designed to provi
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd teamhub-payload
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
@@ -43,6 +45,7 @@ TeamHub Payload is a website template built using Payload CMS, designed to provi
 ## Docker Setup
 
 1. **Build and run the Docker containers**:
+
    ```bash
    docker-compose up --build
    ```
