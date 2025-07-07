@@ -60,7 +60,7 @@
     "@types/dagre": "^0.7.53",
     "@vercel/speed-insights": "^1.2.0",
     "@xyflow/react": "^12.8.1",
-    "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "babel-plugin-react-compiler": "19.1.0-rc.1-rc-af1b7da-20250421",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
@@ -73,7 +73,7 @@
     "graphql": "^16.11.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
-    "next": "^15.3.5",
+    "next": "^15.4.0",
     "next-sitemap": "^4.2.3",
     "next-themes": "^0.4.6",
     "payload": "3.45.0",
@@ -84,7 +84,7 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "7.60.0",
     "react-select": "^5.10.1",
-    "recharts": "^2.15.3",
+    "recharts": "^2.15.4",
     "server-only": "^0.0.1",
     "sharp": "0.34.2",
     "sonner": "^2.0.6",
@@ -102,7 +102,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/escape-html": "^1.0.4",
     "@types/lodash": "^4.17.20",
-    "@types/node": "22.15.21",
+    "@types/node": "22.16.0",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
@@ -123,7 +123,7 @@
   "engines": {
     "node": "^18.20.2 || >=20.9.0"
   },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.12.4",
   "pnpm": {
     "ignoredBuiltDependencies": [
       "@vercel/speed-insights",
