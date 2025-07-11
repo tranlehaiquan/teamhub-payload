@@ -11,8 +11,7 @@ export const certificateSchema = zod
     deliveryDate: zod.date().nullable().optional(),
     expiryDate: zod.date().nullable().optional(),
     skill: zod.number({
-      required_error: 'Skill is required',
-      invalid_type_error: 'Skill must be a number',
+      error: (issue) => (issue.code === 'invalid_type' ? 'Must be a number' : undefined),
     }),
   })
   .refine(
