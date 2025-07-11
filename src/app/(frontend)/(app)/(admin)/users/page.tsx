@@ -1,5 +1,3 @@
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,16 +6,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import UsersTable from './UsersTable';
-import DialogNewUser from './DialogNewUser';
-import { api, HydrateClient } from '@/trpc/server';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { HydrateClient, api } from '@/trpc/server';
 import { PlusIcon } from 'lucide-react';
+import React from 'react';
+import DialogNewUser from './DialogNewUser';
+import UsersTable from './UsersTable';
 
 const PageUsers = async () => {
-  void api.user.getUsers.prefetch({});
+  void api.user.getUsers.prefetch({
+    page: 1,
+  });
 
   return (
     <HydrateClient>
@@ -52,7 +54,7 @@ const PageUsers = async () => {
 
         <React.Suspense
           fallback={
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               <Skeleton className="h-8" />
               <Skeleton className="h-8" />
               <Skeleton className="h-8" />
