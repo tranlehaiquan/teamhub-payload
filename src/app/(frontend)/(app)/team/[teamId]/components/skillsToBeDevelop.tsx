@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { api } from '@/trpc/react';
 
@@ -49,6 +50,7 @@ function CircularProgress({ value }: { value: number }) {
 
 export default function SkillsToBeDevelop({ teamId }: { teamId: number }) {
   const [requirements] = api.team.getTeamRequirements.useSuspenseQuery(teamId);
+  const [showAll, setShowAll] = React.useState(false);
 
   // Flatten and calculate progress
   const skills = requirements.map((skill: any) => {
@@ -71,7 +73,9 @@ export default function SkillsToBeDevelop({ teamId }: { teamId: number }) {
   });
 
   // Sort by lowest progress (top skills to be developed)
-  const topSkills = skills.sort((a, b) => a.progress - b.progress).slice(0, 5);
+  const sortedSkills = skills.sort((a, b) => a.progress - b.progress);
+  const hasMore = sortedSkills.length > 5;
+  const displayedSkills = showAll ? sortedSkills : sortedSkills.slice(0, 5);
 
   return (
     <Card>
@@ -84,7 +88,7 @@ export default function SkillsToBeDevelop({ teamId }: { teamId: number }) {
           <span className="justify-self-end">PROGRESS IN %</span>
         </div>
         <ul>
-          {topSkills.map((skill) => (
+          {displayedSkills.map((skill) => (
             <li
               key={skill.skillName}
               className="flex items-center justify-between border-b last:border-b-0 py-4"
@@ -94,6 +98,14 @@ export default function SkillsToBeDevelop({ teamId }: { teamId: number }) {
             </li>
           ))}
         </ul>
+        {hasMore && (
+          <button
+            className="mt-4 block mx-auto px-4 py-2 rounded bg-muted text-foreground hover:bg-muted/80 transition"
+            onClick={() => setShowAll((prev) => !prev)}
+          >
+            {showAll ? 'Show less' : 'Show more'}
+          </button>
+        )}
       </CardContent>
     </Card>
   );
