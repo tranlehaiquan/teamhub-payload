@@ -14,13 +14,6 @@ import { eq, like, count, sql } from '@payloadcms/db-postgres/drizzle';
 import { inArray, and } from '@payloadcms/db-postgres/drizzle';
 import { TRPCError } from '@trpc/server';
 
-type TeamRequirement = {
-  skill: number;
-  desiredLevel: number | null;
-  desiredMembers: number | null;
-  numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
-};
-
 // Shared helper function
 async function fetchTeamRequirements(
   ctx: any,
@@ -29,6 +22,7 @@ async function fetchTeamRequirements(
   {
     skillId: number;
     skillName: string;
+    progress: number;
     requirements: Array<{
       desiredLevel: number | null;
       desiredMembers: number | null;
@@ -99,8 +93,26 @@ async function fetchTeamRequirements(
       ),
     });
   }
+  const values = Object.values(grouped).map((skill) => {
+    const topReq = skill.requirements.reduce(
+      (max: any, req: any) => (req.desiredMembers > (max?.desiredMembers ?? 0) ? req : max),
+      null,
+    );
+    const progress =
+      topReq && topReq.desiredMembers
+        ? Math.round(
+            ((topReq.numberOfUserSkillsWithSameSkillAndDesiredLevel || 0) / topReq.desiredMembers) *
+              100,
+          )
+        : 0;
 
-  return Object.values(grouped);
+    return {
+      ...skill,
+      progress,
+    };
+  });
+
+  return values;
 }
 
 export const teamRouter = createTRPCRouter({

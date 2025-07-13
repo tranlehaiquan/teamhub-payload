@@ -53,22 +53,10 @@ export default function SkillsToBeDevelop({ teamId }: { teamId: number }) {
   const [showAll, setShowAll] = React.useState(false);
 
   // Flatten and calculate progress
-  const skills = requirements.map((skill: any) => {
-    // Find the requirement with the highest desiredMembers for this skill
-    const topReq = skill.requirements.reduce(
-      (max: any, req: any) => (req.desiredMembers > (max?.desiredMembers ?? 0) ? req : max),
-      null,
-    );
-    const progress =
-      topReq && topReq.desiredMembers
-        ? Math.round(
-            ((topReq.numberOfUserSkillsWithSameSkillAndDesiredLevel || 0) / topReq.desiredMembers) *
-              100,
-          )
-        : 0;
+  const skills = requirements.map((skill) => {
     return {
       skillName: skill.skillName,
-      progress,
+      progress: skill.progress,
     };
   });
 
