@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { Skill } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { groupBy } from 'lodash';
@@ -44,11 +43,12 @@ export const GroupSkillsByCategory = ({
   teamId: number;
   userSkills: UserSkill[];
 }) => {
+  const utils = api.useUtils();
+  const updateUserSkills = api.team.updateUserSkills.useMutation();
+
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
   const userSkillsByUserId = groupBy(userSkills, 'user');
   const [levels] = api.global.getLevels.useSuspenseQuery();
-  const utils = api.useUtils();
-  const updateUserSkills = api.team.updateUserSkills.useMutation();
   const [teamRequirements] = api.team.getTeamRequirements.useSuspenseQuery(teamId);
 
   const getUserSkill = (userId: number, skillId: number) => {
@@ -66,18 +66,11 @@ export const GroupSkillsByCategory = ({
   };
 
   const getTeamRequirementsBySkillId = (skillId: number) => {
-    const teamRequirementsForSkill = teamRequirements.filter(
-      (teamRequirement) => teamRequirement.skill === skillId,
-    );
-
-    return teamRequirementsForSkill.map((teamRequirement) => ({
-      ...teamRequirement,
-      desiredLevel: teamRequirement.desiredLevel ? Number(teamRequirement.desiredLevel) : null,
-      desiredMembers: teamRequirement.desiredMembers
-        ? Number(teamRequirement.desiredMembers)
-        : null,
-      numberOfUserSkillsWithSameSkillAndDesiredLevel:
-        teamRequirement.numberOfUserSkillsWithSameSkillAndDesiredLevel,
+    const teamRequirementsForSkill = teamRequirements.find((i) => i.skillId === skillId);
+    return teamRequirementsForSkill?.requirements.map((req) => ({
+      ...req,
+      desiredLevel: req.desiredLevel || 0,
+      desiredMembers: req.desiredMembers || 0,
     }));
   };
 
@@ -115,14 +108,7 @@ export const GroupSkillsByCategory = ({
             <div className="flex items-center justify-center">
               <RequirementIndicator
                 skill={skill}
-                teamRequirements={
-                  getTeamRequirementsBySkillId(skill.id)?.map((req) => ({
-                    ...req,
-                    skill: req.skill as number,
-                    desiredLevel: req.desiredLevel || 0,
-                    desiredMembers: req.desiredMembers || 0,
-                  })) || []
-                }
+                teamRequirements={getTeamRequirementsBySkillId(skill.id)}
                 teamId={teamId}
               />
             </div>

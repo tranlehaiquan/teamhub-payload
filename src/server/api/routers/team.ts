@@ -10,9 +10,98 @@ import {
   team_skills,
   categories,
 } from '@/payload-generated-schema';
-import { eq, like, count } from '@payloadcms/db-postgres/drizzle';
-import { inArray } from '@payloadcms/db-postgres/drizzle';
+import { eq, like, count, sql } from '@payloadcms/db-postgres/drizzle';
+import { inArray, and } from '@payloadcms/db-postgres/drizzle';
 import { TRPCError } from '@trpc/server';
+
+type TeamRequirement = {
+  skill: number;
+  desiredLevel: number | null;
+  desiredMembers: number | null;
+  numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
+};
+
+// Shared helper function
+async function fetchTeamRequirements(
+  ctx: any,
+  teamId: number,
+): Promise<
+  {
+    skillId: number;
+    skillName: string;
+    requirements: Array<{
+      desiredLevel: number | null;
+      desiredMembers: number | null;
+      numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
+    }>;
+  }[]
+> {
+  const teamRequirementsWithCounts = await ctx.drizzle
+    .select({
+      id: team_requirements.id,
+      skill: team_requirements.skill,
+      desiredLevel: team_requirements.desiredLevel,
+      desiredMembers: team_requirements.desiredMembers,
+      skillName: skills.name,
+      numberOfUserSkillsWithSameSkillAndDesiredLevel: sql<number>`
+        COUNT(
+          CASE
+            WHEN ${users_skills.skill} = ${team_requirements.skill}
+            AND ${users_skills.currentLevel} = ${team_requirements.desiredLevel}
+            THEN 1
+          END
+        )
+      `.as('count'),
+    })
+    .from(team_requirements)
+    .leftJoin(skills, eq(team_requirements.skill, skills.id))
+    .leftJoin(teams_users, eq(teams_users.team, teamId))
+    .leftJoin(
+      users_skills,
+      and(eq(users_skills.user, teams_users.user), eq(users_skills.skill, team_requirements.skill)),
+    )
+    .where(eq(team_requirements.team, teamId))
+    .groupBy(
+      team_requirements.id,
+      team_requirements.skill,
+      team_requirements.desiredLevel,
+      team_requirements.desiredMembers,
+      skills.name,
+    );
+  // Group by skill
+  const grouped: Record<
+    string,
+    {
+      skillId: number;
+      skillName: string;
+      requirements: Array<{
+        desiredLevel: number | null;
+        desiredMembers: number | null;
+        numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
+      }>;
+    }
+  > = {};
+
+  for (const req of teamRequirementsWithCounts) {
+    const skillId = req.skill;
+    if (!grouped[skillId]) {
+      grouped[skillId] = {
+        skillId,
+        skillName: req.skillName,
+        requirements: [],
+      };
+    }
+    grouped[skillId].requirements.push({
+      desiredLevel: req.desiredLevel ? Number(req.desiredLevel) : null,
+      desiredMembers: req.desiredMembers ? Number(req.desiredMembers) : null,
+      numberOfUserSkillsWithSameSkillAndDesiredLevel: Number(
+        req.numberOfUserSkillsWithSameSkillAndDesiredLevel,
+      ),
+    });
+  }
+
+  return Object.values(grouped);
+}
 
 export const teamRouter = createTRPCRouter({
   getTeams: isAuthedProcedure
@@ -164,8 +253,8 @@ export const teamRouter = createTRPCRouter({
         id: row.userSkillId!,
         user: row.userId,
         skill: row.skillId!,
-        currentLevel: row.currentLevel ? Number(row.currentLevel) : undefined,
-        desiredLevel: row.desiredLevel ? Number(row.desiredLevel) : undefined,
+        currentLevel: row.currentLevel ? Number(row.currentLevel) : 0,
+        desiredLevel: row.desiredLevel ? Number(row.desiredLevel) : 0,
       }));
 
     return userSkillsProcessed;
@@ -311,18 +400,7 @@ export const teamRouter = createTRPCRouter({
       .where(eq(team_skills.team, teamId))
       .limit(100);
 
-    return {
-      docs: teamSkills,
-      totalDocs: teamSkills.length,
-      limit: 100,
-      totalPages: 1,
-      page: 1,
-      pagingCounter: 1,
-      hasPrevPage: false,
-      hasNextPage: false,
-      prevPage: null,
-      nextPage: null,
-    };
+    return teamSkills;
   }),
 
   updateTeamSkills: isAuthedProcedure
@@ -355,80 +433,6 @@ export const teamRouter = createTRPCRouter({
 
       return await Promise.all([...removeSkills, ...addSkills]);
     }),
-
-  getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
-    const teamId = input;
-
-    const teamUsersResults = await ctx.drizzle
-      .select({
-        id: teams_users.id,
-        team: teams_users.team,
-        user: teams_users.user,
-      })
-      .from(teams_users)
-      .leftJoin(users, eq(teams_users.user, users.id))
-      .where(eq(teams_users.team, teamId));
-    const teamMemberIds = teamUsersResults.map((teamMember) => teamMember.user as number);
-    const userSkills = await ctx.drizzle
-      .select({
-        id: users_skills.id,
-        user: users_skills.user,
-        skill: users_skills.skill,
-        currentLevel: users_skills.currentLevel,
-        desiredLevel: users_skills.desiredLevel,
-      })
-      .from(users_skills)
-      .where(inArray(users_skills.user, teamMemberIds));
-
-    const teamRequirements = await ctx.drizzle
-      .select({
-        id: team_requirements.id,
-        team: team_requirements.team,
-        skill: team_requirements.skill,
-        desiredLevel: team_requirements.desiredLevel,
-        desiredMembers: team_requirements.desiredMembers,
-        skillName: skills.name,
-      })
-      .from(team_requirements)
-      .leftJoin(skills, eq(team_requirements.skill, skills.id))
-      .where(eq(team_requirements.team, teamId));
-
-    // Create a lookup map for efficient counting: skill_id -> currentLevel -> count
-    const userSkillsLookup = new Map<number, Map<number, number>>();
-    userSkills.forEach((userSkill) => {
-      const skillId = userSkill.skill as number;
-      const currentLevel = userSkill.currentLevel ? Number(userSkill.currentLevel) : null;
-
-      if (currentLevel !== null) {
-        if (!userSkillsLookup.has(skillId)) {
-          userSkillsLookup.set(skillId, new Map());
-        }
-        const skillMap = userSkillsLookup.get(skillId)!;
-        skillMap.set(currentLevel, (skillMap.get(currentLevel) || 0) + 1);
-      }
-    });
-
-    const teamRequirementsProcessed = teamRequirements.map((requirement) => {
-      const skill = requirement.skill;
-      const desiredLevel = requirement.desiredLevel ? Number(requirement.desiredLevel) : null;
-      const desiredMembers = requirement.desiredMembers ? Number(requirement.desiredMembers) : null;
-
-      // Efficient lookup instead of filtering
-      const numberOfUserSkillsWithSameSkillAndDesiredLevel =
-        skill && desiredLevel !== null && userSkillsLookup.has(skill)
-          ? userSkillsLookup.get(skill)!.get(desiredLevel) || 0
-          : 0;
-
-      return {
-        skill,
-        desiredLevel,
-        desiredMembers,
-        numberOfUserSkillsWithSameSkillAndDesiredLevel,
-      };
-    });
-
-    return teamRequirementsProcessed;
-  }),
 
   updateUserSkills: isAuthedProcedure
     .input(
@@ -510,6 +514,19 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+
+  getTeamRequirements: isAuthedProcedure.input(z.number()).query(async ({ input, ctx }) => {
+    try {
+      const teamRequirements = await fetchTeamRequirements(ctx, input);
+      return teamRequirements;
+    } catch (error) {
+      console.error('Error fetching team requirements:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch team requirements',
+      });
+    }
+  }),
 
   updateTeamRequirements: isAuthedProcedure
     .input(

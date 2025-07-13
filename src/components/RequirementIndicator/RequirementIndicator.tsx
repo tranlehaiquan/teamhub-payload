@@ -15,7 +15,6 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Skill } from '@/payload-types';
 import { api } from '@/trpc/react';
 import { Edit } from 'lucide-react';
 import LevelSkillSelection from '../LevelSkillSelection/LevelSkillSelection';
@@ -30,7 +29,6 @@ type Props = {
     name: string;
   };
   teamRequirements?: {
-    skill: number;
     desiredLevel: number;
     desiredMembers: number;
     numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
@@ -38,7 +36,7 @@ type Props = {
   teamId: number;
 };
 
-const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId }) => {
+const DialogRequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId }) => {
   const [open, setOpen] = useState(false);
   const [levels] = api.global.getLevels.useSuspenseQuery();
   const utils = api.useUtils();
@@ -118,10 +116,15 @@ const RequirementIndicator: React.FC<Props> = ({ skill, teamRequirements, teamId
           ))}
         </div>
 
-        <Button onClick={handleOnSubmit}>Save</Button>
+        <Button
+          onClick={handleOnSubmit}
+          disabled={updateRequirements.isPending || formMethods.formState.isSubmitting}
+        >
+          Save
+        </Button>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default RequirementIndicator;
+export default DialogRequirementIndicator;

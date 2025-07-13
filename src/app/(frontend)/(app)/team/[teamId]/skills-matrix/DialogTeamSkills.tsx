@@ -39,7 +39,7 @@ const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, ch
   const updateTeamSkillsMutation = api.team.updateTeamSkills.useMutation();
   const utils = api.useUtils();
 
-  const selectedOptions = teamSkills.docs
+  const selectedOptions = teamSkills
     .filter((skill) => skill.skill && skill.skill.name)
     .map((skill) => ({
       label: skill.skill!.name,
@@ -60,11 +60,11 @@ const DialogTeamSkills: React.FC<React.PropsWithChildren<Props>> = ({ teamId, ch
 
   const handleSubmit = formMethods.handleSubmit(async (data) => {
     const skills = data.skills.map((skill) => skill.value);
-    const removeSkills = teamSkills.docs
+    const removeSkills = teamSkills
       .filter((teamSkill) => teamSkill.skill && !skills.includes(teamSkill.skill.id))
       .map((teamSkill) => teamSkill.id);
     const addSkills = skills.filter(
-      (skill) => !teamSkills.docs.some((teamSkill) => teamSkill.skill?.id === skill),
+      (skill) => !teamSkills.some((teamSkill) => teamSkill.skill?.id === skill),
     );
 
     try {

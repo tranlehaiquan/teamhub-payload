@@ -21,7 +21,11 @@ const QuickNavigate = ({ teamId }: { teamId: string }) => {
           </Card>
         </Link>
 
-        <Link href={`/team/${teamId}/health-check`} className="block">
+        <Link
+          href={`/team/${teamId}/health-check`}
+          className="block opacity-50 cursor-not-allowed pointer-events-none"
+          aria-disabled
+        >
           <Card className="hover:bg-accent/5 transition-colors cursor-pointer h-full">
             <CardHeader>
               <div className="w-12 h-12 bg-lime-100 rounded-lg flex items-center justify-center mb-2">
@@ -35,7 +39,11 @@ const QuickNavigate = ({ teamId }: { teamId: string }) => {
           </Card>
         </Link>
 
-        <Link href={`/team/${teamId}/retro`} className="block">
+        <Link
+          href={`/team/${teamId}/retro`}
+          className="block opacity-50 cursor-not-allowed pointer-events-none"
+          aria-disabled
+        >
           <Card className="hover:bg-accent/5 transition-colors cursor-pointer h-full">
             <CardHeader>
               <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-2">

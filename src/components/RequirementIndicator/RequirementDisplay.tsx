@@ -3,7 +3,6 @@ import LevelSlot from '@/components/LevelSlot';
 
 type Props = {
   requirements: {
-    skill: number;
     desiredLevel: number;
     desiredMembers: number;
     numberOfUserSkillsWithSameSkillAndDesiredLevel: number;

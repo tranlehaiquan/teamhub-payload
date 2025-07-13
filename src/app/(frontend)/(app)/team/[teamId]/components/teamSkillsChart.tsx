@@ -8,40 +8,54 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { api } from '@/trpc/react';
-import type { Skill } from '@/payload-types';
 
+// Utility functions
 const generateColor = (index: number, total: number) => {
   const hue = (index * 360) / total;
   return `hsl(${hue}, 70%, 50%)`;
 };
 
-export default function TeamSkillsChart({ teamId }: { teamId: number }) {
-  const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
-  const [teamSkills] = api.team.getTeamSkills.useSuspenseQuery(teamId);
-  const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
-
-  // Generate dynamic chart config based on team members
-  const chartConfig = Object.fromEntries(
-    teamMembers.map((member, index) => [
+const createChartConfig = (members: any[]) => {
+  return Object.fromEntries(
+    members.map((member, index) => [
       member.user.id.toString(),
       {
-        label: member.user.name || `${member.user.email}`,
-        color: generateColor(index, teamMembers.length),
+        label: member.user.name || member.user.email,
+        color: generateColor(index, members.length),
       },
     ]),
   ) satisfies ChartConfig;
+};
 
-  const data = teamSkills.docs.map((teamSkill) => {
-    const teamMemberSkills = teamUserSkills.filter(
-      (i) => i.skill === (teamSkill.skill as Skill).id,
-    );
+const processChartData = (skills: any[], teamUserSkills: any[], members: any[]) => {
+  const teamUserSkillsBySkillId = Object.groupBy(teamUserSkills, (i) => i.skill);
+  const memberIds = members.map((i) => i.user.id);
+
+  return skills.map((teamSkill) => {
+    const teamMemberSkills = teamUserSkillsBySkillId[teamSkill.skill?.id as number] || [];
     const skillsEntries = Object.fromEntries(teamMemberSkills.map((i) => [i.user, i.currentLevel]));
 
+    // Fill missing member skills with 0
+    memberIds.forEach((memberId) => {
+      if (!skillsEntries[memberId]) {
+        skillsEntries[memberId] = 0;
+      }
+    });
+
     return {
-      skill: (teamSkill.skill as Skill).name,
+      skill: teamSkill.skill?.name,
       ...skillsEntries,
     };
   });
+};
+
+export default function TeamSkillsChart({ teamId }: { teamId: number }) {
+  const [teamUserSkills] = api.team.getUserSkills.useSuspenseQuery(teamId);
+  const [skills] = api.team.getTeamSkills.useSuspenseQuery(teamId);
+  const [members] = api.team.getTeamMembers.useSuspenseQuery(teamId);
+
+  const chartConfig = createChartConfig(members);
+  const chartData = processChartData(skills, teamUserSkills, members);
 
   return (
     <Card>
@@ -52,11 +66,11 @@ export default function TeamSkillsChart({ teamId }: { teamId: number }) {
 
       <CardContent className="pb-0">
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
-          <RadarChart data={data}>
+          <RadarChart data={chartData}>
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
             <PolarAngleAxis dataKey="skill" />
             <PolarGrid />
-            {teamMembers.map((member) => (
+            {members.map((member) => (
               <Radar
                 key={member.id}
                 dataKey={member.user.id.toString()}
