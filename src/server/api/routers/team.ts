@@ -14,7 +14,7 @@ import { eq, like, count, sql } from '@payloadcms/db-postgres/drizzle';
 import { inArray, and } from '@payloadcms/db-postgres/drizzle';
 import { TRPCError } from '@trpc/server';
 
-// Shared helper function
+// Optimized helper function with better query structure
 async function fetchTeamRequirements(
   ctx: any,
   teamId: number,
@@ -30,25 +30,23 @@ async function fetchTeamRequirements(
     }>;
   }[]
 > {
+  // Single optimized query with better joins and aggregation
   const teamRequirementsWithCounts = await ctx.drizzle
     .select({
-      id: team_requirements.id,
-      skill: team_requirements.skill,
+      skillId: team_requirements.skill,
+      skillName: skills.name,
       desiredLevel: team_requirements.desiredLevel,
       desiredMembers: team_requirements.desiredMembers,
-      skillName: skills.name,
+      // More efficient count using conditional aggregation
       numberOfUserSkillsWithSameSkillAndDesiredLevel: sql<number>`
-        COUNT(
-          CASE
-            WHEN ${users_skills.skill} = ${team_requirements.skill}
-            AND ${users_skills.currentLevel} = ${team_requirements.desiredLevel}
-            THEN 1
-          END
-        )
+        COALESCE(COUNT(CASE
+          WHEN ${users_skills.currentLevel} = ${team_requirements.desiredLevel}
+          THEN 1
+        END), 0)
       `.as('count'),
     })
     .from(team_requirements)
-    .leftJoin(skills, eq(team_requirements.skill, skills.id))
+    .innerJoin(skills, eq(team_requirements.skill, skills.id))
     .leftJoin(teams_users, eq(teams_users.team, teamId))
     .leftJoin(
       users_skills,
@@ -56,15 +54,16 @@ async function fetchTeamRequirements(
     )
     .where(eq(team_requirements.team, teamId))
     .groupBy(
-      team_requirements.id,
       team_requirements.skill,
+      skills.name,
       team_requirements.desiredLevel,
       team_requirements.desiredMembers,
-      skills.name,
-    );
-  // Group by skill
-  const grouped: Record<
-    string,
+    )
+    .orderBy(skills.name, team_requirements.desiredLevel);
+
+  // More efficient grouping using Map for better performance
+  const skillsMap = new Map<
+    number,
     {
       skillId: number;
       skillName: string;
@@ -74,18 +73,20 @@ async function fetchTeamRequirements(
         numberOfUserSkillsWithSameSkillAndDesiredLevel: number;
       }>;
     }
-  > = {};
+  >();
 
   for (const req of teamRequirementsWithCounts) {
-    const skillId = req.skill;
-    if (!grouped[skillId]) {
-      grouped[skillId] = {
+    const { skillId, skillName } = req;
+
+    if (!skillsMap.has(skillId)) {
+      skillsMap.set(skillId, {
         skillId,
-        skillName: req.skillName,
+        skillName,
         requirements: [],
-      };
+      });
     }
-    grouped[skillId].requirements.push({
+
+    skillsMap.get(skillId)!.requirements.push({
       desiredLevel: req.desiredLevel ? Number(req.desiredLevel) : null,
       desiredMembers: req.desiredMembers ? Number(req.desiredMembers) : null,
       numberOfUserSkillsWithSameSkillAndDesiredLevel: Number(
@@ -93,26 +94,30 @@ async function fetchTeamRequirements(
       ),
     });
   }
-  const values = Object.values(grouped).map((skill) => {
-    const topReq = skill.requirements.reduce(
-      (max: any, req: any) => (req.desiredMembers > (max?.desiredMembers ?? 0) ? req : max),
-      null,
+
+  // Calculate progress more efficiently
+  return Array.from(skillsMap.values()).map((skill) => {
+    const maxRequirement = skill.requirements.reduce(
+      (max, req) => ((req.desiredMembers ?? 0) > (max?.desiredMembers ?? 0) ? req : max),
+      skill.requirements[0] || null,
     );
-    const progress =
-      topReq && topReq.desiredMembers
-        ? Math.round(
-            ((topReq.numberOfUserSkillsWithSameSkillAndDesiredLevel || 0) / topReq.desiredMembers) *
+
+    const progress = maxRequirement?.desiredMembers
+      ? Math.min(
+          100,
+          Math.round(
+            ((maxRequirement.numberOfUserSkillsWithSameSkillAndDesiredLevel || 0) /
+              maxRequirement.desiredMembers) *
               100,
-          )
-        : 0;
+          ),
+        )
+      : 0;
 
     return {
       ...skill,
       progress,
     };
   });
-
-  return values;
 }
 
 export const teamRouter = createTRPCRouter({
@@ -299,76 +304,81 @@ export const teamRouter = createTRPCRouter({
 
   deleteTeam: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
     const me = ctx.user;
-
     const teamId = input;
     const userId = me.user.id;
+
+    // Use a single query to check ownership and existence
     const team = await ctx.drizzle.select().from(teams).where(eq(teams.id, teamId));
 
-    if (!team || team[0].owner !== userId) {
+    if (!team.length || team[0].owner !== userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: 'Team not found',
+        message: 'Team not found or you are not the owner',
       });
     }
 
     const transactionID = (await ctx.payload.db.beginTransaction()) as string;
 
-    // TODO: soft delete?
-    const deleteTeamSkills = ctx.payload.delete({
-      collection: 'team_skills',
-      where: {
-        team: {
-          equals: teamId,
+    try {
+      // Use Promise.allSettled for better error handling - continue even if some operations fail
+      const deleteOperations = [
+        ctx.payload.delete({
+          collection: 'team_skills',
+          where: { team: { equals: teamId } },
+          req: { transactionID },
+        }),
+        ctx.payload.delete({
+          collection: 'team_requirements',
+          where: { team: { equals: teamId } },
+          req: { transactionID },
+        }),
+        ctx.payload.delete({
+          collection: 'teams_users',
+          where: { team: { equals: teamId } },
+          req: { transactionID },
+        }),
+      ];
+
+      // Execute related deletions in parallel first
+      const [skillsResult, requirementsResult, usersResult] =
+        await Promise.allSettled(deleteOperations);
+
+      // Log any partial failures but continue
+      const failedOperations = [skillsResult, requirementsResult, usersResult]
+        .filter((result) => result.status === 'rejected')
+        .map((result) => (result as PromiseRejectedResult).reason);
+
+      if (failedOperations.length > 0) {
+        console.warn('Some cleanup operations failed:', failedOperations);
+      }
+
+      // Delete the team itself last
+      const teamResult = await ctx.payload.delete({
+        collection: 'teams',
+        id: teamId,
+        req: { transactionID },
+      });
+
+      await ctx.payload.db.commitTransaction(transactionID);
+
+      return {
+        success: true,
+        team: teamResult,
+        cleanupResults: {
+          skills: skillsResult.status === 'fulfilled' ? skillsResult.value : null,
+          requirements: requirementsResult.status === 'fulfilled' ? requirementsResult.value : null,
+          users: usersResult.status === 'fulfilled' ? usersResult.value : null,
         },
-      },
-      req: {
-        transactionID,
-      },
-    });
-
-    const deleteTeamRequirements = ctx.payload.delete({
-      collection: 'team_requirements',
-      where: {
-        team: {
-          equals: teamId,
-        },
-      },
-      req: {
-        transactionID,
-      },
-    });
-
-    // teams_users
-    const deleteTeamUsers = ctx.payload.delete({
-      collection: 'teams_users',
-      where: {
-        team: {
-          equals: teamId,
-        },
-      },
-      req: {
-        transactionID,
-      },
-    });
-
-    const deleteTeam = ctx.payload.delete({
-      collection: 'teams',
-      id: teamId,
-      req: {
-        transactionID,
-      },
-    });
-
-    const result = await Promise.all([
-      deleteTeamSkills,
-      deleteTeamRequirements,
-      deleteTeamUsers,
-      deleteTeam,
-    ]);
-
-    await ctx.payload.db.commitTransaction(transactionID);
-
-    return result;
+        failedOperations: failedOperations.length,
+      };
+    } catch (error) {
+      await ctx.payload.db.rollbackTransaction(transactionID);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to delete team',
+        cause: error,
+      });
+    }
   }),
 
   createTeam: adminProcedure
@@ -459,35 +469,68 @@ export const teamRouter = createTRPCRouter({
       ),
     )
     .mutation(async ({ input, ctx }) => {
-      const newUserSkills = input.filter((userSkill) => !userSkill.id);
-      const userSkillsUpdate = input.filter((userSkill) => userSkill.id) as {
-        id: number;
-        user: number;
-        skill: number;
-        currentLevel: number;
-      }[];
+      if (input.length === 0) {
+        return { created: 0, updated: 0 };
+      }
 
-      const newUserSkillsRs = newUserSkills.map(async (userSkill) => {
-        return await ctx.payload.create({
-          collection: 'users_skills',
-          data: {
-            user: userSkill.user,
-            skill: userSkill.skill,
-            currentLevel: userSkill.currentLevel,
-            desiredLevel: userSkill.desiredLevel,
-          },
+      const transactionID = (await ctx.payload.db.beginTransaction()) as string;
+
+      try {
+        // Separate operations more efficiently
+        const newUserSkills = input.filter((userSkill) => !userSkill.id);
+        const userSkillsToUpdate = input.filter((userSkill) => userSkill.id);
+
+        // Batch create operations
+        const createPromises = newUserSkills.map((userSkill) =>
+          ctx.payload.create({
+            collection: 'users_skills',
+            data: {
+              user: userSkill.user,
+              skill: userSkill.skill,
+              currentLevel: userSkill.currentLevel,
+              desiredLevel: userSkill.desiredLevel,
+            },
+            req: { transactionID },
+          }),
+        );
+
+        // Batch update operations
+        const updatePromises = userSkillsToUpdate.map((userSkillUpdate) =>
+          ctx.payload.update({
+            collection: 'users_skills',
+            id: userSkillUpdate.id!,
+            data: {
+              user: userSkillUpdate.user,
+              skill: userSkillUpdate.skill,
+              currentLevel: userSkillUpdate.currentLevel,
+              desiredLevel: userSkillUpdate.desiredLevel,
+            },
+            req: { transactionID },
+          }),
+        );
+
+        // Execute all operations in parallel
+        const [createResults, updateResults] = await Promise.all([
+          Promise.all(createPromises),
+          Promise.all(updatePromises),
+        ]);
+
+        await ctx.payload.db.commitTransaction(transactionID);
+
+        return {
+          created: createResults.length,
+          updated: updateResults.length,
+          createResults,
+          updateResults,
+        };
+      } catch (error) {
+        await ctx.payload.db.rollbackTransaction(transactionID);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update user skills',
+          cause: error,
         });
-      });
-
-      const updateUserSkillsRs = userSkillsUpdate.map(async (userSkillUpdate) => {
-        return await ctx.payload.update({
-          collection: 'users_skills',
-          id: userSkillUpdate.id,
-          data: userSkillUpdate,
-        });
-      });
-
-      return await Promise.all([...newUserSkillsRs, ...updateUserSkillsRs]);
+      }
     }),
 
   transferTeamOwnership: isAuthedProcedure
@@ -556,33 +599,61 @@ export const teamRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { teamId, skillId, requirements } = input;
 
-      // Delete existing requirements for this team and skill
-      await ctx.payload.delete({
-        collection: 'team_requirements',
-        where: {
-          AND: [
-            {
-              team: {
-                equals: teamId,
-              },
-            },
-            {
-              skill: {
-                equals: skillId,
-              },
-            },
-          ],
-        },
-      });
+      const transactionID = (await ctx.payload.db.beginTransaction()) as string;
 
-      // Create new requirements
-      const createRequirements = requirements
-        .filter(
+      try {
+        // Get existing requirements for comparison
+        const existingRequirements = await ctx.payload.find({
+          collection: 'team_requirements',
+          where: {
+            AND: [{ team: { equals: teamId } }, { skill: { equals: skillId } }],
+          },
+          req: { transactionID },
+        });
+
+        // Filter valid requirements
+        const validRequirements = requirements.filter(
           (req) =>
             req.desiredLevel !== null && req.desiredMembers !== null && req.desiredMembers > 0,
-        )
-        .map(async (requirement) => {
-          return await ctx.payload.create({
+        );
+
+        // Create a map of existing requirements for efficient lookup
+        const existingMap = new Map(
+          existingRequirements.docs.map((req) => [
+            `${req.desiredLevel}-${req.desiredMembers}`,
+            req,
+          ]),
+        );
+
+        // Separate operations for better performance
+        const toCreate = validRequirements.filter(
+          (req) => !existingMap.has(`${req.desiredLevel}-${req.desiredMembers}`),
+        );
+
+        const toKeep = validRequirements.filter((req) =>
+          existingMap.has(`${req.desiredLevel}-${req.desiredMembers}`),
+        );
+
+        const toDelete = existingRequirements.docs.filter(
+          (existing) =>
+            !validRequirements.some(
+              (req) =>
+                req.desiredLevel === existing.desiredLevel &&
+                req.desiredMembers === existing.desiredMembers,
+            ),
+        );
+
+        // Execute operations in parallel where possible
+        const deleteOperations = toDelete.map((req) =>
+          ctx.payload.delete({
+            collection: 'team_requirements',
+            id: req.id,
+            req: { transactionID },
+          }),
+        );
+
+        const createOperations = toCreate.map((requirement) =>
+          ctx.payload.create({
             collection: 'team_requirements',
             data: {
               team: teamId,
@@ -590,9 +661,28 @@ export const teamRouter = createTRPCRouter({
               desiredLevel: requirement.desiredLevel,
               desiredMembers: requirement.desiredMembers,
             },
-          });
-        });
+            req: { transactionID },
+          }),
+        );
 
-      return await Promise.all(createRequirements);
+        // Execute both sets of operations in parallel
+        const [deleteResults, createResults] = await Promise.all([
+          Promise.all(deleteOperations),
+          Promise.all(createOperations),
+        ]);
+
+        await ctx.payload.db.commitTransaction(transactionID);
+
+        return {
+          created: toCreate.length,
+          deleted: toDelete.length,
+          kept: toKeep.length,
+          deleteResults,
+          createResults,
+        };
+      } catch (error) {
+        await ctx.payload.db.rollbackTransaction(transactionID);
+        throw error;
+      }
     }),
 });
