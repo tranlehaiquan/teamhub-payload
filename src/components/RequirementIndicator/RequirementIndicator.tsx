@@ -22,6 +22,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRequirementForm } from './useRequirementForm';
 import { RequirementDisplay } from './RequirementDisplay';
+import { RequirementProgressDisplay } from './RequirementProgressDisplay';
 
 type Props = {
   skill: {

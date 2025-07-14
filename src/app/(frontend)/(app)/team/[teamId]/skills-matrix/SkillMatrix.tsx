@@ -32,16 +32,21 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
 
   return (
     <div className="p-4">
-      <h1 className="text-lg mb-4">Skill matrix {team.name}</h1>
-
       <div className="grid gap-4">
-        <SectionCard title="Skills" className="overflow-hidden">
-          <div className="flex justify-between items-center mb-2">
-            <SkillLevelLegend levels={levels} />
+        <SectionCard className="overflow-hidden">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-xl font-medium">Skill matrix {team.name}</h1>
+              <p className="text-sm text-gray-500">
+                Team skill requirements vs current capabilities
+              </p>
+            </div>
+
             <DialogTeamSkills teamId={teamId}>
               <Button className="btn">Update team skills</Button>
             </DialogTeamSkills>
           </div>
+          <SkillLevelLegend levels={levels} className="my-4" />
           <Table>
             <TableHeader>
               <TableRow>
