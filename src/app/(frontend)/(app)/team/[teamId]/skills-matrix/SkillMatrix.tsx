@@ -1,16 +1,13 @@
 'use client';
 import type React from 'react';
 import SectionCard from '@/components/SectionCard/SectionCard';
-import { UserAvatarOnlyByUserId } from '@/components/UserProfile/UserAvatar';
-import { Category, Skill, type User } from '@/payload-types';
+import { type User } from '@/payload-types';
 import { api } from '@/trpc/react';
 import uniqBy from 'lodash/uniqBy';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import groupBy from 'lodash/groupBy';
 import { Button } from '@/components/ui/button';
 import SkillLevelLegend from '@/components/SkillLevelLegend/SkillLevelLegend';
 import DialogTeamSkills from './DialogTeamSkills';
-import { GroupSkillsByCategory } from './GroupSkillsByCategory';
+import SkillMatrixTable, { type TeamSkill } from './SkillMatrixTable';
 
 interface Props {
   className?: string;
@@ -26,9 +23,20 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
 
   const categories = uniqBy(teamSkills, (teamSkill) => teamSkill.skillCategory?.id).map(
     (i) => i.skillCategory,
-  );
-  const groupSkillsByCategory = groupBy(teamSkills, (teamSkill) => teamSkill.skillCategory?.id);
-  const users = teamMembers.map((teamMember) => teamMember.user as User);
+  ) as {
+    id: number;
+    title: string;
+  }[];
+
+  // Fix teamUserSkills to remove null users
+  const filteredTeamUserSkills = teamUserSkills
+    .filter((us) => us.user !== null)
+    .map((us) => ({
+      ...us,
+      user: us.user as number,
+    }));
+
+  const members = teamMembers.map((teamMember) => teamMember.user as User);
 
   return (
     <div className="p-4">
@@ -47,34 +55,14 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
             </DialogTeamSkills>
           </div>
           <SkillLevelLegend levels={levels} className="my-4" />
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="sticky left-0 z-10"></TableHead>
-                <TableHead className="w-[250px] text-center">Requirements</TableHead>
-                {users.map((user) => (
-                  <TableHead key={user.id} title={user.email} className="py-2">
-                    <div className="flex items-center flex-col gap-1">
-                      <UserAvatarOnlyByUserId userId={user.id} />
-                      <p className="text-sm">{user.email}</p>
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
 
-            <TableBody>
-              {categories.map((category) => (
-                <GroupSkillsByCategory
-                  key={category?.id}
-                  category={category as any}
-                  teamSkills={groupSkillsByCategory[category?.id ?? ''] as any}
-                  teamId={teamId}
-                  userSkills={teamUserSkills as any}
-                />
-              ))}
-            </TableBody>
-          </Table>
+          <SkillMatrixTable
+            members={members}
+            categories={categories}
+            teamSkills={teamSkills as TeamSkill[]}
+            teamId={teamId}
+            teamUserSkills={filteredTeamUserSkills}
+          />
         </SectionCard>
       </div>
     </div>
