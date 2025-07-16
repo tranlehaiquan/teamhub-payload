@@ -57,12 +57,6 @@ export const meRouter = createTRPCRouter({
     return teamsIsMember as Team[];
   }),
 
-  getProfile: isAuthedProcedure.query(async ({ ctx }) => {
-    const me = ctx.user;
-
-    return me.user.profile as Profile;
-  }),
-
   userSkills: isAuthedProcedure.query(
     async ({
       ctx: {

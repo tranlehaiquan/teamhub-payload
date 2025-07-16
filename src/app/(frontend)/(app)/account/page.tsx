@@ -14,9 +14,11 @@ import AccountForm from './AccountForm';
 import ChangePasswordForm from './ChangePasswordForm';
 import { api } from '@/trpc/react';
 import UpdateUserForm from './UpdateUserForm';
+import { Profile } from '@/payload-types';
 
 const AccountPage: React.FC = () => {
-  const [profile] = api.me.getProfile.useSuspenseQuery();
+  const [me] = api.me.getMe.useSuspenseQuery();
+  const profile = me.user.profile as Profile;
 
   return (
     <div>

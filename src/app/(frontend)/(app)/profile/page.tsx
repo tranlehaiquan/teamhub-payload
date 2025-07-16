@@ -23,7 +23,6 @@ const Profile: React.FC = async () => {
 
   void api.category.getCategories.prefetch();
   void api.me.userSkills.prefetch();
-  void api.me.getProfile.prefetch();
   void api.me.getTrainings.prefetch();
   void api.me.getCertificates.prefetch();
 

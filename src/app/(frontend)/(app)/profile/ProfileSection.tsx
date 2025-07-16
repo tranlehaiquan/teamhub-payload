@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserProfile';
-import type { Media } from '@/payload-types';
+import type { Media, Profile } from '@/payload-types';
 import type React from 'react';
 import { Edit } from 'lucide-react';
 import Link from 'next/link';
@@ -10,8 +10,8 @@ import SectionCard from '@/components/SectionCard/SectionCard';
 import useJobTitleById from '@/hooks/useJobTitleById';
 
 const ProfileSection: React.FC = () => {
-  const [userProfile] = api.me.getProfile.useSuspenseQuery();
   const [me] = api.me.getMe.useSuspenseQuery();
+  const userProfile = me.user.profile as Profile;
   const [skills] = api.me.userSkills.useSuspenseQuery();
   const [{ docs: certificates }] = api.me.getCertificates.useSuspenseQuery();
   const [{ docs: trainings }] = api.me.getTrainings.useSuspenseQuery();

@@ -54,7 +54,7 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
         lastName: data.lastName,
       });
 
-      utils.me.getProfile.invalidate();
+      utils.me.getMe.invalidate();
       toast.success('Profile updated');
 
       form.reset({
@@ -89,7 +89,6 @@ const AccountForm: React.FC<Props> = ({ profile }) => {
 
     try {
       const result = await uploadAvatar(formData);
-      utils.me.getProfile.invalidate();
       utils.me.getMe.invalidate();
 
       toast.success(result.success ? 'Avatar uploaded' : 'Failed to upload avatar');

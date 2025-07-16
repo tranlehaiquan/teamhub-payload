@@ -18,7 +18,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   void api.me.getMe.prefetch();
   void api.me.getTeams.prefetch();
-  void api.me.getProfile.prefetch();
   void api.me.getCertificates.prefetch();
   void api.global.getLevels.prefetch();
   void api.global.getJobTitles.prefetch();
