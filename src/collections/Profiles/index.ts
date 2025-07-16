@@ -33,5 +33,15 @@ export const Profiles: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterRead: [
+      ({ doc }) => {
+        return {
+          ...doc,
+          fullName: [doc.firstName, doc.lastName].filter(Boolean).join(' '),
+        };
+      },
+    ],
+  },
   timestamps: true,
 };

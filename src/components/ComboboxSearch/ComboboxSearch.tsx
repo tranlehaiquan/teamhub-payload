@@ -18,7 +18,7 @@ import { useState } from 'react';
 // props
 interface ComboboxSearchProps {
   className?: string;
-  onSelect: (value: string) => void;
+  onSelect: (value: { value: string; label: string } | null) => void;
   placeholder?: string;
   value?: string;
   disabled?: boolean;
@@ -77,7 +77,7 @@ export function ComboboxSearch({
                       keywords={[item.label]}
                       onSelect={(currentValue) => {
                         const newValue = currentValue === value ? '' : currentValue;
-                        onSelect(newValue);
+                        onSelect(newValue ? item : null);
                         setOpen(false);
                       }}
                     >

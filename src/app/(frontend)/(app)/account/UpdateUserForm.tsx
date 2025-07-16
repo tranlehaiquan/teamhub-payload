@@ -19,7 +19,12 @@ import { ComboboxSearchJobTitles } from '@/components/ComboboxSearchJobTitle/Com
 
 // Define the form schema with proper typing
 const formSchema = z.object({
-  reportTo: z.number().nullable(),
+  reportTo: z
+    .object({
+      value: z.string(),
+      label: z.string(),
+    })
+    .nullable(),
   jobTitle: z.string().optional(),
 });
 
@@ -35,7 +40,12 @@ const UpdateUserForm: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      reportTo: reportTo?.id || null,
+      reportTo: reportTo
+        ? {
+            value: reportTo?.id.toString() || '',
+            label: reportTo?.email || '',
+          }
+        : null,
       jobTitle: me.user.jobTitle || '',
     },
   });
@@ -43,12 +53,17 @@ const UpdateUserForm: React.FC = () => {
   const onSubmit = form.handleSubmit(async (data) => {
     try {
       await updateMe.mutateAsync({
-        reportTo: data.reportTo,
-        jobTitle: data.jobTitle,
+        reportTo: data.reportTo ? Number(data.reportTo.value) : null,
+        jobTitle: data.jobTitle || null,
       });
 
       form.reset({
-        reportTo: data.reportTo,
+        reportTo: data.reportTo
+          ? {
+              value: data.reportTo.value,
+              label: data.reportTo.label,
+            }
+          : null,
         jobTitle: data.jobTitle,
       });
       utils.me.getMe.invalidate();
@@ -71,9 +86,9 @@ const UpdateUserForm: React.FC = () => {
                 <FormLabel>Report to</FormLabel>
                 <FormControl>
                   <ComboboxSearchUser
-                    value={field.value ? String(field.value) : undefined}
+                    selected={field.value}
                     onSelect={(value) => {
-                      field.onChange(Number(value));
+                      field.onChange(value);
                     }}
                   />
                 </FormControl>

@@ -2,10 +2,16 @@ import { z } from 'zod';
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
 import type { Profile, Team } from '@/payload-types';
-import { unionBy } from 'lodash';
-import { categories, skills, users_skills } from '@/payload-generated-schema';
+import {
+  categories,
+  skills,
+  teams,
+  teams_users,
+  users,
+  users_skills,
+} from '@/payload-generated-schema';
 import { TrainingStatusValues } from '@/collections/Trainings/constants';
-import { eq, inArray } from '@payloadcms/db-postgres/drizzle';
+import { eq, inArray, or } from '@payloadcms/db-postgres/drizzle';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -26,35 +32,24 @@ export const meRouter = createTRPCRouter({
   getTeams: isAuthedProcedure.query(async ({ ctx }) => {
     const me = ctx.user;
     const userId = me.user.id;
-    const payload = await getPayloadFromConfig();
+    const drizzle = ctx.drizzle;
 
-    // all teams user is owner
-    const teamsOwned = await payload.find({
-      collection: 'teams',
-      where: {
-        owner: {
-          equals: userId,
-        },
-      },
-    });
+    // Optimized: Single query to get all teams where user is owner or member
+    const teamsIsMemberOrOwner = await drizzle
+      .select()
+      .from(teams)
+      .leftJoin(teams_users, eq(teams.id, teams_users.team))
+      .where(or(eq(teams.owner, userId), eq(teams_users.user, userId)));
 
-    // find team_user
-    const teamUsers = await payload.find({
-      collection: 'teams_users',
-      where: {
-        user: {
-          equals: userId,
-        },
-      },
-      populate: {},
-    });
+    // Remove duplicates (if any) due to join
+    const uniqueTeams = new Map();
+    for (const row of teamsIsMemberOrOwner) {
+      // If using Drizzle's select with join, row will be { teams: ..., teams_users: ... }
+      const team = row.teams || row;
+      uniqueTeams.set(team.id, team);
+    }
 
-    const teamsIsMember = unionBy(
-      teamUsers.docs.map((teamUser) => teamUser.team as Team).concat(teamsOwned.docs),
-      'id',
-    ).filter((team) => team.id);
-
-    return teamsIsMember as Team[];
+    return Array.from(uniqueTeams.values());
   }),
 
   userSkills: isAuthedProcedure.query(
@@ -533,22 +528,24 @@ export const meRouter = createTRPCRouter({
     .input(
       z.object({
         reportTo: z.number().nullable(),
-        jobTitle: z.string().optional(),
+        jobTitle: z.string().nullable(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const me = ctx.user.user;
 
       if (me.id === input.reportTo) {
         throw new Error('You cannot report to yourself');
       }
 
-      await payload.update({
-        collection: 'users',
-        id: me.id,
-        data: input,
-      });
+      await drizzle
+        .update(users)
+        .set({
+          reportTo: input.reportTo,
+          jobTitle: input.jobTitle,
+        })
+        .where(eq(users.id, me.id));
 
       return {
         success: true,

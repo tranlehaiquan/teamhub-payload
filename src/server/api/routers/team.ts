@@ -140,7 +140,6 @@ export const teamRouter = createTRPCRouter({
           name: teams.name,
           owner: {
             id: users.id,
-            name: users.name,
             email: users.email,
           },
           members: count(teams_users.id),
@@ -151,15 +150,7 @@ export const teamRouter = createTRPCRouter({
         .leftJoin(users, eq(teams.owner, users.id))
         .leftJoin(teams_users, eq(teams.id, teams_users.team))
         .where(name ? like(teams.name, `%${name}%`) : undefined)
-        .groupBy(
-          teams.id,
-          teams.name,
-          users.id,
-          users.name,
-          users.email,
-          teams.createdAt,
-          teams.updatedAt,
-        )
+        .groupBy(teams.id, teams.name, users.id, users.email, teams.createdAt, teams.updatedAt)
         .limit(limit)
         .offset((page - 1) * limit);
 
@@ -222,7 +213,6 @@ export const teamRouter = createTRPCRouter({
         user: {
           id: users.id,
           email: users.email,
-          name: users.name,
           profile: users.profile,
         },
       })

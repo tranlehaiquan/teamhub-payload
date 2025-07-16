@@ -305,7 +305,6 @@ export interface UsersSkill {
  */
 export interface User {
   id: number;
-  name?: string | null;
   relatedSkills?: {
     docs?: (number | UsersSkill)[];
     hasNextPage?: boolean;
@@ -657,7 +656,6 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  name?: T;
   relatedSkills?: T;
   certificates?: T;
   roles?: T;

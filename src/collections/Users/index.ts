@@ -43,10 +43,6 @@ export const Users: CollectionConfig = {
   },
   fields: [
     {
-      name: 'name',
-      type: 'text',
-    },
-    {
       name: 'relatedSkills',
       type: 'join',
       collection: 'users_skills',
