@@ -1,5 +1,6 @@
 'use client';
 import type React from 'react';
+import { useState } from 'react';
 import SectionCard from '@/components/SectionCard/SectionCard';
 import { type User } from '@/payload-types';
 import { api } from '@/trpc/react';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import SkillLevelLegend from '@/components/SkillLevelLegend/SkillLevelLegend';
 import DialogTeamSkills from './DialogTeamSkills';
 import SkillMatrixTable, { type TeamSkill } from './SkillMatrixTable';
+import IndividualSkillView from './individualSkillView';
 
 interface Props {
   className?: string;
@@ -15,6 +17,7 @@ interface Props {
 }
 
 const SkillMatrix: React.FC<Props> = ({ teamId }) => {
+  const [selectedView, setSelectedView] = useState<'matrix' | 'individuals'>('matrix');
   const [team] = api.team.getTeamById.useSuspenseQuery(teamId);
   const [teamSkills] = api.team.getTeamSkills.useSuspenseQuery(teamId);
   const [teamMembers] = api.team.getTeamMembers.useSuspenseQuery(teamId);
@@ -36,7 +39,7 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
       user: us.user as number,
     }));
 
-  const members = teamMembers.map((teamMember) => teamMember.user as User);
+  const members = teamMembers.map((teamMember) => teamMember.user);
 
   return (
     <div className="p-4">
@@ -50,19 +53,46 @@ const SkillMatrix: React.FC<Props> = ({ teamId }) => {
               </p>
             </div>
 
-            <DialogTeamSkills teamId={teamId}>
-              <Button className="btn">Update team skills</Button>
-            </DialogTeamSkills>
+            <div className="flex gap-2">
+              <div className="flex rounded-lg border">
+                <Button
+                  variant={selectedView === 'matrix' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedView('matrix')}
+                >
+                  Team matrix
+                </Button>
+                <Button
+                  variant={selectedView === 'individuals' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedView('individuals')}
+                >
+                  Individual Skills
+                </Button>
+              </div>
+
+              <DialogTeamSkills teamId={teamId}>
+                <Button className="btn" size="sm">
+                  Update team skills
+                </Button>
+              </DialogTeamSkills>
+            </div>
           </div>
           <SkillLevelLegend levels={levels} className="my-4" />
 
-          <SkillMatrixTable
-            members={members}
-            categories={categories}
-            teamSkills={teamSkills as TeamSkill[]}
-            teamId={teamId}
-            teamUserSkills={filteredTeamUserSkills}
-          />
+          {selectedView === 'matrix' && (
+            <SkillMatrixTable
+              members={members}
+              categories={categories}
+              teamSkills={teamSkills as TeamSkill[]}
+              teamId={teamId}
+              teamUserSkills={filteredTeamUserSkills}
+            />
+          )}
+
+          {selectedView === 'individuals' && (
+            <IndividualSkillView members={members} teamUserSkills={filteredTeamUserSkills} />
+          )}
         </SectionCard>
       </div>
     </div>

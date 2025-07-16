@@ -1,5 +1,5 @@
 import React from 'react';
-import SkillMatrix from './SkillMatrix';
+import SkillMatrix from './components/SkillMatrix';
 
 const Page = async ({ params }: { params: Promise<{ teamId: string }> }) => {
   const { teamId } = await params;

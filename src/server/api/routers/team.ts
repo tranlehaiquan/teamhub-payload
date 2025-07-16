@@ -11,7 +11,7 @@ import {
   categories,
 } from '@/payload-generated-schema';
 import { eq, like, count, sql } from '@payloadcms/db-postgres/drizzle';
-import { inArray, and } from '@payloadcms/db-postgres/drizzle';
+import { and } from '@payloadcms/db-postgres/drizzle';
 import { TRPCError } from '@trpc/server';
 
 // Optimized helper function with better query structure

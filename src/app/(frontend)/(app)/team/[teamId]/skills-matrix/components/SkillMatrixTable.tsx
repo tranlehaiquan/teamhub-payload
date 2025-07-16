@@ -29,7 +29,10 @@ export type TeamSkill = {
 };
 
 interface Props {
-  members: User[];
+  members: {
+    id: number;
+    email: string;
+  }[];
   categories: { id: number; title: string }[];
   // groupSkillsByCategory: Record<string, TeamSkill[]>;
   teamSkills: TeamSkill[];
