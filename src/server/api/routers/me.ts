@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import type { Profile } from '@/payload-types';
+import type { Profile, UsersSkill } from '@/payload-types';
 import {
   categories,
   skills,
@@ -518,7 +518,10 @@ export const meRouter = createTRPCRouter({
       // Get user skills relationships for trainings
       const trainingIds = userTrainings.map((training) => training.id);
 
-      let trainingsWithUserSkills = userTrainings;
+      let trainingsWithUserSkills = userTrainings.map((i) => ({
+        ...i,
+        userSkills: [] as UsersSkill[],
+      }));
 
       if (trainingIds.length > 0) {
         const trainingUserSkills = await drizzle

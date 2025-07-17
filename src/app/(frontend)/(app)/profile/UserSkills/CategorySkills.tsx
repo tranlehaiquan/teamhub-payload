@@ -51,9 +51,8 @@ const CategorySkills: React.FC<CategorySkillsProps> = ({
 
   const getTrainingsByUserSkillId = (userSkillId: number) => {
     return trainings.filter((training) => {
-      return (
-        training.userSkills &&
-        (training.userSkills as UsersSkill[]).some((userSkill) => userSkill.id === userSkillId)
+      return (training.userSkills as UsersSkill[]).some(
+        (userSkill) => userSkill.id === userSkillId,
       );
     });
   };

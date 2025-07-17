@@ -106,7 +106,7 @@ const UpdateUserForm: React.FC = () => {
                 <ComboboxSearchJobTitles
                   value={field.value}
                   onSelect={(value) => {
-                    field.onChange(value);
+                    field.onChange(value.value);
                   }}
                   placeholder="Select job title"
                 />

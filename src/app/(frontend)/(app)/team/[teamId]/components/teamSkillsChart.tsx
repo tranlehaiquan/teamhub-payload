@@ -20,7 +20,7 @@ const createChartConfig = (members: any[]) => {
     members.map((member, index) => [
       member.user.id.toString(),
       {
-        label: member.user.name || member.user.email,
+        label: member.user.email,
         color: generateColor(index, members.length),
       },
     ]),

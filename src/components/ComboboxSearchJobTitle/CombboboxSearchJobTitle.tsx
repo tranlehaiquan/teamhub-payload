@@ -6,7 +6,7 @@ import { ComboboxSearch } from '@/components/ComboboxSearch/ComboboxSearch';
 // props
 interface ComboboxSearchJobTitlesProps {
   className?: string;
-  onSelect: (value: string) => void;
+  onSelect: (selected: { value: string; label: string }) => void;
   placeholder?: string;
   value?: string;
   disabled?: boolean;

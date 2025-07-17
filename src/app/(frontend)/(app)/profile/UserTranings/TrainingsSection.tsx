@@ -104,9 +104,7 @@ const TrainingsSection: React.FC = () => {
                     description: training.description ?? '',
                     status: training.status ?? undefined,
                     name: training.name ?? '',
-                    userSkills: training.userSkills
-                      ? (training.userSkills as UsersSkill[]).map((i) => i.id)
-                      : [],
+                    userSkills: (training.userSkills as UsersSkill[]).map((i) => i.id),
                   }}
                   onSubmit={(data) =>
                     handleUpdate({
