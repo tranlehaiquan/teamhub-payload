@@ -20,9 +20,7 @@ const UserSkills: React.FC = () => {
   const utils = api.useUtils();
 
   const skillsByCategory = groupBy(
-    userSkills.filter(
-      (userSkill) => userSkill.skill && userSkill.currentLevel && userSkill.desiredLevel,
-    ),
+    userSkills.filter((userSkill) => userSkill.skill),
     (userSkill) => userSkill.skill?.category ?? null,
   );
   const categoriesByIdPair = Object.entries(skillsByCategory).filter(

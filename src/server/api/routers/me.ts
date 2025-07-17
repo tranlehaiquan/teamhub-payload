@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, isAuthedProcedure } from '@/server/api/trpc';
 import { getPayloadFromConfig } from '@/utilities/getPayloadFromConfig';
-import type { Profile, Team } from '@/payload-types';
+import type { Profile } from '@/payload-types';
 import {
   categories,
   skills,
@@ -9,9 +9,14 @@ import {
   teams_users,
   users,
   users_skills,
+  profiles,
+  certificates,
+  certificates_rels,
+  trainings,
+  trainings_rels,
 } from '@/payload-generated-schema';
 import { TrainingStatusValues } from '@/collections/Trainings/constants';
-import { eq, inArray, or } from '@payloadcms/db-postgres/drizzle';
+import { eq, inArray, or, and, desc } from '@payloadcms/db-postgres/drizzle';
 
 const schemaChangePassword = z.object({
   currentPassword: z.string().min(8, {
@@ -60,60 +65,122 @@ export const meRouter = createTRPCRouter({
       },
     }) => {
       const userId = user.id;
-      const userSkills = await drizzle
+
+      // Single query with joins to get all data at once
+      const userSkillsWithSkills = await drizzle
         .select({
           id: users_skills.id,
-          skill: users_skills.skill,
           currentLevel: users_skills.currentLevel,
           desiredLevel: users_skills.desiredLevel,
+          skill: {
+            id: skills.id,
+            name: skills.name,
+            category: categories.id,
+          },
         })
         .from(users_skills)
-        .where(eq(users_skills.user, userId));
-      const skillsRecords = await drizzle
-        .select({
-          id: skills.id,
-          name: skills.name,
-          category: skills.category,
-        })
-        .from(skills)
+        .leftJoin(skills, eq(users_skills.skill, skills.id))
         .leftJoin(categories, eq(skills.category, categories.id))
-        .where(
-          inArray(
-            skills.id,
-            userSkills.map((userSkill) => userSkill.skill as number),
-          ),
-        );
-      const skillsRecordsMap = new Map(skillsRecords.map((skill) => [skill.id, skill]));
-
-      const userSkillsWithSkills = userSkills.map((userSkill) => ({
-        ...userSkill,
-        skill: skillsRecordsMap.get(userSkill.skill as number),
-      }));
+        .where(eq(users_skills.user, userId));
 
       return userSkillsWithSkills;
     },
   ),
 
   getCertificates: isAuthedProcedure.query(async ({ ctx }) => {
-    const payload = await getPayloadFromConfig();
+    const drizzle = ctx.drizzle;
     const me = ctx.user;
     const userId = me.user.id;
 
-    const userCertificates = await payload.find({
-      collection: 'certificates',
-      populate: {
-        users_skills: {
-          skill: true,
-        },
-      },
-      where: {
-        user: {
-          equals: userId,
-        },
-      },
+    // Get certificates with their user skills relationships in a single query using joins
+    const certificatesWithRels = await drizzle
+      .select({
+        id: certificates.id,
+        name: certificates.name,
+        issuingOrganization: certificates.issuingOrganization,
+        deliveryDate: certificates.deliveryDate,
+        expiryDate: certificates.expiryDate,
+        user: certificates.user,
+        updatedAt: certificates.updatedAt,
+        createdAt: certificates.createdAt,
+        userSkillId: certificates_rels.users_skillsID,
+      })
+      .from(certificates)
+      .leftJoin(
+        certificates_rels,
+        and(
+          eq(certificates.id, certificates_rels.parent),
+          eq(certificates_rels.path, 'userSkills'),
+        ),
+      )
+      .where(eq(certificates.user, userId))
+      .orderBy(desc(certificates.createdAt));
+
+    if (certificatesWithRels.length === 0) {
+      return { docs: [], totalDocs: 0, hasNextPage: false };
+    }
+
+    // Extract unique user skill IDs from the joined results
+    const userSkillIds = certificatesWithRels
+      .map((cert) => cert.userSkillId)
+      .filter(Boolean) as number[];
+
+    let userSkillsMap = new Map();
+    if (userSkillIds.length > 0) {
+      const userSkillsData = await drizzle
+        .select({
+          id: users_skills.id,
+          user: users_skills.user,
+          skill: users_skills.skill,
+          currentLevel: users_skills.currentLevel,
+          desiredLevel: users_skills.desiredLevel,
+          skillName: skills.name,
+        })
+        .from(users_skills)
+        .leftJoin(skills, eq(users_skills.skill, skills.id))
+        .where(inArray(users_skills.id, userSkillIds));
+
+      userSkillsMap = new Map(
+        userSkillsData.map((skill) => [
+          skill.id,
+          {
+            ...skill,
+            skill: { id: skill.skill, name: skill.skillName },
+          },
+        ]),
+      );
+    }
+
+    // Group certificates and their user skills from the joined results
+    const certificatesMap = new Map();
+    certificatesWithRels.forEach((row) => {
+      const certId = row.id;
+      if (!certificatesMap.has(certId)) {
+        certificatesMap.set(certId, {
+          id: row.id,
+          name: row.name,
+          issuingOrganization: row.issuingOrganization,
+          deliveryDate: row.deliveryDate,
+          expiryDate: row.expiryDate,
+          user: row.user,
+          updatedAt: row.updatedAt,
+          createdAt: row.createdAt,
+          userSkills: [],
+        });
+      }
+
+      if (row.userSkillId && userSkillsMap.has(row.userSkillId)) {
+        certificatesMap.get(certId).userSkills.push(userSkillsMap.get(row.userSkillId));
+      }
     });
 
-    return userCertificates;
+    const certificatesWithUserSkills = Array.from(certificatesMap.values());
+
+    return {
+      docs: certificatesWithUserSkills,
+      totalDocs: certificatesWithUserSkills.length,
+      hasNextPage: false,
+    };
   }),
 
   updateProfile: isAuthedProcedure
@@ -125,16 +192,20 @@ export const meRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user;
+      const drizzle = ctx.drizzle;
       const profileId = (me.user.profile as Profile).id;
 
-      const payload = await getPayloadFromConfig();
-      const profile = await payload.update({
-        collection: 'profiles',
-        id: profileId,
-        data: input,
-      });
+      const updatedProfile = await drizzle
+        .update(profiles)
+        .set({
+          firstName: input.firstName,
+          lastName: input.lastName,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(profiles.id, profileId))
+        .returning();
 
-      return profile;
+      return updatedProfile[0];
     }),
 
   addCertificate: isAuthedProcedure
@@ -158,22 +229,38 @@ export const meRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;
       const userId = me.id;
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const { name, issuingOrganization, deliveryDate, expiryDate, userSkills } = input;
 
-      const certificate = await payload.create({
-        collection: 'certificates',
-        data: {
+      // Insert certificate
+      const newCertificate = await drizzle
+        .insert(certificates)
+        .values({
           name,
           issuingOrganization,
           deliveryDate: deliveryDate ? new Date(deliveryDate).toISOString() : null,
           expiryDate: expiryDate ? new Date(expiryDate).toISOString() : null,
-          userSkills,
           user: userId,
-        },
-      });
+          updatedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        })
+        .returning();
 
-      return certificate;
+      const certificateId = newCertificate[0].id;
+
+      // Insert user skills relationships
+      if (userSkills.length > 0) {
+        const relationshipData = userSkills.map((userSkillId, index) => ({
+          parent: certificateId,
+          path: 'userSkills',
+          users_skillsID: userSkillId,
+          order: index,
+        }));
+
+        await drizzle.insert(certificates_rels).values(relationshipData);
+      }
+
+      return newCertificate[0];
     }),
 
   updateCertificate: isAuthedProcedure
@@ -198,48 +285,64 @@ export const meRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;
       const userId = me.id;
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const { id, name, issuingOrganization, deliveryDate, expiryDate, userSkills } = input;
 
-      const certificate = await payload.update({
-        collection: 'certificates',
-        where: {
-          id: {
-            equals: id,
-          },
-          user: {
-            equals: userId,
-          },
-        },
-        data: {
+      // Update certificate
+      const updatedCertificate = await drizzle
+        .update(certificates)
+        .set({
           name,
           issuingOrganization,
           deliveryDate: deliveryDate ? new Date(deliveryDate).toISOString() : null,
           expiryDate: expiryDate ? new Date(expiryDate).toISOString() : null,
-          userSkills,
-        },
-      });
+          updatedAt: new Date().toISOString(),
+        })
+        .where(and(eq(certificates.id, id), eq(certificates.user, userId)))
+        .returning();
 
-      return certificate;
+      if (updatedCertificate.length === 0) {
+        throw new Error('Certificate not found or access denied');
+      }
+
+      // Delete existing user skills relationships
+      await drizzle
+        .delete(certificates_rels)
+        .where(and(eq(certificates_rels.parent, id), eq(certificates_rels.path, 'userSkills')));
+
+      // Insert new user skills relationships
+      if (userSkills.length > 0) {
+        const relationshipData = userSkills.map((userSkillId, index) => ({
+          parent: id,
+          path: 'userSkills',
+          users_skillsID: userSkillId,
+          order: index,
+        }));
+
+        await drizzle.insert(certificates_rels).values(relationshipData);
+      }
+
+      return updatedCertificate[0];
     }),
 
   removeCertificate: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
-    const payload = await getPayloadFromConfig();
+    const drizzle = ctx.drizzle;
     const userId = ctx.user.user.id;
     const certificateId = input;
 
     try {
-      await payload.delete({
-        collection: 'certificates',
-        where: {
-          id: {
-            equals: certificateId,
-          },
-          user: {
-            equals: userId,
-          },
-        },
-      });
+      // Delete relationships first (cascading should handle this, but being explicit)
+      await drizzle.delete(certificates_rels).where(eq(certificates_rels.parent, certificateId));
+
+      // Delete certificate
+      const deletedCertificate = await drizzle
+        .delete(certificates)
+        .where(and(eq(certificates.id, certificateId), eq(certificates.user, userId)))
+        .returning();
+
+      if (deletedCertificate.length === 0) {
+        throw new Error('Certificate not found or access denied');
+      }
 
       return {
         success: true,
@@ -274,16 +377,18 @@ export const meRouter = createTRPCRouter({
   addUserSkill: isAuthedProcedure.input(z.array(z.number())).mutation(async ({ input, ctx }) => {
     const me = ctx.user.user;
     const userId = me.id;
-    const payload = await getPayloadFromConfig();
+    const drizzle = ctx.drizzle;
     const skills = input;
 
     try {
       const newUserSkills = skills.map((skill) => ({
         user: userId,
         skill: skill,
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       }));
 
-      await payload.db.drizzle.insert(users_skills).values(newUserSkills);
+      await drizzle.insert(users_skills).values(newUserSkills);
 
       return {
         success: true,
@@ -300,21 +405,18 @@ export const meRouter = createTRPCRouter({
   removeUserSkill: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
     const me = ctx.user.user;
     const userId = me.id;
-    const payload = await getPayloadFromConfig();
+    const drizzle = ctx.drizzle;
     const skill = input;
 
     try {
-      await payload.delete({
-        collection: 'users_skills',
-        where: {
-          user: {
-            equals: userId,
-          },
-          skill: {
-            equals: skill,
-          },
-        },
-      });
+      const deletedSkill = await drizzle
+        .delete(users_skills)
+        .where(and(eq(users_skills.user, userId), eq(users_skills.skill, skill)))
+        .returning();
+
+      if (deletedSkill.length === 0) {
+        throw new Error('User skill not found');
+      }
 
       return {
         success: true,
@@ -339,25 +441,23 @@ export const meRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;
       const userId = me.id;
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const { id, currentLevel, desiredLevel } = input;
 
       try {
-        await payload.update({
-          collection: 'users_skills',
-          where: {
-            user: {
-              equals: userId,
-            },
-            id: {
-              equals: id,
-            },
-          },
-          data: {
-            currentLevel,
-            desiredLevel,
-          },
-        });
+        const updatedUserSkill = await drizzle
+          .update(users_skills)
+          .set({
+            currentLevel: currentLevel !== undefined ? String(currentLevel) : undefined,
+            desiredLevel: desiredLevel !== undefined ? String(desiredLevel) : undefined,
+            updatedAt: new Date().toISOString(),
+          })
+          .where(and(eq(users_skills.user, userId), eq(users_skills.id, id)))
+          .returning();
+
+        if (updatedUserSkill.length === 0) {
+          throw new Error('User skill not found');
+        }
 
         return {
           success: true,
@@ -383,22 +483,110 @@ export const meRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const me = ctx.user;
       const userId = me.user.id;
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const { page = 1, limit = 10 } = input || {};
 
-      const trainings = await payload.find({
-        collection: 'trainings',
-        where: {
-          user: {
-            equals: userId,
-          },
-        },
+      const offset = (page - 1) * limit;
+
+      // Get trainings for the user and total count in parallel
+      const [userTrainings, totalCountResult] = await Promise.all([
+        drizzle
+          .select({
+            id: trainings.id,
+            name: trainings.name,
+            link: trainings.link,
+            description: trainings.description,
+            user: trainings.user,
+            status: trainings.status,
+            startDate: trainings.startDate,
+            endDate: trainings.endDate,
+            certificate: trainings.certificate,
+            updatedAt: trainings.updatedAt,
+            createdAt: trainings.createdAt,
+          })
+          .from(trainings)
+          .where(eq(trainings.user, userId))
+          .orderBy(desc(trainings.createdAt))
+          .limit(limit)
+          .offset(offset),
+        drizzle.select({ count: trainings.id }).from(trainings).where(eq(trainings.user, userId)),
+      ]);
+
+      const totalDocs = totalCountResult.length;
+      const hasNextPage = offset + limit < totalDocs;
+
+      // Get user skills relationships for trainings
+      const trainingIds = userTrainings.map((training) => training.id);
+
+      let trainingsWithUserSkills = userTrainings;
+
+      if (trainingIds.length > 0) {
+        const trainingUserSkills = await drizzle
+          .select({
+            trainingId: trainings_rels.parent,
+            userSkillId: trainings_rels.users_skillsID,
+          })
+          .from(trainings_rels)
+          .where(
+            and(inArray(trainings_rels.parent, trainingIds), eq(trainings_rels.path, 'userSkills')),
+          );
+
+        // Get user skills with skill details
+        const userSkillIds = trainingUserSkills
+          .map((rel) => rel.userSkillId)
+          .filter(Boolean) as number[];
+
+        let userSkillsMap = new Map();
+        if (userSkillIds.length > 0) {
+          const userSkillsData = await drizzle
+            .select({
+              id: users_skills.id,
+              user: users_skills.user,
+              skill: users_skills.skill,
+              currentLevel: users_skills.currentLevel,
+              desiredLevel: users_skills.desiredLevel,
+              skillName: skills.name,
+            })
+            .from(users_skills)
+            .leftJoin(skills, eq(users_skills.skill, skills.id))
+            .where(inArray(users_skills.id, userSkillIds));
+
+          userSkillsMap = new Map(
+            userSkillsData.map((skill) => [
+              skill.id,
+              {
+                ...skill,
+                skill: { id: skill.skill, name: skill.skillName },
+              },
+            ]),
+          );
+        }
+
+        // Map trainings with their user skills
+        trainingsWithUserSkills = userTrainings.map((training) => {
+          const relatedUserSkills = trainingUserSkills
+            .filter((rel) => rel.trainingId === training.id)
+            .map((rel) => (rel.userSkillId ? userSkillsMap.get(rel.userSkillId) : null))
+            .filter(Boolean);
+
+          return {
+            ...training,
+            userSkills: relatedUserSkills,
+          };
+        });
+      }
+
+      return {
+        docs: trainingsWithUserSkills,
+        totalDocs,
         page,
         limit,
-      });
-
-      return trainings;
+        totalPages: Math.ceil(totalDocs / limit),
+        hasNextPage,
+        hasPrevPage: page > 1,
+      };
     }),
+
   addTraining: isAuthedProcedure
     .input(
       z.object({
@@ -414,24 +602,40 @@ export const meRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;
       const userId = me.id;
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const { name, link, description, status, startDate, endDate, userSkills } = input;
 
-      const training = await payload.create({
-        collection: 'trainings',
-        data: {
+      // Insert training
+      const newTraining = await drizzle
+        .insert(trainings)
+        .values({
           name,
-          link,
-          description,
-          status,
+          link: link || null,
+          description: description || null,
+          status: status || 'not-started',
           user: userId,
           startDate: startDate ? new Date(startDate).toISOString() : null,
           endDate: endDate ? new Date(endDate).toISOString() : null,
-          userSkills,
-        },
-      });
+          updatedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        })
+        .returning();
 
-      return training;
+      const trainingId = newTraining[0].id;
+
+      // Insert user skills relationships
+      if (userSkills && userSkills.length > 0) {
+        const relationshipData = userSkills.map((userSkillId, index) => ({
+          parent: trainingId,
+          path: 'userSkills',
+          users_skillsID: userSkillId,
+          order: index,
+        }));
+
+        await drizzle.insert(trainings_rels).values(relationshipData);
+      }
+
+      return newTraining[0];
     }),
 
   updateTraining: isAuthedProcedure
@@ -457,30 +661,45 @@ export const meRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const me = ctx.user.user;
       const userId = me.id;
-      const payload = await getPayloadFromConfig();
+      const drizzle = ctx.drizzle;
       const { id, name, link, description, status, startDate, endDate, userSkills } = input;
 
       try {
-        await payload.update({
-          collection: 'trainings',
-          where: {
-            user: {
-              equals: userId,
-            },
-            id: {
-              equals: id,
-            },
-          },
-          data: {
+        // Update training
+        const updatedTraining = await drizzle
+          .update(trainings)
+          .set({
             name,
-            link,
-            description,
+            link: link || null,
+            description: description || null,
             status,
             startDate: startDate ? new Date(startDate).toISOString() : null,
             endDate: endDate ? new Date(endDate).toISOString() : null,
-            userSkills,
-          },
-        });
+            updatedAt: new Date().toISOString(),
+          })
+          .where(and(eq(trainings.id, id), eq(trainings.user, userId)))
+          .returning();
+
+        if (updatedTraining.length === 0) {
+          throw new Error('Training not found or access denied');
+        }
+
+        // Delete existing user skills relationships
+        await drizzle
+          .delete(trainings_rels)
+          .where(and(eq(trainings_rels.parent, id), eq(trainings_rels.path, 'userSkills')));
+
+        // Insert new user skills relationships
+        if (userSkills && userSkills.length > 0) {
+          const relationshipData = userSkills.map((userSkillId, index) => ({
+            parent: id,
+            path: 'userSkills',
+            users_skillsID: userSkillId,
+            order: index,
+          }));
+
+          await drizzle.insert(trainings_rels).values(relationshipData);
+        }
 
         return {
           success: true,
@@ -495,22 +714,23 @@ export const meRouter = createTRPCRouter({
     }),
 
   removeTraining: isAuthedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
-    const payload = await getPayloadFromConfig();
+    const drizzle = ctx.drizzle;
     const userId = ctx.user.user.id;
     const trainingId = input;
 
     try {
-      await payload.delete({
-        collection: 'trainings',
-        where: {
-          id: {
-            equals: trainingId,
-          },
-          user: {
-            equals: userId,
-          },
-        },
-      });
+      // Delete relationships first (cascading should handle this, but being explicit)
+      await drizzle.delete(trainings_rels).where(eq(trainings_rels.parent, trainingId));
+
+      // Delete training
+      const deletedTraining = await drizzle
+        .delete(trainings)
+        .where(and(eq(trainings.id, trainingId), eq(trainings.user, userId)))
+        .returning();
+
+      if (deletedTraining.length === 0) {
+        throw new Error('Training not found or access denied');
+      }
 
       return {
         success: true,
