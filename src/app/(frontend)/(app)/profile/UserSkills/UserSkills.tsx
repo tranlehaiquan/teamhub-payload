@@ -26,7 +26,9 @@ const UserSkills: React.FC = () => {
   const categoriesByIdPair = Object.entries(skillsByCategory).filter(
     ([_, userSkills]) => userSkills.length > 0,
   );
-  const userSkillIds = userSkills.map((userSkill) => userSkill.id) || [];
+  const userSkillIds = userSkills
+    .map((userSkill) => userSkill.skill?.id)
+    .filter(Boolean) as number[];
 
   const handleRemoveSkill = async (skillId: number) => {
     await removeCurrentUserSkillMutation.mutateAsync(skillId);
